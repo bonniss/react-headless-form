@@ -1,0 +1,82 @@
+{
+  "name": "react-headless-form",
+  "description": "Headless form component built on React Hook Form, - bring your own UI",
+  "private": false,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.12.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bonniss/react-headless-form"
+  },
+  "main": "./dist/react-headless-form.umd.js",
+  "module": "./dist/react-headless-form.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/react-headless-form.es.js",
+      "require": "./dist/react-headless-form.umd.js"
+    },
+    "./styles.css": "./dist/react-headless-form.css"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "ladle serve",
+    "build": "tsc && vite build",
+    "static": "ladle build",
+    "preview": "ladle preview",
+    "lint": "npx @biomejs/biome lint --write ./src",
+    "format": "npx @biomejs/biome check --write --organize-imports-enabled=true ./src",
+    "test": "vitest",
+    "test:cov": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@babel/core": "7.27.4",
+    "@biomejs/biome": "2.0.4",
+    "@ladle/react": "^5.1.1",
+    "@testing-library/react": "16.3.0",
+    "@types/node": "24.0.3",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "4.5.2",
+    "@vitest/coverage-v8": "3.2.4",
+    "autoprefixer": "10.4.21",
+    "babel-loader": "10.0.0",
+    "husky": "9.1.7",
+    "jsdom": "26.1.0",
+    "lint-staged": "16.1.2",
+    "postcss": "8.5.6",
+    "react": "^18",
+    "react-dom": "^18",
+    "tailwindcss": "3.4.19",
+    "typescript": "5.8.3",
+    "vite": "6.3.5",
+    "vite-plugin-dts": "4.5.4",
+    "vite-tsconfig-paths": "^6.0.3",
+    "vitest": "3.2.4"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0 || ^17 || ^18 || ^19",
+    "react-dom": "^16.8.0 || ^17 || ^18 || ^19"
+  },
+  "files": [
+    "dist"
+  ],
+  "lint-staged": {
+    "*.{js,ts,cjs,mjs,d.cts,d.mts,json,jsonc}": [
+      "biome check --files-ignore-unknown=true",
+      "biome check --write --no-errors-on-unmatched",
+      "biome lint --write --no-errors-on-unmatched --files-ignore-unknown=true",
+      "biome format --write --no-errors-on-unmatched"
+    ]
+  },
+  "dependencies": {
+    "@hookform/devtools": "^4.4.0",
+    "just-debounce-it": "^3.2.0",
+    "just-safe-get": "^4.2.0",
+    "react-easy-provider": "^0.2.1",
+    "react-hook-form": "^7.69.0"
+  }
+}
