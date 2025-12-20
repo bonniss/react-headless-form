@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0 (2025-12-20)
+
+
+### Features
+
+* project foundation ([70b5eaa](https://github.com/bonniss/react-headless-form/commit/70b5eaa08000c0b85fa4f58446eaf1b4276906ba))
+
 ## [1.0.2](https://github.com/bonniss/react-library-vite-template/compare/v1.0.1...v1.0.2) (2025-12-20)
 
 
