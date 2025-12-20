@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react'
-import { useField } from '../providers'
+import { useField } from '../provider'
 
 interface InlineFieldProps {}
 

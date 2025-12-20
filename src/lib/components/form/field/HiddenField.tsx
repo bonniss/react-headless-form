@@ -2,7 +2,7 @@
 import { FunctionComponent, useEffect } from 'react'
 
 import { useFormContext } from 'react-hook-form'
-import { useField } from '../providers'
+import { useField } from '../provider'
 
 interface HiddenFieldProps {}
 

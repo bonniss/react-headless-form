@@ -1,13 +1,13 @@
 import { render, fireEvent, screen } from "@testing-library/react"
 import { describe, it, expect } from "vitest"
-import { DynamicForm } from "@/components"
+import { BlueForm } from "@/components"
 
 describe("HiddenField – nested object", () => {
   it("registers value using full path instead of local name", async () => {
     let submitted: any = null
 
     render(
-      <DynamicForm
+      <BlueForm
         config={{
           profile: {
             type: "group",
@@ -26,7 +26,7 @@ describe("HiddenField – nested object", () => {
         }}
       >
         <button type="submit">Submit</button>
-      </DynamicForm>
+      </BlueForm>
     )
 
     fireEvent.click(screen.getByText("Submit"))

@@ -1,24 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DevTool } from '@hookform/devtools'
-import { BaseSyntheticEvent, ComponentProps, CSSProperties, ReactNode } from 'react'
-import {
+import type { BaseSyntheticEvent, PropsWithChildren, ReactNode } from "react"
+import type {
   FieldErrors,
   FieldValues,
   SubmitErrorHandler,
   SubmitHandler,
   UseFormProps,
   UseFormReturn,
-} from 'react-hook-form'
-import { ComponentMap, FormConfig } from './config'
+} from "react-hook-form"
+import type { TranslationResolver, ValidationResolver } from "@/components/i18n"
+import type { ComponentMap, FormConfig } from "./config"
 
-interface CommonProps {
-  id?: string
-  className?: string
-  children?: ReactNode
-  style?: CSSProperties
-}
-
-export type SubmitHandlerWithFormMethods<TModel extends FieldValues = FieldValues> = (
+export type SubmitHandlerWithFormMethods<
+  TModel extends FieldValues = FieldValues
+> = (
   data: TModel,
   formMethods: UseFormReturn<TModel>,
   event?: React.BaseSyntheticEvent
@@ -28,18 +23,53 @@ type RootRendererArgs<TModel = FieldValues> = {
   formMethods: UseFormReturn
   children: ReactNode
   onSubmit: (e?: BaseSyntheticEvent) => Promise<void>
+  onError?: (errors: FieldErrors) => void
   submit: (raw: TModel) => void
-  errorHandler: (errors: FieldErrors) => void
-} & Omit<CommonProps, 'children'>
+}
 
 /**
  * Custom root wrapper renderer. Useful for replacing the default <form> with any custom structure.
  */
-export type RootRenderer<TModel = FieldValues> = (args: RootRendererArgs<TModel>) => ReactNode
+export type RootRenderer<TModel = FieldValues> = (
+  args: RootRendererArgs<TModel>
+) => ReactNode
 
-export type DynamicFormRef<TModel = FieldValues> = UseFormReturn<any, any, TModel> |  null
+export type BlueFormRef<TModel = FieldValues> = UseFormReturn<
+  any,
+  any,
+  TModel
+> | null
 
-export interface DynamicFormCommonProps {
+export interface BlueFormConfigBase {
+  /**
+   * Internationalization (i18n) and validation message configuration.
+   */
+  i18nConfig?: {
+    /**
+     * Whether to enable i18n support for validation messages.
+     * If false or omitted, messages will fallback to raw/default text.
+     */
+    enabled?: boolean
+
+    /**
+     * Translation function used to resolve localized message strings.
+     * If not provided, defaults to an identity function: (key) => key
+     */
+    t?: TranslationResolver
+
+    /**
+     * Custom resolver for formatting validation messages.
+     * Allows overriding or extending default error message generation logic.
+     */
+    validationResolver?: ValidationResolver
+  }
+
+  /**
+   * Mapping between field types and React components used to render them.
+   * Example: `{ text: TextField, select: SelectField }`
+   */
+  fieldMapping?: ComponentMap
+
   /**
    * Custom root renderer for the form element.
    * Defaults to rendering a native `<form>` element.
@@ -57,13 +87,16 @@ export interface DynamicFormCommonProps {
 
   /**
    * Enable the React Hook Form DevTool for debugging form state.
+   * Tạm thời bỏ qua để nghiên cứu theo hướng plugins, nhằm giảm bundle size
    */
-  devToolConfig?: DevToolConfig
+  // devToolConfig?: DevToolConfig
 }
 
-export interface DynamicFormProps<TModel extends FieldValues, TComponentMap extends ComponentMap>
-  extends CommonProps,
-    DynamicFormCommonProps {
+export interface BlueFormProps<
+  TModel extends FieldValues,
+  TComponentMap extends ComponentMap
+> extends BlueFormConfigBase,
+    PropsWithChildren {
   /**
    * Form field configuration including field type, name, label, props, etc.
    */
@@ -108,7 +141,13 @@ export interface DynamicFormProps<TModel extends FieldValues, TComponentMap exte
   /**
    * Called when a single field value changes.
    */
-  onFieldChange?: (name: keyof TModel, value: any, form: UseFormReturn<TModel>) => void
+  onFieldChange?: (
+    // name: keyof TModel,
+    // hướng đến sử dụng nested path
+    name: string,
+    value: any,
+    form: UseFormReturn<TModel>
+  ) => void
 
   /**
    * Called whenever the entire form state changes.
@@ -126,9 +165,4 @@ export interface DynamicFormProps<TModel extends FieldValues, TComponentMap exte
    * Set to 0 or leave undefined to disable debounce.
    */
   changeDebounceDelay?: number
-}
-
-export type DevToolConfig = {
-  enabled?: boolean
-  devToolProps?: Omit<NonNullable<ComponentProps<typeof DevTool>>, 'control'>
 }

@@ -1,39 +1,46 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Fragment } from 'react'
-import { FieldValues, useFormContext } from 'react-hook-form'
+import { Fragment } from "react"
+import { FieldValues, useFormContext } from "react-hook-form"
 
 import type {
+  BlueFormProps,
   ComponentMap,
   CoreFieldType,
-  DynamicFormProps,
   FieldResolvedProps,
   FormFieldConfig,
   NestedFieldProps,
-} from '../types'
+} from "@/types"
 
-import HiddenField from './fields/HiddenField'
+import HiddenField from "./field/HiddenField"
+import InlineField from "./field/InlineField"
+import { FieldArrayProvider } from "./provider/FieldArrayProvider"
+import { FieldProvider } from "./provider/FieldProvider"
 
-import InlineField from './fields/InlineField'
-import { FieldArrayProvider } from './providers/FieldArrayProvider'
-import { FieldProvider } from './providers/FieldProvider'
-import { useDynamicFormContext } from './providers/FormProvider'
-
-interface FormEngineProps<TModel extends FieldValues, TComponentMap extends ComponentMap>
-  extends Pick<DynamicFormProps<TModel, TComponentMap>, 'config' | 'readOnly' | 'readOnlyEmptyFallback'> {
+interface FormEngineProps<
+  TModel extends FieldValues,
+  TComponentMap extends ComponentMap
+> extends Pick<
+    BlueFormProps<TModel, TComponentMap>,
+    | "config"
+    | "readOnly"
+    | "readOnlyEmptyFallback"
+    | "fieldMapping"
+    | "i18nConfig"
+  > {
   namespace?: string
 }
 
-function FormEngine<TModel extends FieldValues, TComponentMap extends Record<string, any>>({
+function FormEngine<
+  TModel extends FieldValues,
+  TComponentMap extends Record<string, any>
+>({
+  i18nConfig = {},
+  fieldMapping,
   config,
   readOnly: isFormReadOnly,
   readOnlyEmptyFallback,
   namespace,
 }: FormEngineProps<TModel, TComponentMap>) {
-  const {
-    fieldMapping,
-    i18nConfig = {},
-    readOnlyEmptyFallback: readOnlyEmptyFallbackFromContext,
-  } = useDynamicFormContext()
   const { t, validationResolver = {}, enabled: isI18nEnabled } = i18nConfig
 
   const { watch } = useFormContext()
@@ -62,12 +69,18 @@ function FormEngine<TModel extends FieldValues, TComponentMap extends Record<str
         const translatedLabel = t?.(label)
         const translatedDescription = t?.(description)
 
-        const isVisible = typeof visible === 'function' ? visible(values) : visible !== false
-        const isDisabled = typeof disabled === 'function' ? disabled(values) : !!disabled
+        const isVisible =
+          typeof visible === "function" ? visible(values) : visible !== false
+        const isDisabled =
+          typeof disabled === "function" ? disabled(values) : !!disabled
         const isReadonly = Boolean(isFormReadOnly ?? isFieldReadOnly)
         const isRequired = Boolean(rules?.required)
 
-        if (isI18nEnabled && !!Object.keys(rules).length && !!Object.keys(validationResolver).length) {
+        if (
+          isI18nEnabled &&
+          !!Object.keys(rules).length &&
+          !!Object.keys(validationResolver).length
+        ) {
           for (const key in rules) {
             if (Object.hasOwnProperty.call(rules, key)) {
               const ruleType = key as keyof typeof rules
@@ -75,7 +88,11 @@ function FormEngine<TModel extends FieldValues, TComponentMap extends Record<str
               const resolver = validationResolver[ruleType]
 
               if (rule && resolver) {
-                const resolvedRule = resolver({ field: translatedLabel!, rule: rule! as any, translator: t })
+                const resolvedRule = resolver({
+                  field: translatedLabel!,
+                  rule: rule! as any,
+                  translator: t,
+                })
                 if (resolvedRule) {
                   rules[ruleType] = resolvedRule as any
                 }
@@ -96,27 +113,33 @@ function FormEngine<TModel extends FieldValues, TComponentMap extends Record<str
           readOnly: isReadonly,
           visible: isVisible,
           required: isRequired,
-          readOnlyEmptyFallback: readOnlyEmptyFallback ?? readOnlyEmptyFallbackFromContext,
+          readOnlyEmptyFallback,
           rules,
           defaultValue,
         } as FieldResolvedProps
 
         switch (type as CoreFieldType) {
-          case 'array': {
-            const ArrayField = fieldMapping?.['array']
+          case "array": {
+            const ArrayField = fieldMapping?.["array"]
             if (!ArrayField) {
-              throw new Error(`No component of array field found for **${name}**`)
+              throw new Error(
+                `No component of array field found for **${name}**`
+              )
             }
             component = (
-              <FieldArrayProvider defaultValue={{ resolved: resolvedProps, config: field }}>
+              <FieldArrayProvider
+                defaultValue={{ resolved: resolvedProps, config: field }}
+              >
                 <ArrayField {...componentProps} />
               </FieldArrayProvider>
             )
             break
           }
-          case 'group':
-          case 'ui': {
-            const contentConfig = (componentProps as NestedFieldProps<TModel, TComponentMap>)?.config
+          case "group":
+          case "ui": {
+            const contentConfig = (
+              componentProps as NestedFieldProps<TModel, TComponentMap>
+            )?.config
             let children = null
 
             if (contentConfig) {
@@ -125,30 +148,41 @@ function FormEngine<TModel extends FieldValues, TComponentMap extends Record<str
                   config={contentConfig}
                   readOnly={isFormReadOnly}
                   readOnlyEmptyFallback={readOnlyEmptyFallback}
-                  namespace={(type as CoreFieldType) === 'ui' ? namespace : path}
+                  namespace={
+                    (type as CoreFieldType) === "ui" ? namespace : path
+                  }
                 />
               )
             }
 
-            component = render?.({ fieldProps: resolvedProps, children, props: componentProps }) ?? children
+            component =
+              render?.({
+                fieldProps: resolvedProps,
+                children,
+                props: componentProps,
+              }) ?? children
             break
           }
           default: {
             let Component = fieldMapping?.[type]
-            if (!Component && (type as CoreFieldType) === 'hidden') {
+            if (!Component && (type as CoreFieldType) === "hidden") {
               Component = HiddenField
             }
-            if (!Component && (type as CoreFieldType) === 'inline') {
+            if (!Component && (type as CoreFieldType) === "inline") {
               Component = InlineField
             }
             if (Component) {
               component = (
-                <FieldProvider defaultValue={{ resolved: resolvedProps, config: field }}>
+                <FieldProvider
+                  defaultValue={{ resolved: resolvedProps, config: field }}
+                >
                   <Component {...componentProps} />
                 </FieldProvider>
               )
             } else {
-              throw new Error(`No renderer found for field **${path}** with type **${type}**`)
+              throw new Error(
+                `No renderer found for field **${path}** with type **${type}**`
+              )
             }
             break
           }

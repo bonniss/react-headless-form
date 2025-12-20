@@ -3,7 +3,7 @@ import { useController, useFormContext } from 'react-hook-form'
 
 import { createProvider } from 'react-easy-provider'
 
-import type { FieldResolvedProps, FormFieldConfig } from '../../types'
+import type { FieldResolvedProps, FormFieldConfig } from '../../../types'
 
 type FieldProviderParams = {
   resolved: FieldResolvedProps

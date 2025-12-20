@@ -1,5 +1,5 @@
-export type * from './config'
-export type * from './mapping'
-export type * from './input'
-export type * from './rule'
-export type { DevToolConfig, DynamicFormCommonProps, DynamicFormProps, RootRenderer } from './form'
+export type * from "./config"
+export type { BlueFormConfigBase, BlueFormProps, RootRenderer } from "./form"
+export type * from "./input"
+export type * from "./mapping"
+export type * from "./rule"
