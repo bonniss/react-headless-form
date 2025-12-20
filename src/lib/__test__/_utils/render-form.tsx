@@ -7,7 +7,11 @@ export function renderWithBlueFormProvider(
 ) {
   return render(
     <BlueFormProvider
-      renderRoot={(props: any) => <form {...props} />}
+      renderRoot={(props) => (
+        <form data-testid="provider-root" onSubmit={props.onSubmit}>
+          {props.children}
+        </form>
+      )}
       {...providerProps}
     >
       {ui}
