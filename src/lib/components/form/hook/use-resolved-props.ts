@@ -1,6 +1,9 @@
 import { identity } from '@/components/helper/identity';
+import { typedKeys } from '@/components/helper/typed-keys';
+import { ValidationResolver } from '@/components/i18n';
 import { normalizeTranslator } from '@/components/i18n/resolver';
 import { BlueFormProps, ComponentMap } from '@/types';
+import { I18nResolvedConfig } from '@/types/form';
 import { FieldValues } from 'react-hook-form';
 import { useBlueFormProvider } from '../provider';
 
@@ -41,13 +44,89 @@ export const useResolvedProps = <
     i18nConfig?.enabled === false
       ? identity
       : normalizeTranslator(i18nConfig?.t ?? identity);
+  const resolver: ValidationResolver = {};
+
+  if (
+    i18nConfig?.validationTranslation &&
+    Object.keys(i18nConfig.validationTranslation).length
+  ) {
+    for (const validationType of typedKeys(i18nConfig.validationTranslation)) {
+      const messageKey = i18nConfig.validationTranslation[validationType];
+      if (!messageKey) continue;
+
+      switch (validationType) {
+        case 'required': {
+          resolver[validationType] = ({ field }) =>
+            t({
+              message: messageKey,
+              params: { field },
+            });
+          break;
+        }
+
+        case 'min':
+        case 'max':
+        case 'minLength':
+        case 'maxLength': {
+          resolver[validationType] = ({ field, rule }) => {
+            if (rule == null) return undefined;
+
+            const value =
+              typeof rule === 'number'
+                ? rule
+                : typeof rule === 'string'
+                ? Number(rule)
+                : typeof rule === 'object'
+                ? Number(rule.value)
+                : NaN;
+
+            if (!Number.isFinite(value)) return undefined;
+
+            return {
+              value,
+              message: t({
+                message: messageKey,
+                params: {
+                  field,
+                  [validationType]: value,
+                },
+              }),
+            };
+          };
+          break;
+        }
+
+        case 'pattern': {
+          resolver[validationType] = ({ field, rule }) => {
+            if (!rule) return undefined;
+
+            const value =
+              typeof rule === 'object' && 'value' in rule ? rule.value : rule;
+
+            return {
+              value,
+              message: t({
+                message: messageKey,
+                params: { field },
+              }),
+            };
+          };
+          break;
+        }
+
+        default:
+          break;
+      }
+    }
+  }
 
   return {
-    fieldMapping,
     renderRoot,
     i18nConfig: {
       t,
-    },
+      validationResolver: resolver,
+    } as I18nResolvedConfig,
+    fieldMapping,
     readOnlyEmptyFallback,
     ...props,
   };

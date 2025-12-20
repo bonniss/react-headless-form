@@ -12,6 +12,7 @@ import type {
 } from '@/types';
 
 import { I18nResolvedConfig } from '@/types/form';
+import { typedKeys } from '../helper/typed-keys';
 import HiddenField from './field/HiddenField';
 import InlineField from './field/InlineField';
 import { FieldArrayProvider } from './provider/FieldArrayProvider';
@@ -32,14 +33,14 @@ function BlueFormEngine<
   TModel extends FieldValues,
   TComponentMap extends Record<string, any>
 >({
-  i18nConfig = {},
+  i18nConfig,
   fieldMapping,
   config,
   readOnly: isFormReadOnly,
   readOnlyEmptyFallback,
   namespace,
 }: BlueFormEngineProps<TModel, TComponentMap>) {
-  const { t, validationResolver = {} } = i18nConfig;
+  const { t, validationResolver } = i18nConfig;
 
   const { watch } = useFormContext();
   const values = watch() as Partial<TModel>;
@@ -64,8 +65,8 @@ function BlueFormEngine<
 
         const path = (namespace ? `${namespace}.${key}` : key) as string;
 
-        const translatedLabel = t?.(label);
-        const translatedDescription = t?.(description);
+        const translatedLabel = t(label);
+        const translatedDescription = t(description);
 
         const isVisible =
           typeof visible === 'function' ? visible(values) : visible !== false;
@@ -75,24 +76,20 @@ function BlueFormEngine<
         const isRequired = Boolean(rules?.required);
 
         if (
-          !!Object.keys(rules).length &&
-          !!Object.keys(validationResolver).length
+          Boolean(
+            Object.keys(rules).length && Object.keys(validationResolver).length
+          )
         ) {
-          for (const key in rules) {
-            if (Object.hasOwnProperty.call(rules, key)) {
-              const ruleType = key as keyof typeof rules;
-              const rule = rules[ruleType];
-              const resolver = validationResolver[ruleType];
-
-              if (rule && resolver) {
-                const resolvedRule = resolver({
-                  field: translatedLabel!,
-                  rule: rule! as any,
-                  translator: t,
-                });
-                if (resolvedRule) {
-                  rules[ruleType] = resolvedRule as any;
-                }
+          for (const ruleType of typedKeys(rules)) {
+            const rule = rules[ruleType];
+            const resolver = validationResolver[ruleType];
+            if (rule && resolver) {
+              const resolvedRule = resolver({
+                field: translatedLabel!,
+                rule: rule as any,
+              });
+              if (resolvedRule) {
+                rules[ruleType] = resolvedRule as any;
               }
             }
           }

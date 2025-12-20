@@ -2,6 +2,7 @@ import type {
   TranslateFn,
   TranslationResolver,
   ValidationResolver,
+  ValidationTranslationMap,
 } from '@/components/i18n';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { BaseSyntheticEvent, PropsWithChildren, ReactNode } from 'react';
@@ -61,7 +62,7 @@ export type I18nConfig = {
    * Custom resolver for formatting validation messages.
    * Allows overriding or extending default error message generation logic.
    */
-  validationResolver?: ValidationResolver;
+  validationTranslation?: ValidationTranslationMap;
 };
 
 export type I18nResolvedConfig = {
@@ -69,13 +70,13 @@ export type I18nResolvedConfig = {
    * Translation function used to resolve localized message strings.
    * If not provided, defaults to an identity function: (key) => key
    */
-  t?: TranslationResolver;
+  t: TranslationResolver;
 
   /**
    * Custom resolver for formatting validation messages.
    * Allows overriding or extending default error message generation logic.
    */
-  validationResolver?: ValidationResolver;
+  validationResolver: ValidationResolver;
 };
 
 export interface BlueFormConfigBase {
