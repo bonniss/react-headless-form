@@ -9,12 +9,16 @@ interface HiddenFieldProps {}
 const HiddenField: FunctionComponent<HiddenFieldProps> = () => {
   const { fieldProps } = useField()
   const { register, setValue } = useFormContext()
-  const { value, name } = fieldProps
+  const { value, path } = fieldProps
 
   useEffect(() => {
-    if (name) {
-      register(name)
-      setValue(name, value)
+    if (path) {
+      register(path)
+      setValue(path, value, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false,
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
