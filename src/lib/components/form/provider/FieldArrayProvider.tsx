@@ -38,5 +38,6 @@ export const [useArrayField, FieldArrayProvider] = createProvider(
       fieldProps,
       config,
     };
-  }
+  },
+  'FieldArrayProvider'
 );

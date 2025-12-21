@@ -1,5 +1,5 @@
-import { FieldValues } from 'react-hook-form'
-import { ComponentMap, FormConfig } from '../types'
+import type { FieldValues } from 'react-hook-form';
+import type { ComponentMap, FormConfig } from '@/types';
 
 /**
  * A factory function that returns a utility function to create a
@@ -17,6 +17,6 @@ export function createFormConfigFactory<TComponentMap extends ComponentMap>() {
   return function configForm<TModel extends FieldValues>(
     config: FormConfig<TModel, TComponentMap>
   ): FormConfig<TModel, TComponentMap> {
-    return config
-  }
+    return config;
+  };
 }
