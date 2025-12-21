@@ -1,6 +1,6 @@
-import { render, fireEvent, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
 import { BlueForm, HiddenField } from '@/components';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 import { renderWithBlueFormProvider } from '../_utils/render-form';
 
 describe('HiddenField – nested object', () => {
@@ -16,7 +16,7 @@ describe('HiddenField – nested object', () => {
               config: {
                 userId: {
                   type: 'hidden',
-                  value: 'u-123',
+                  defaultValue: 'u-123',
                 },
               },
             },
@@ -36,13 +36,15 @@ describe('HiddenField – nested object', () => {
 
     fireEvent.click(screen.getByText('Submit'));
 
-    expect(submitted).toEqual({
-      profile: {
-        userId: 'u-123',
-      },
-    });
+    await waitFor(() => {
+      expect(submitted).toEqual({
+        profile: {
+          userId: 'u-123',
+        },
+      });
 
-    // ensure it is NOT at root
-    expect(submitted.userId).toBeUndefined();
+      // ensure it is NOT at root
+      expect(submitted.userId).toBeUndefined();
+    });
   });
 });
