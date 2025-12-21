@@ -52,7 +52,7 @@ export function BlueFormInner<
     defaultValues,
   } as UseFormProps<TModel>);
 
-  const { handleSubmit, subscribe } = form;
+  const { handleSubmit, watch } = form;
 
   useImperativeHandle(ref, () => form, [form]);
 
@@ -61,50 +61,28 @@ export function BlueFormInner<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    // make sure to unsubscribe;
-    const unsubscribe = subscribe({
-      formState: {
-        values: true,
-      },
-      callback: ({ values, name }) => {
-        if (name) {
-          const next = getProperty(values, name);
-          onFieldChange?.(name, next, form);
+  useEffect(
+    function watchFormChanges() {
+      const observer: WatchObserver<TModel> = (
+        value: Partial<TModel>,
+        { name }
+      ) => {
+        if (name && onFieldChange) {
+          const next = getProperty(value, name);
+          onFieldChange(name, next, form);
         }
-        onFormChange?.(values, form);
-      },
-    });
+        onFormChange?.(value as TModel, form);
+      };
 
-    return unsubscribe;
-  }, [subscribe]);
+      const sub = watch(
+        changeDebounceDelay ? debounce(observer, changeDebounceDelay) : observer
+      );
 
-  // useEffect(
-  //   function watchFormChanges() {
-  //     const observer: WatchObserver<TModel> = (
-  //       value: Partial<TModel>,
-  //       { name }
-  //     ) => {
-  //       if (name) {
-  //         const prev = form.getValues(name);
-  //         const next = getProperty(value, name);
-
-  //         if (!Object.is(prev, next)) {
-  //           onFieldChange?.(name, next, form);
-  //         }
-  //       }
-  //       onFormChange?.(value as TModel, form);
-  //     };
-
-  //     const sub = watch(
-  //       changeDebounceDelay ? debounce(observer, changeDebounceDelay) : observer
-  //     );
-
-  //     return () => sub.unsubscribe();
-  //   },
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   [watch, changeDebounceDelay]
-  // );
+      return () => sub.unsubscribe();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [watch, changeDebounceDelay]
+  );
 
   const submit = ((raw: TModel, e) => {
     onSubmit?.(raw, form, e);
