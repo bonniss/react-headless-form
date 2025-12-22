@@ -17,9 +17,8 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/lib/*"],
+      "@/*": ["src/lib/*"]
     }
   },
   "include": ["src", ".ladle"],
-  "exclude": ["./src/**/*.stories.*"]
 }

@@ -1,4 +1,4 @@
-export { default as DynamicForm } from './DynamicForm'
-export { default as HiddenField } from './fields/HiddenField'
-export { default as SkipRender } from './fields/SkipRender'
-export * from './providers'
+export { default as BlueForm } from "./form/BlueForm"
+export { default as SkipRender } from "./form/field/SkipRender"
+export * from "./form/provider"
+export * from "./form/setup"

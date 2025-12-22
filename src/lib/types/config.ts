@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ComponentProps, ComponentType, ReactNode } from 'react'
-import { FieldValues } from 'react-hook-form'
-import { TranslatableText } from '../i18n'
-import { FieldResolvedProps } from './input'
-import { ValidationRules } from './rule'
+
+import type { ComponentProps, ComponentType, ReactNode } from "react"
+import type { FieldValues } from "react-hook-form"
+import type { TranslatableText } from "@/components/i18n"
+import type { FieldResolvedProps } from "./input"
+import type { ValidationRules } from "./rule"
+import type { WithKnownKeys } from "./utils"
 
 /**
  * Core field types used for logical structuring or custom handling in dynamic forms.
@@ -28,9 +30,8 @@ import { ValidationRules } from './rule'
  *   Ignored by default in automatic rendering; requires full control from the developer.
  *
  */
-export type CoreFieldType = 'ui' | 'group' | 'array' | 'hidden' | 'inline'
-
-export type ComponentMap = Record<string, ComponentType<any>>
+export type CoreFieldType = "ui" | "group" | "array" | "hidden" | "inline"
+export type ComponentMap = WithKnownKeys<CoreFieldType, ComponentType<any>>
 
 /**
  * Configuration for a single form field in a dynamic form engine.
@@ -40,9 +41,9 @@ export type ComponentMap = Record<string, ComponentType<any>>
  * @template TComponentMap - A mapping of field types to component prop types.
  */
 export type FormFieldConfig<
-  TModel,
+  TModel extends FieldValues,
   TComponentMap extends ComponentMap,
-  TFieldType extends keyof TComponentMap = keyof TComponentMap,
+  TFieldType extends keyof TComponentMap = keyof TComponentMap
 > = {
   /**
    * The type of field, used to select the appropriate renderer component.
@@ -117,24 +118,20 @@ export type FormFieldConfig<
     children?: ReactNode
     meta?: Record<string, any>
   }) => ReactNode
-
-  /**
-   * Transforms the value before it is rendered by the UI.
-   * Useful for formatting or mapping internal values.
-   */
-  transformValue?: (value: Partial<TModel>) => any
-
-  /**
-   * Transforms the value before it is passed to the form on change.
-   * Useful for normalization or cleanup.
-   */
-  transformOnChange?: (value: Partial<TModel>) => any
 }
 
-type FieldConfigUnion<TModel, TComponentMap extends ComponentMap> = {
-  [K in keyof TComponentMap]: FormFieldConfig<TModel, TComponentMap, K> & { type: K }
+type FieldConfigUnion<
+  TModel extends FieldValues,
+  TComponentMap extends ComponentMap
+> = {
+  [K in keyof TComponentMap]: FormFieldConfig<TModel, TComponentMap, K> & {
+    type: K
+  }
 }[keyof TComponentMap]
 
-export type FormConfig<TModel extends FieldValues, TComponentMap extends ComponentMap> = {
+export type FormConfig<
+  TModel extends FieldValues,
+  TComponentMap extends ComponentMap
+> = {
   [K in keyof TModel]?: FieldConfigUnion<TModel, TComponentMap>
 }

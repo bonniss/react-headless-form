@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ReactNode } from 'react'
-import { ValidationRules } from './rule'
+import type { ReactNode } from "react"
+import type { ValidationRules } from "./rule"
 
-export type FieldResolvedProps<ValueType = any, OnChangeType = (...event: any[]) => void> = {
-  /**
-   * DOM id
-   */
+export type FieldResolvedProps<
+  ValueType = any,
+  OnChangeType = (...event: any[]) => void
+> = {
   id?: string
 
   /**
