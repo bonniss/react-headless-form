@@ -43,23 +43,23 @@ export function BlueFormInner<
     onSubmitSuccess,
     onSubmitError,
     ...props
-  } = useResolvedProps(blueFormProps);
+  } = useResolvedProps(blueFormProps)
 
   const form = useForm<TModel>({
-    mode: 'onTouched',
-    reValidateMode: 'onChange',
+    mode: "onTouched",
+    reValidateMode: "onChange",
     ...formProps,
     defaultValues,
-  } as UseFormProps<TModel>);
+  } as UseFormProps<TModel>)
 
-  const { handleSubmit, watch } = form;
+  const { handleSubmit, watch } = form
 
-  useImperativeHandle(ref, () => form, [form]);
+  useImperativeHandle(ref, () => form, [form])
 
   useEffect(() => {
-    onInit?.(form);
+    onInit?.(form)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   useEffect(
     function watchFormChanges() {
@@ -68,26 +68,26 @@ export function BlueFormInner<
         { name }
       ) => {
         if (name && onFieldChange) {
-          const next = getProperty(value, name);
-          onFieldChange(name, next, form);
+          const next = getProperty(value, name)
+          onFieldChange(name, next, form)
         }
-        onFormChange?.(value as TModel, form);
-      };
+        onFormChange?.(value as TModel, form)
+      }
 
       const sub = watch(
         changeDebounceDelay ? debounce(observer, changeDebounceDelay) : observer
-      );
+      )
 
-      return () => sub.unsubscribe();
+      return () => sub.unsubscribe()
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [watch, changeDebounceDelay]
-  );
+  )
 
   const submit = ((raw: TModel, e) => {
-    onSubmit?.(raw, form, e);
-    onSubmitSuccess?.(raw, form, e);
-  }) as SubmitHandler<TModel>;
+    onSubmit?.(raw, form, e)
+    onSubmitSuccess?.(raw, form, e)
+  }) as SubmitHandler<TModel>
 
   const formBody = (
     <>
@@ -100,9 +100,9 @@ export function BlueFormInner<
       />
       {children}
     </>
-  );
+  )
 
-  const submitHandler = handleSubmit(submit, onSubmitError);
+  const submitHandler = handleSubmit(submit, onSubmitError)
 
   const formRendererArgs = {
     formMethods: form,
@@ -110,11 +110,12 @@ export function BlueFormInner<
     onSubmit: submitHandler,
     submit,
     ...props,
-  } as const;
+  } as const
 
-  const renderedForm = renderRoot?.(formRendererArgs);
+  // @ts-expect-error expect error
+  const renderedForm = renderRoot?.(formRendererArgs)
 
-  return <FormProvider {...form}>{renderedForm}</FormProvider>;
+  return <FormProvider {...form}>{renderedForm}</FormProvider>
 }
 
 const BlueForm = forwardRef(BlueFormInner);

@@ -24,7 +24,7 @@
   },
   "scripts": {
     "dev": "ladle serve",
-    "build": "tsc && vite build",
+    "build": "tsc -p tsconfig.build.json && vite build",
     "static": "ladle build",
     "preview": "ladle preview",
     "lint": "npx @biomejs/biome lint --write ./src",
