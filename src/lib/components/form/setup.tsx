@@ -1,5 +1,5 @@
 import type {
-  BlueFormConfigBase,
+  BlueFormBaseConfig,
   BlueFormProps,
   ComponentMap,
   FormConfig,
@@ -53,7 +53,7 @@ export const defineFieldMapping = <TUserMap extends ComponentMap>(
 }
 
 export const setupForm = <TComponentMap extends ComponentMap>(
-  baseConfig: BlueFormConfigBase<TComponentMap>
+  baseConfig: BlueFormBaseConfig<TComponentMap>
 ) => {
   const defineConfig = createDefineConfigFn<TComponentMap>()
   const Form = <TModel extends FieldValues>(
