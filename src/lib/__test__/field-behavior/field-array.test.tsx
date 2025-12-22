@@ -1,21 +1,21 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
-import { BlueForm, HiddenField } from '@/components';
-import { renderWithBlueFormProvider } from '../_utils/render-form';
-import { useArrayField } from '@/components/form/provider/FieldArrayProvider';
+import { render, screen, fireEvent, waitFor } from "@testing-library/react"
+import { describe, it, expect } from "vitest"
+import { BlueForm, HiddenField } from "@/components"
+import { renderWithBlueFormProvider } from "../_utils/render-form"
+import { useArrayField } from "@/components/form/provider"
 
 const TestRoot = ({ children, onSubmit }: any) => (
   <form onSubmit={onSubmit}>
     {children}
     <button type="submit">Submit</button>
   </form>
-);
+)
 
-describe('BlueForm - field array', () => {
-it('ignores defaultValue defined on array field config', async () => {
-    let submitted: any = null;
+describe("BlueForm - field array", () => {
+  it("ignores defaultValue defined on array field config", async () => {
+    let submitted: any = null
     const ArrayUI = () => {
-      const { controller } = useArrayField();
+      const { controller } = useArrayField()
       return (
         <>
           <button type="button" onClick={() => controller.append({})}>
@@ -23,13 +23,13 @@ it('ignores defaultValue defined on array field config', async () => {
           </button>
           <button
             type="button"
-            onClick={() => controller.update(0, { name: 'Alice' })}
+            onClick={() => controller.update(0, { name: "Alice" })}
           >
             Set Name
           </button>
         </>
-      );
-    };
+      )
+    }
 
     renderWithBlueFormProvider(
       <BlueForm
@@ -37,12 +37,12 @@ it('ignores defaultValue defined on array field config', async () => {
         onSubmit={(v) => (submitted = v)}
         config={{
           users: {
-            type: 'array',
-            defaultValue: [{ name: 'Default' }],
+            type: "array",
+            defaultValue: [{ name: "Default" }],
             props: {
               config: {
                 name: {
-                  type: 'hidden',
+                  type: "hidden",
                 },
               },
             },
@@ -53,28 +53,65 @@ it('ignores defaultValue defined on array field config', async () => {
           hidden: HiddenField,
         }}
       />
-    );
+    )
 
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Submit"))
 
     await waitFor(() => {
       expect(submitted).toEqual({
         users: [],
-      });
-    });
-  });
+      })
+    })
+  })
 
-  it('appends item to array and updates form values', async () => {
-    let snapshot: any = null;
+  it("throws error when array field has no mapping and no render", () => {
+    expect(() =>
+      renderWithBlueFormProvider(
+        <BlueForm
+          renderRoot={TestRoot}
+          config={{
+            users: {
+              type: "array",
+              props: {
+                config: {},
+              },
+            },
+          }}
+        />
+      )
+    ).toThrow(/array/i)
+  })
+
+  it("renders array using render() when no mapping is provided", () => {
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        config={{
+          users: {
+            type: "array",
+            render: () => <div data-testid="custom-array" />,
+            props: {
+              config: {},
+            },
+          },
+        }}
+      />
+    )
+
+    expect(screen.getByTestId("custom-array")).toBeDefined()
+  })
+
+  it("appends item to array and updates form values", async () => {
+    let snapshot: any = null
 
     const ArrayUI = () => {
-      const { controller } = useArrayField();
+      const { controller } = useArrayField()
       return (
         <button type="button" onClick={() => controller.append({})}>
           Add
         </button>
-      );
-    };
+      )
+    }
 
     renderWithBlueFormProvider(
       <BlueForm
@@ -82,7 +119,7 @@ it('ignores defaultValue defined on array field config', async () => {
         onFormChange={(v) => (snapshot = v)}
         config={{
           users: {
-            type: 'array',
+            type: "array",
             props: {
               config: {},
             },
@@ -92,20 +129,20 @@ it('ignores defaultValue defined on array field config', async () => {
           array: ArrayUI,
         }}
       />
-    );
+    )
 
-    fireEvent.click(screen.getByText('Add'));
+    fireEvent.click(screen.getByText("Add"))
 
     await waitFor(() => {
-      expect(snapshot).toEqual({ users: [{}] });
-    });
-  });
+      expect(snapshot).toEqual({ users: [{}] })
+    })
+  })
 
-  it('updates array item value correctly', async () => {
-    let snapshot: any = null;
+  it("updates array item value correctly", async () => {
+    let snapshot: any = null
 
     const ArrayUI = () => {
-      const { controller } = useArrayField();
+      const { controller } = useArrayField()
       return (
         <>
           <button type="button" onClick={() => controller.append({})}>
@@ -113,13 +150,13 @@ it('ignores defaultValue defined on array field config', async () => {
           </button>
           <button
             type="button"
-            onClick={() => controller.update(0, { name: 'Alice' })}
+            onClick={() => controller.update(0, { name: "Alice" })}
           >
             Set Name
           </button>
         </>
-      );
-    };
+      )
+    }
 
     renderWithBlueFormProvider(
       <BlueForm
@@ -127,7 +164,7 @@ it('ignores defaultValue defined on array field config', async () => {
         onFormChange={(v) => (snapshot = v)}
         config={{
           users: {
-            type: 'array',
+            type: "array",
             props: {
               config: {},
             },
@@ -137,23 +174,23 @@ it('ignores defaultValue defined on array field config', async () => {
           array: ArrayUI,
         }}
       />
-    );
+    )
 
-    fireEvent.click(screen.getByText('Add'));
-    fireEvent.click(screen.getByText('Set Name'));
+    fireEvent.click(screen.getByText("Add"))
+    fireEvent.click(screen.getByText("Set Name"))
 
     await waitFor(() => {
       expect(snapshot).toEqual({
-        users: [{ name: 'Alice' }],
-      });
-    });
-  });
+        users: [{ name: "Alice" }],
+      })
+    })
+  })
 
-  it('removes array item and updates form values', async () => {
-    let snapshot: any = null;
+  it("removes array item and updates form values", async () => {
+    let snapshot: any = null
 
     const ArrayUI = () => {
-      const { controller } = useArrayField();
+      const { controller } = useArrayField()
       return (
         <>
           <button type="button" onClick={() => controller.append({})}>
@@ -163,8 +200,8 @@ it('ignores defaultValue defined on array field config', async () => {
             Remove
           </button>
         </>
-      );
-    };
+      )
+    }
 
     renderWithBlueFormProvider(
       <BlueForm
@@ -172,7 +209,7 @@ it('ignores defaultValue defined on array field config', async () => {
         onFormChange={(v) => (snapshot = v)}
         config={{
           users: {
-            type: 'array',
+            type: "array",
             props: {
               config: {},
             },
@@ -182,30 +219,30 @@ it('ignores defaultValue defined on array field config', async () => {
           array: ArrayUI,
         }}
       />
-    );
+    )
 
-    fireEvent.click(screen.getByText('Add'));
-    fireEvent.click(screen.getByText('Remove'));
+    fireEvent.click(screen.getByText("Add"))
+    fireEvent.click(screen.getByText("Remove"))
 
     await waitFor(() => {
-      expect(snapshot).toEqual({ users: [] });
-    });
-  });
+      expect(snapshot).toEqual({ users: [] })
+    })
+  })
 
-  it('submits array payload correctly', async () => {
-    let submitted: any = null;
+  it("submits array payload correctly", async () => {
+    let submitted: any = null
 
     const ArrayUI = () => {
-      const { controller } = useArrayField();
+      const { controller } = useArrayField()
       return (
         <button
           type="button"
-          onClick={() => controller.append({ name: 'Bob' })}
+          onClick={() => controller.append({ name: "Bob" })}
         >
           Add
         </button>
-      );
-    };
+      )
+    }
 
     renderWithBlueFormProvider(
       <BlueForm
@@ -213,7 +250,7 @@ it('ignores defaultValue defined on array field config', async () => {
         onSubmit={(data) => (submitted = data)}
         config={{
           users: {
-            type: 'array',
+            type: "array",
             props: {
               config: {},
             },
@@ -223,15 +260,15 @@ it('ignores defaultValue defined on array field config', async () => {
           array: ArrayUI,
         }}
       />
-    );
+    )
 
-    fireEvent.click(screen.getByText('Add'));
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Add"))
+    fireEvent.click(screen.getByText("Submit"))
 
     await waitFor(() => {
       expect(submitted).toEqual({
-        users: [{ name: 'Bob' }],
-      });
-    });
-  });
-});
+        users: [{ name: "Bob" }],
+      })
+    })
+  })
+})

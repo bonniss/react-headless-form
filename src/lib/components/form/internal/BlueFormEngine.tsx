@@ -14,7 +14,7 @@ import type {
 import { typedKeys } from "../../helper/typed-keys"
 import HiddenField from "../field/HiddenField"
 import InlineField from "../field/InlineField"
-import { FieldArrayProvider } from "../provider/FieldArrayProvider"
+import { FieldArrayProvider } from "../provider"
 import { FieldProvider } from "../provider/FieldProvider"
 import { useBlueFormInternal } from "./BlueFormInteralProvider"
 
@@ -107,18 +107,27 @@ function BlueFormEngine<
         switch (type as CoreFieldType) {
           case "array": {
             const ArrayField = fieldMapping?.["array"]
-            if (!ArrayField) {
+            if (!ArrayField && !render) {
               throw new Error(
-                `No component of array field found for **${resolvedProps.name}**`
+                `Array field "${resolvedProps.name}" requires either a fieldMapping["array"] component or a render() function in its config.`
               )
             }
+
             component = (
               <FieldArrayProvider
                 defaultValue={{ resolved: resolvedProps, config: field }}
               >
-                <ArrayField {...componentProps} />
+                {ArrayField ? (
+                  <ArrayField {...componentProps} />
+                ) : (
+                  render?.({
+                    // NOTE: this is just a placeholder to satisfy the type checker, all logic below this tree should be provided via `useArrayField`
+                    fieldProps: resolvedProps,
+                  })
+                )}
               </FieldArrayProvider>
             )
+
             break
           }
           case "group":
