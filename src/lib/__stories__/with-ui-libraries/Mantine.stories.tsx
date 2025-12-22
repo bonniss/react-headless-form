@@ -1,12 +1,18 @@
 import { useArrayField } from "@/components"
 import { defineFieldMapping, setupForm } from "@/components/form/setup"
-import { Story } from "@ladle/react"
+import { Story, StoryDefault } from "@ladle/react"
+import { Button, Fieldset, MantineProvider } from "@mantine/core"
+import "@mantine/core/styles.css"
 import { useState } from "react"
 import { UserProfile } from "../example/types"
-import CheckboxField from "./CheckboxField"
-import InputField from "./InputField"
-import SelectField from "./SelectField"
-import TextAreaField from "./TextAreaField"
+import CheckboxField from "../components/with-mantine/CheckboxField"
+import InputField from "../components/with-mantine/InputField"
+import SelectField from "../components/with-mantine/SelectField"
+import TextAreaField from "../components/with-mantine/TextAreaField"
+
+export default {
+  title: "With UI Libraries",
+} satisfies StoryDefault;
 
 const [Form, defineConfig] = setupForm({
   fieldMapping: defineFieldMapping({
@@ -17,15 +23,18 @@ const [Form, defineConfig] = setupForm({
   }),
 })
 
-export const NativeFormWithNativeInput: Story = () => {
+export const Mantine: Story = () => {
   const [formData, setFormData] = useState<any>()
+
   return (
     <>
       <Form<UserProfile>
         onFormChange={(fd) => setFormData(fd)}
         onSubmit={(fd) => alert(JSON.stringify(fd, null, 2))}
         renderRoot={({ children, onSubmit }) => (
-          <form onSubmit={onSubmit}>{children}</form>
+          <MantineProvider>
+            <form onSubmit={onSubmit}>{children}</form>
+          </MantineProvider>
         )}
         config={defineConfig({
           name: {
@@ -53,7 +62,7 @@ export const NativeFormWithNativeInput: Story = () => {
             type: "select",
             label: "Role",
             props: {
-              options: [
+              data: [
                 { value: "admin", label: "Admin" },
                 { value: "user", label: "User" },
               ],
@@ -63,12 +72,7 @@ export const NativeFormWithNativeInput: Story = () => {
             type: "group",
             label: "Settings",
             render: ({ children, fieldProps: { label } }) => {
-              return (
-                <fieldset>
-                  <legend>{label}</legend>
-                  {children}
-                </fieldset>
-              )
+              return <Fieldset legend={label}>{children}</Fieldset>
             },
             props: {
               config: defineConfig<UserProfile["settings"]>({
@@ -80,7 +84,7 @@ export const NativeFormWithNativeInput: Story = () => {
                   type: "select",
                   label: "Theme",
                   props: {
-                    options: [
+                    data: [
                       { value: "light", label: "Light" },
                       { value: "dark", label: "Dark" },
                     ],
@@ -97,13 +101,12 @@ export const NativeFormWithNativeInput: Story = () => {
                 controller: { append },
               } = useArrayField()
               return (
-                <fieldset>
-                  <legend>{fieldProps.label}</legend>
+                <Fieldset legend={fieldProps.label}>
                   {children}
-                  <button type="button" onClick={() => append({})}>
+                  <Button type="button" onClick={() => append({})}>
                     Add Address
-                  </button>
-                </fieldset>
+                  </Button>
+                </Fieldset>
               )
             },
             props: {
@@ -121,7 +124,7 @@ export const NativeFormWithNativeInput: Story = () => {
           },
         })}
       >
-        <button type="submit">Submit</button>
+        <Button type="submit">Submit</Button>
       </Form>
       <pre>{JSON.stringify(formData, null, 2)}</pre>
     </>

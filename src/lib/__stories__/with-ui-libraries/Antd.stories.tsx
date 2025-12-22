@@ -1,13 +1,17 @@
 import { useArrayField } from "@/components"
 import { defineFieldMapping, setupForm } from "@/components/form/setup"
-import { Story } from "@ladle/react"
+import { Story, StoryDefault } from "@ladle/react"
 import { Form as AntdForm, Button, Card } from "antd"
 import { useState } from "react"
 import { UserProfile } from "../example/types"
-import CheckboxField from "./CheckboxField"
-import InputField from "./InputField"
-import SelectField from "./SelectField"
-import TextAreaField from "./TextAreaField"
+import CheckboxField from "../components/with-antd/CheckboxField"
+import InputField from "../components/with-antd/InputField"
+import SelectField from "../components/with-antd/SelectField"
+import TextAreaField from "../components/with-antd/TextAreaField"
+
+export default {
+  title: "With UI Libraries",
+} satisfies StoryDefault;
 
 const [Form, defineConfig] = setupForm({
   fieldMapping: defineFieldMapping({
@@ -18,7 +22,7 @@ const [Form, defineConfig] = setupForm({
   }),
 })
 
-export const FormWithAntdInput: Story = () => {
+export const AntDesign: Story = () => {
   const [formData, setFormData] = useState<any>()
 
   return (
