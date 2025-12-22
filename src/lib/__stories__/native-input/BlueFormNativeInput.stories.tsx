@@ -1,4 +1,4 @@
-import { defineFieldMapping, setupForm } from "@/components/helper"
+import { defineFieldMapping, setupForm } from "@/components/form/setup"
 import { Story } from "@ladle/react"
 import { useState } from "react"
 import { UserProfile } from "../example/types"
@@ -6,14 +6,12 @@ import CheckboxField from "./CheckboxField"
 import InputField from "./InputField"
 import TextAreaField from "./TextAreaField"
 
-const fieldMapping = defineFieldMapping({
-  text: InputField,
-  longText: TextAreaField,
-  checkbox: CheckboxField,
-})
-
 const [Form, defineConfig] = setupForm({
-  fieldMapping,
+  fieldMapping: defineFieldMapping({
+    text: InputField,
+    longText: TextAreaField,
+    checkbox: CheckboxField,
+  }),
 })
 
 export const FormWithNativeInput: Story = () => {
@@ -52,6 +50,16 @@ export const FormWithNativeInput: Story = () => {
           settings: {
             type: "group",
             label: "Settings",
+            render: ({ children, fieldProps: {
+              label,
+            } }) => {
+              return (
+                <fieldset>
+                  <legend>{label}</legend>
+                  {children}
+                </fieldset>
+              )
+            },
             props: {
               config: defineConfig<UserProfile["settings"]>({
                 newsletter: {

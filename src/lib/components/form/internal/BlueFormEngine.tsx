@@ -11,36 +11,30 @@ import type {
   NestedFieldProps,
 } from "@/types"
 
-import { I18nResolvedConfig } from "@/types/form"
-import { typedKeys } from "../helper/typed-keys"
-import HiddenField from "./field/HiddenField"
-import InlineField from "./field/InlineField"
-import { FieldArrayProvider } from "./provider/FieldArrayProvider"
-import { FieldProvider } from "./provider/FieldProvider"
+import { typedKeys } from "../../helper/typed-keys"
+import HiddenField from "../field/HiddenField"
+import InlineField from "../field/InlineField"
+import { FieldArrayProvider } from "../provider/FieldArrayProvider"
+import { FieldProvider } from "../provider/FieldProvider"
+import { useBlueFormInternal } from "./BlueFormInteralProvider"
 
 interface BlueFormEngineProps<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap
-> extends Pick<
-    BlueFormProps<TModel, TComponentMap>,
-    "config" | "readOnly" | "readOnlyEmptyFallback" | "fieldMapping"
-  > {
+> extends Pick<BlueFormProps<TModel, TComponentMap>, "config"> {
   namespace?: string
-  i18nConfig: I18nResolvedConfig
 }
 
 function BlueFormEngine<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap
->({
-  i18nConfig,
-  fieldMapping,
-  config,
-  readOnly: isFormReadOnly,
-  readOnlyEmptyFallback,
-  namespace,
-}: BlueFormEngineProps<TModel, TComponentMap>) {
-  const { t, validationResolver } = i18nConfig
+>({ config, namespace }: BlueFormEngineProps<TModel, TComponentMap>) {
+  const {
+    i18nConfig: { t, validationResolver },
+    fieldMapping,
+    readOnly: isFormReadOnly,
+    readOnlyEmptyFallback,
+  } = useBlueFormInternal()
   const { watch } = useFormContext()
   const values = watch() as Partial<TModel>
 
@@ -75,7 +69,8 @@ function BlueFormEngine<
         const isRequired = Boolean(rules?.required)
 
         if (
-          Object.keys(rules).length && Object.keys(validationResolver).length
+          Object.keys(rules).length &&
+          Object.keys(validationResolver).length
         ) {
           for (const ruleType of typedKeys(rules)) {
             const rule = rules[ruleType]
@@ -137,10 +132,6 @@ function BlueFormEngine<
               children = (
                 <BlueFormEngine
                   config={contentConfig}
-                  readOnly={isFormReadOnly}
-                  readOnlyEmptyFallback={readOnlyEmptyFallback}
-                  i18nConfig={i18nConfig}
-                  fieldMapping={fieldMapping}
                   namespace={
                     (type as CoreFieldType) === "ui" ? namespace : path
                   }

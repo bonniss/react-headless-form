@@ -3,14 +3,17 @@ import type {
   BlueFormProps,
   ComponentMap,
   FormConfig,
+  NestedFieldProps,
 } from "@/types"
+import type { ComponentType } from "react"
 import type { FieldValues } from "react-hook-form"
-import {
-  PlaceholderForHidden,
-  PlaceholderForInline,
-  PlaceholderForNestedField,
-} from "../helper"
 import BlueForm from "./BlueForm"
+
+export const PlaceholderForNestedField = null as unknown as ComponentType<
+  NestedFieldProps<any, any>
+>
+export const PlaceholderForHidden = null as unknown as ComponentType<any>
+export const PlaceholderForInline = null as unknown as ComponentType<any>
 
 /**
  * A factory function that returns a utility function to create a
