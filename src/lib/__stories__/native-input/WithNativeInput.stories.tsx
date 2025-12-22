@@ -15,12 +15,11 @@ const [Form, defineConfig] = setupForm({
   }),
 })
 
-export const FormWithNativeInput: Story = () => {
+export const NativeFormWithNativeInput: Story = () => {
   const [formData, setFormData] = useState<any>()
 
   return (
     <>
-      <h2>With native input</h2>
       <Form<UserProfile>
         onFormChange={(fd) => setFormData(fd)}
         renderRoot={({ children, onSubmit }) => (
