@@ -90,3 +90,5 @@ export type LooseShape<T, Extra = any> = {
 } & {
   [K in Exclude<string, keyof T>]?: Extra
 }
+
+export type Without<T, U> = Omit<T, keyof U>

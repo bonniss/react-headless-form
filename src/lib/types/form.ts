@@ -79,7 +79,7 @@ export type I18nResolvedConfig = {
   validationResolver: ValidationResolver
 }
 
-export interface BlueFormConfigBase<
+export interface BlueFormBaseConfig<
   TComponentMap extends ComponentMap = ComponentMap
 > {
   /**
@@ -118,7 +118,7 @@ export interface BlueFormConfigBase<
 export interface BlueFormProps<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap
-> extends BlueFormConfigBase<TComponentMap>,
+> extends BlueFormBaseConfig<TComponentMap>,
     PropsWithChildren {
   /**
    * Form field configuration including field type, name, label, props, etc.

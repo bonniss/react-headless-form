@@ -1,3 +1,3 @@
-import type { BlueFormConfigBase } from "./form"
+import type { BlueFormBaseConfig } from "./form"
 
-export type BlueFormProviderOptions = BlueFormConfigBase
+export type BlueFormProviderOptions = BlueFormBaseConfig

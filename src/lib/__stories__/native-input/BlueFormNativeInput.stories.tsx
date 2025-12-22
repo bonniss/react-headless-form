@@ -8,6 +8,7 @@ import InputField from "./InputField"
 const fieldMapping = {
   text: InputField,
   hana: InputField,
+  hoho: InputField,  
 } as const satisfies ComponentMap
 
 const [Form, defineConfig] = setupForm({
@@ -27,7 +28,7 @@ export const FormWithNativeInput: Story = () => {
         )}
         config={defineConfig({
           name: {
-            type: "text",
+            type: "hoho",
             label: "Name",
             props: {
               className: "input-class",
