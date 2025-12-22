@@ -1,3 +1,3 @@
-export * from './findFirstErrorField'
-export * from './placeholder'
-export * from './config'
+export * from "../form/setup"
+export * from "./findFirstErrorField"
+export * from "./placeholder"

@@ -6,7 +6,7 @@ import type {
 } from "@/types"
 import { Without } from "@/types/utils"
 import type { FieldValues } from "react-hook-form"
-import BlueForm from "../form/BlueForm"
+import BlueForm from "./BlueForm"
 
 /**
  * A factory function that returns a utility function to create a
