@@ -1,6 +1,7 @@
 import { useArrayField } from "@/components"
 import { defineFieldMapping, setupForm } from "@/components/form/setup"
 import { Story } from "@ladle/react"
+import { Form as AntdForm, Button, Card } from "antd"
 import { useState } from "react"
 import { UserProfile } from "../example/types"
 import CheckboxField from "./CheckboxField"
@@ -17,15 +18,16 @@ const [Form, defineConfig] = setupForm({
   }),
 })
 
-export const NativeFormWithNativeInput: Story = () => {
+export const FormWithAntdInput: Story = () => {
   const [formData, setFormData] = useState<any>()
+
   return (
     <>
       <Form<UserProfile>
         onFormChange={(fd) => setFormData(fd)}
         onSubmit={(fd) => alert(JSON.stringify(fd, null, 2))}
         renderRoot={({ children, onSubmit }) => (
-          <form onSubmit={onSubmit}>{children}</form>
+          <AntdForm onFinish={onSubmit}>{children}</AntdForm>
         )}
         config={defineConfig({
           name: {
@@ -64,10 +66,9 @@ export const NativeFormWithNativeInput: Story = () => {
             label: "Settings",
             render: ({ children, fieldProps: { label } }) => {
               return (
-                <fieldset>
-                  <legend>{label}</legend>
+                <Card title={label} variant="outlined">
                   {children}
-                </fieldset>
+                </Card>
               )
             },
             props: {
@@ -97,13 +98,10 @@ export const NativeFormWithNativeInput: Story = () => {
                 controller: { append },
               } = useArrayField()
               return (
-                <fieldset>
-                  <legend>{fieldProps.label}</legend>
+                <Card title={fieldProps.label} variant="outlined">
                   {children}
-                  <button type="button" onClick={() => append({})}>
-                    Add Address
-                  </button>
-                </fieldset>
+                  <Button onClick={() => append({})}>Add Address</Button>
+                </Card>
               )
             },
             props: {
@@ -121,7 +119,9 @@ export const NativeFormWithNativeInput: Story = () => {
           },
         })}
       >
-        <button type="submit">Submit</button>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
       </Form>
       <pre>{JSON.stringify(formData, null, 2)}</pre>
     </>

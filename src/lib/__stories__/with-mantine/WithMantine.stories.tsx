@@ -26,6 +26,7 @@ export const FormWithMantineInput: Story = () => {
     <>
       <Form<UserProfile>
         onFormChange={(fd) => setFormData(fd)}
+        onSubmit={(fd) => alert(JSON.stringify(fd, null, 2))}
         renderRoot={({ children, onSubmit }) => (
           <MantineProvider>
             <form onSubmit={onSubmit}>{children}</form>
@@ -39,7 +40,7 @@ export const FormWithMantineInput: Story = () => {
               type: "text",
             },
             rules: {
-              required: true,
+              required: "Name is required",
             },
           },
           password: {
@@ -76,8 +77,14 @@ export const FormWithMantineInput: Story = () => {
                   label: "Newsletter",
                 },
                 theme: {
-                  type: "text",
+                  type: "select",
                   label: "Theme",
+                  props: {
+                    data: [
+                      { value: "light", label: "Light" },
+                      { value: "dark", label: "Dark" },
+                    ],
+                  },
                 },
               }),
             },
@@ -112,7 +119,9 @@ export const FormWithMantineInput: Story = () => {
             },
           },
         })}
-      />
+      >
+        <Button type="submit">Submit</Button>
+      </Form>
       <pre>{JSON.stringify(formData, null, 2)}</pre>
     </>
   )
