@@ -38,6 +38,7 @@ export function createDefineConfigFn<TComponentMap extends ComponentMap>() {
 export const BASE_MAPPING = {
   hidden: PlaceholderForHidden,
   inline: PlaceholderForInline,
+  array: PlaceholderForNestedField,
   group: PlaceholderForNestedField,
   ui: PlaceholderForNestedField,
 } as const satisfies ComponentMap

@@ -1,3 +1,4 @@
+import { useArrayField } from "@/components"
 import { defineFieldMapping, setupForm } from "@/components/form/setup"
 import { Story } from "@ladle/react"
 import { useState } from "react"
@@ -50,9 +51,7 @@ export const FormWithNativeInput: Story = () => {
           settings: {
             type: "group",
             label: "Settings",
-            render: ({ children, fieldProps: {
-              label,
-            } }) => {
+            render: ({ children, fieldProps: { label } }) => {
               return (
                 <fieldset>
                   <legend>{label}</legend>
@@ -69,6 +68,36 @@ export const FormWithNativeInput: Story = () => {
                 theme: {
                   type: "text",
                   label: "Theme",
+                },
+              }),
+            },
+          },
+          addresses: {
+            type: "array",
+            label: "Address book",
+            render: ({ fieldProps, children }) => {
+              const {
+                controller: { append },
+              } = useArrayField()
+              return (
+                <fieldset>
+                  <legend>{fieldProps.label}</legend>
+                  {children}
+                  <button type="button" onClick={() => append({})}>
+                    Add Address
+                  </button>
+                </fieldset>
+              )
+            },
+            props: {
+              config: defineConfig<UserProfile["addresses"][number]>({
+                street: {
+                  type: "text",
+                  label: "Street",
+                },
+                city: {
+                  type: "text",
+                  label: "City",
                 },
               }),
             },

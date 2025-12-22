@@ -1,5 +1,5 @@
 import { FormFieldConfig } from "@/types"
-import { FunctionComponent } from "react"
+import { Fragment, FunctionComponent } from "react"
 import { useArrayField } from "../provider"
 
 interface ArrayRenderSlotProps {
@@ -9,8 +9,13 @@ interface ArrayRenderSlotProps {
 const ArrayRenderSlot: FunctionComponent<ArrayRenderSlotProps> = ({
   render,
 }) => {
-  const { fieldProps } = useArrayField()
-  const content = render?.({ fieldProps })
+  const { fieldProps, controller, renderItem } = useArrayField()
+
+  const children = controller.fields.map((item, index) => {
+    return <Fragment key={item.id ?? index}>{renderItem(item, index)}</Fragment>
+  })
+
+  const content = render?.({ fieldProps, children })
   return content
 }
 
