@@ -1,4 +1,4 @@
-import { setupForm, createDefineConfigFn } from "@/components/helper"
+import { setupForm } from "@/components/helper"
 import { ComponentMap } from "@/types"
 import { Story } from "@ladle/react"
 import { useState } from "react"
@@ -7,9 +7,9 @@ import InputField from "./InputField"
 
 const fieldMapping = {
   text: InputField,
+  hana: InputField,
 } as const satisfies ComponentMap
 
-export const configForm = createDefineConfigFn<typeof fieldMapping>()
 const [Form, defineConfig] = setupForm({
   fieldMapping,
 })
@@ -21,7 +21,10 @@ export const FormWithNativeInput: Story = () => {
     <>
       <h2>With native input</h2>
       <Form<UserProfile>
-        renderRoot={({ children }) => <form>{children}</form>}
+        onFormChange={(fd) => setFormData(fd)}
+        renderRoot={({ children, onSubmit }) => (
+          <form onSubmit={onSubmit}>{children}</form>
+        )}
         config={defineConfig({
           name: {
             type: "text",
@@ -33,10 +36,9 @@ export const FormWithNativeInput: Story = () => {
                 color: "red",
               },
             },
+            rules: { required: "Name is required" },
           },
         })}
-        onFormChange={(fd) => setFormData(fd)}
-        onSubmit={(fd) => fd}
       />
       <pre>{JSON.stringify(formData, null, 2)}</pre>
     </>

@@ -75,9 +75,7 @@ function BlueFormEngine<
         const isRequired = Boolean(rules?.required)
 
         if (
-          Boolean(
-            Object.keys(rules).length && Object.keys(validationResolver).length
-          )
+          Object.keys(rules).length && Object.keys(validationResolver).length
         ) {
           for (const ruleType of typedKeys(rules)) {
             const rule = rules[ruleType]

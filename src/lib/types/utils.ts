@@ -42,9 +42,8 @@ export type CommonPropsWithSameType<A, B> = {
  *     { x: 10, y: 20, z: 30 }
  *   where 'x' and 'y' are known keys, and 'z' is an unknown key.
  */
-export type WithKnownKeys<K extends string, T> = Partial<Record<K, T>> & {
-  [key: string]: T
-}
+export type WithKnownKeys<K extends string, T> = Partial<Record<K, T>> &
+  Record<string, T>
 
 /**
  * Type alias that helps native TypeScript IDEs (e.g. VS Code) provide a better preview of the type.

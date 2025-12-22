@@ -79,7 +79,9 @@ export type I18nResolvedConfig = {
   validationResolver: ValidationResolver
 }
 
-export interface BlueFormConfigBase {
+export interface BlueFormConfigBase<
+  TComponentMap extends ComponentMap = ComponentMap
+> {
   /**
    * Internationalization (i18n) and validation message configuration.
    */
@@ -89,7 +91,7 @@ export interface BlueFormConfigBase {
    * Mapping between field types and React components used to render them.
    * Example: `{ text: TextField, select: SelectField }`
    */
-  fieldMapping?: ComponentMap
+  fieldMapping?: TComponentMap
 
   /**
    * Custom root renderer for the form element.
@@ -102,7 +104,7 @@ export interface BlueFormConfigBase {
    * Triggered for values that are `null`, `undefined`, or empty strings.
    *
    * Instead of rendering an empty input or textarea, this fallback will be shown
-   * (e.g. `"No data available"` or `"Chưa có dữ liệu"`).
+   * (e.g. `"No data available"`).
    */
   readOnlyEmptyFallback?: ReactNode
 
@@ -116,7 +118,7 @@ export interface BlueFormConfigBase {
 export interface BlueFormProps<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap
-> extends BlueFormConfigBase,
+> extends BlueFormConfigBase<TComponentMap>,
     PropsWithChildren {
   /**
    * Form field configuration including field type, name, label, props, etc.
