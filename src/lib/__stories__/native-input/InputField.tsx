@@ -20,8 +20,6 @@ const InputField: FunctionComponent<InputFieldProps> = (props) => {
     },
   } = useField()
 
-  console.info({ visible, readOnly, readOnlyEmptyFallback })
-
   if (!visible) return null
   if (readOnly && readOnlyEmptyFallback) {
     return <div id={id}>{readOnlyEmptyFallback}</div>
@@ -29,13 +27,14 @@ const InputField: FunctionComponent<InputFieldProps> = (props) => {
 
   return (
     <div id={id}>
+      <span style={{ marginRight: 10 }}>{label}</span>
       <input
         {...props}
         value={value ?? ""}
         onChange={(e) => onChange?.(e.target.value)}
         disabled={disabled}
         readOnly={readOnly}
-        placeholder={label}
+        placeholder={props.placeholder ?? label}
         aria-required={required}
         aria-invalid={Boolean(errorMessage)}
       />

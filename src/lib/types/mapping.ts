@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FieldValues } from 'react-hook-form'
-import { ComponentMap, FormConfig } from './config'
+import type { FieldValues } from "react-hook-form"
+import type { ComponentMap, FormConfig } from "./config"
 
-export interface FieldArrayProps<TModel extends FieldValues, TComponentMap extends Record<string, any>> {
+export interface FieldArrayProps<
+  TModel extends FieldValues,
+  TComponentMap extends ComponentMap
+> {
   /**
    * Form field configuration including field type, name, label, props, etc.
    */
@@ -14,7 +17,10 @@ export interface FieldArrayProps<TModel extends FieldValues, TComponentMap exten
   defaultValues?: Partial<TModel>
 }
 
-export interface NestedFieldProps<TModel extends FieldValues, TComponentMap extends ComponentMap> {
+export interface NestedFieldProps<
+  TModel extends FieldValues,
+  TComponentMap extends ComponentMap
+> {
   /**
    * Form field configuration including field type, name, label, props, etc.
    */
