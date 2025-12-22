@@ -4,7 +4,6 @@ import type {
   ComponentMap,
   FormConfig,
 } from "@/types"
-import { Without } from "@/types/utils"
 import type { FieldValues } from "react-hook-form"
 import BlueForm from "./BlueForm"
 
@@ -33,10 +32,7 @@ export const setupForm = <TComponentMap extends ComponentMap>(
 ) => {
   const defineConfig = createDefineConfigFn<TComponentMap>()
   const Form = <TModel extends FieldValues>(
-    props: Without<
-      BlueFormProps<TModel, TComponentMap>,
-      BlueFormConfigBase<TComponentMap>
-    >
+    props: Omit<BlueFormProps<TModel, TComponentMap>, "fieldMapping">
   ) => {
     return (
       // @ts-expect-error HACK: to fix generic type issue

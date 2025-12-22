@@ -8,7 +8,7 @@ import InputField from "./InputField"
 const fieldMapping = {
   text: InputField,
   hana: InputField,
-  hoho: InputField,  
+  hoho: InputField,
 } as const satisfies ComponentMap
 
 const [Form, defineConfig] = setupForm({
