@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { BaseSyntheticEvent, PropsWithChildren, ReactNode } from 'react';
+import type { BaseSyntheticEvent, PropsWithChildren, ReactNode } from "react"
 import type {
   FieldErrors,
   FieldValues,
@@ -8,15 +8,15 @@ import type {
   SubmitHandler,
   UseFormProps,
   UseFormReturn,
-} from 'react-hook-form';
+} from "react-hook-form"
 import type {
   TranslateFn,
   TranslationResolver,
   ValidationResolver,
   ValidationTranslationMap,
-} from '@/components/i18n';
-import type { ComponentMap, FormConfig } from './config';
-import type { BlueFormPlugin } from './plugin';
+} from "@/components/i18n"
+import type { ComponentMap, FormConfig } from "./config"
+import type { BlueFormPlugin } from "./plugin"
 
 export type SubmitHandlerWithFormMethods<
   TModel extends FieldValues = FieldValues
@@ -24,62 +24,62 @@ export type SubmitHandlerWithFormMethods<
   data: TModel,
   formMethods: UseFormReturn<TModel>,
   event?: React.BaseSyntheticEvent
-) => ReturnType<SubmitHandler<TModel>>;
+) => ReturnType<SubmitHandler<TModel>>
 
 type RootRendererArgs<TModel = FieldValues> = {
-  formMethods: UseFormReturn;
-  children: ReactNode;
-  onSubmit: (e?: BaseSyntheticEvent) => Promise<void>;
-  onError?: (errors: FieldErrors) => void;
-  submit: (raw: TModel) => void;
-};
+  formMethods: UseFormReturn
+  children: ReactNode
+  onSubmit: (e?: BaseSyntheticEvent) => Promise<void>
+  onError?: (errors: FieldErrors) => void
+  submit: (raw: TModel) => void
+}
 
 /**
  * Custom root wrapper renderer. Useful for replacing the default <form> with any custom structure.
  */
 export type RootRenderer<TModel extends FieldValues = FieldValues> = (
   args: RootRendererArgs<TModel>
-) => ReactNode;
+) => ReactNode
 
 export type BlueFormRef<TModel = FieldValues> = UseFormReturn<
   any,
   any,
   TModel
-> | null;
+> | null
 
 export type I18nConfig = {
   /**
    * Whether to enable i18n support for validation messages.
    * If false or omitted, messages will fallback to raw/default text.
    */
-  enabled?: boolean;
+  enabled?: boolean
 
   /**
    * Translation function used to resolve localized message strings.
    * If not provided, defaults to an identity function: (key) => key
    */
-  t?: TranslateFn;
+  t?: TranslateFn
 
   /**
    * Custom resolver for formatting validation messages.
    * Allows overriding or extending default error message generation logic.
    */
-  validationTranslation?: ValidationTranslationMap;
-};
+  validationTranslation?: ValidationTranslationMap
+}
 
 export type I18nResolvedConfig = {
   /**
    * Translation function used to resolve localized message strings.
    * If not provided, defaults to an identity function: (key) => key
    */
-  t: TranslationResolver;
+  t: TranslationResolver
 
   /**
    * Custom resolver for formatting validation messages.
    * Allows overriding or extending default error message generation logic.
    */
-  validationResolver: ValidationResolver;
-};
+  validationResolver: ValidationResolver
+}
 
 export interface BlueFormBaseConfig<
   TComponentMap extends ComponentMap = ComponentMap
@@ -87,19 +87,19 @@ export interface BlueFormBaseConfig<
   /**
    * Internationalization (i18n) and validation message configuration.
    */
-  i18nConfig?: I18nConfig;
+  i18nConfig?: I18nConfig
 
   /**
    * Mapping between field types and React components used to render them.
    * Example: `{ text: TextField, select: SelectField }`
    */
-  fieldMapping?: TComponentMap;
+  fieldMapping?: TComponentMap
 
   /**
    * Custom root renderer for the form element.
    * Defaults to rendering a native `<form>` element.
    */
-  renderRoot?: RootRenderer;
+  renderRoot?: RootRenderer
 
   /**
    * Fallback content to display when a field has no value and the form is in read-only mode.
@@ -108,12 +108,12 @@ export interface BlueFormBaseConfig<
    * Instead of rendering an empty input or textarea, this fallback will be shown
    * (e.g. `"No data available"`).
    */
-  readOnlyEmptyFallback?: ReactNode;
+  readOnlyEmptyFallback?: ReactNode
 
   /**
    * Plugins to extend or modify form behavior.
    */
-  plugins?: BlueFormPlugin[];
+  plugins?: BlueFormPlugin[]
 }
 
 export interface BlueFormProps<
@@ -124,59 +124,57 @@ export interface BlueFormProps<
   /**
    * Form field configuration including field type, name, label, props, etc.
    */
-  config: FormConfig<TModel, TComponentMap>;
+  config: FormConfig<TModel, TComponentMap>
 
   /**
    * Called when the form is submitted successfully and passes validation.
    */
-  onSubmit?: SubmitHandlerWithFormMethods<TModel>;
+  onSubmit?: SubmitHandlerWithFormMethods<TModel>
 
   /**
    * Called after a successful form submission.
    */
-  onSubmitSuccess?: SubmitHandlerWithFormMethods<TModel>;
+  onSubmitSuccess?: SubmitHandlerWithFormMethods<TModel>
 
   /**
    * Called when form submission fails due to validation errors.
    */
-  onSubmitError?: SubmitErrorHandler<TModel>;
+  onSubmitError?: SubmitErrorHandler<TModel>
 
   /**
    * Initial values for the form.
    */
-  defaultValues?: Partial<TModel>;
+  defaultValues?: Partial<TModel>
 
   /**
    * Props to pass to RHF's `useForm` hook.
    * @see https://react-hook-form.com/docs/useform
    */
-  formProps?: UseFormProps<TModel>;
+  formProps?: UseFormProps<TModel>
 
   /**
    * When true, the form renders in read-only mode with static text instead of inputs.
    */
-  readOnly?: boolean;
+  readOnly?: boolean
 
   /**
    * Callback invoked once on mount, useful for side effects like setting dynamic default values.
    */
-  onInit?: (form: UseFormReturn<TModel>) => void;
+  onInit?: (form: UseFormReturn<TModel>) => void
 
   /**
    * Called when a single field value changes.
    */
   onFieldChange?: (
-    // name: keyof TModel,
-    // hướng đến sử dụng nested path
     name: string,
     value: any,
     form: UseFormReturn<TModel>
-  ) => void;
+  ) => void
 
   /**
    * Called whenever the entire form state changes.
    */
-  onFormChange?: (values: TModel, form: UseFormReturn<TModel>) => void;
+  onFormChange?: (values: TModel, form: UseFormReturn<TModel>) => void
 
   /**
    * Delay in milliseconds before reacting to form value changes.
@@ -188,5 +186,5 @@ export interface BlueFormProps<
    *
    * Set to 0 or leave undefined to disable debounce.
    */
-  changeDebounceDelay?: number;
+  changeDebounceDelay?: number
 }

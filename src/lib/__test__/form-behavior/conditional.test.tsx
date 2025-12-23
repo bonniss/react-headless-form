@@ -33,7 +33,7 @@ describe('BlueForm - conditional UI', () => {
           toggle: {
             type: 'inline',
             render: ({ fieldProps: { onChange } }) => (
-              <button onClick={() => onChange?.(true)}>Toggle</button>
+              <button type="button" onClick={() => onChange?.(true)}>Toggle</button>
             ),
           },
           name: {

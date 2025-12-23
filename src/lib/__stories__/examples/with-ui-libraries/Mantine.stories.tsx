@@ -1,13 +1,14 @@
 import { useArrayField } from "@/components"
 import { defineFieldMapping, setupForm } from "@/components/form/setup"
 import { Story, StoryDefault } from "@ladle/react"
-import { Form as AntdForm, Button, Card } from "antd"
+import { Button, Fieldset, MantineProvider } from "@mantine/core"
+import "@mantine/core/styles.css"
 import { useState } from "react"
-import { UserProfile } from "../example/types"
-import CheckboxField from "../components/with-antd/CheckboxField"
-import InputField from "../components/with-antd/InputField"
-import SelectField from "../components/with-antd/SelectField"
-import TextAreaField from "../components/with-antd/TextAreaField"
+import { UserProfile } from "../types"
+import CheckboxField from "../../components/with-mantine/CheckboxField"
+import InputField from "../../components/with-mantine/InputField"
+import SelectField from "../../components/with-mantine/SelectField"
+import TextAreaField from "../../components/with-mantine/TextAreaField"
 
 export default {
   title: "With UI Libraries",
@@ -22,7 +23,7 @@ const [Form, defineConfig] = setupForm({
   }),
 })
 
-export const AntDesign: Story = () => {
+export const Mantine: Story = () => {
   const [formData, setFormData] = useState<any>()
 
   return (
@@ -31,7 +32,9 @@ export const AntDesign: Story = () => {
         onFormChange={(fd) => setFormData(fd)}
         onSubmit={(fd) => alert(JSON.stringify(fd, null, 2))}
         renderRoot={({ children, onSubmit }) => (
-          <AntdForm onFinish={onSubmit}>{children}</AntdForm>
+          <MantineProvider>
+            <form onSubmit={onSubmit}>{children}</form>
+          </MantineProvider>
         )}
         config={defineConfig({
           name: {
@@ -59,7 +62,7 @@ export const AntDesign: Story = () => {
             type: "select",
             label: "Role",
             props: {
-              options: [
+              data: [
                 { value: "admin", label: "Admin" },
                 { value: "user", label: "User" },
               ],
@@ -69,11 +72,7 @@ export const AntDesign: Story = () => {
             type: "group",
             label: "Settings",
             render: ({ children, fieldProps: { label } }) => {
-              return (
-                <Card title={label} variant="outlined">
-                  {children}
-                </Card>
-              )
+              return <Fieldset legend={label}>{children}</Fieldset>
             },
             props: {
               config: defineConfig<UserProfile["settings"]>({
@@ -85,7 +84,7 @@ export const AntDesign: Story = () => {
                   type: "select",
                   label: "Theme",
                   props: {
-                    options: [
+                    data: [
                       { value: "light", label: "Light" },
                       { value: "dark", label: "Dark" },
                     ],
@@ -102,10 +101,12 @@ export const AntDesign: Story = () => {
                 controller: { append },
               } = useArrayField()
               return (
-                <Card title={fieldProps.label} variant="outlined">
+                <Fieldset legend={fieldProps.label}>
                   {children}
-                  <Button onClick={() => append({})}>Add Address</Button>
-                </Card>
+                  <Button type="button" onClick={() => append({})}>
+                    Add Address
+                  </Button>
+                </Fieldset>
               )
             },
             props: {
@@ -123,9 +124,7 @@ export const AntDesign: Story = () => {
           },
         })}
       >
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
+        <Button type="submit">Submit</Button>
       </Form>
       <pre>{JSON.stringify(formData, null, 2)}</pre>
     </>

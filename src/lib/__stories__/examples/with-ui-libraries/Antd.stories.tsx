@@ -1,14 +1,13 @@
 import { useArrayField } from "@/components"
 import { defineFieldMapping, setupForm } from "@/components/form/setup"
 import { Story, StoryDefault } from "@ladle/react"
-import { Button, Fieldset, MantineProvider } from "@mantine/core"
-import "@mantine/core/styles.css"
+import { Form as AntdForm, Button, Card } from "antd"
 import { useState } from "react"
-import { UserProfile } from "../example/types"
-import CheckboxField from "../components/with-mantine/CheckboxField"
-import InputField from "../components/with-mantine/InputField"
-import SelectField from "../components/with-mantine/SelectField"
-import TextAreaField from "../components/with-mantine/TextAreaField"
+import { UserProfile } from "../types"
+import CheckboxField from "../../components/with-antd/CheckboxField"
+import InputField from "../../components/with-antd/InputField"
+import SelectField from "../../components/with-antd/SelectField"
+import TextAreaField from "../../components/with-antd/TextAreaField"
 
 export default {
   title: "With UI Libraries",
@@ -23,7 +22,7 @@ const [Form, defineConfig] = setupForm({
   }),
 })
 
-export const Mantine: Story = () => {
+export const AntDesign: Story = () => {
   const [formData, setFormData] = useState<any>()
 
   return (
@@ -32,9 +31,7 @@ export const Mantine: Story = () => {
         onFormChange={(fd) => setFormData(fd)}
         onSubmit={(fd) => alert(JSON.stringify(fd, null, 2))}
         renderRoot={({ children, onSubmit }) => (
-          <MantineProvider>
-            <form onSubmit={onSubmit}>{children}</form>
-          </MantineProvider>
+          <AntdForm onFinish={onSubmit}>{children}</AntdForm>
         )}
         config={defineConfig({
           name: {
@@ -62,7 +59,7 @@ export const Mantine: Story = () => {
             type: "select",
             label: "Role",
             props: {
-              data: [
+              options: [
                 { value: "admin", label: "Admin" },
                 { value: "user", label: "User" },
               ],
@@ -72,7 +69,11 @@ export const Mantine: Story = () => {
             type: "group",
             label: "Settings",
             render: ({ children, fieldProps: { label } }) => {
-              return <Fieldset legend={label}>{children}</Fieldset>
+              return (
+                <Card title={label} variant="outlined">
+                  {children}
+                </Card>
+              )
             },
             props: {
               config: defineConfig<UserProfile["settings"]>({
@@ -84,7 +85,7 @@ export const Mantine: Story = () => {
                   type: "select",
                   label: "Theme",
                   props: {
-                    data: [
+                    options: [
                       { value: "light", label: "Light" },
                       { value: "dark", label: "Dark" },
                     ],
@@ -101,12 +102,10 @@ export const Mantine: Story = () => {
                 controller: { append },
               } = useArrayField()
               return (
-                <Fieldset legend={fieldProps.label}>
+                <Card title={fieldProps.label} variant="outlined">
                   {children}
-                  <Button type="button" onClick={() => append({})}>
-                    Add Address
-                  </Button>
-                </Fieldset>
+                  <Button onClick={() => append({})}>Add Address</Button>
+                </Card>
               )
             },
             props: {
@@ -124,7 +123,9 @@ export const Mantine: Story = () => {
           },
         })}
       >
-        <Button type="submit">Submit</Button>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
       </Form>
       <pre>{JSON.stringify(formData, null, 2)}</pre>
     </>

@@ -2,11 +2,11 @@ import { useArrayField } from '@/components';
 import { defineFieldMapping, setupForm } from '@/components/form/setup';
 import { Story, StoryDefault } from '@ladle/react';
 import { useState } from 'react';
-import CheckboxField from '../components/with-native/CheckboxField';
-import InputField from '../components/with-native/InputField';
-import SelectField from '../components/with-native/SelectField';
-import TextAreaField from '../components/with-native/TextAreaField';
-import { UserProfile } from '../example/types';
+import CheckboxField from '../../components/with-native/CheckboxField';
+import InputField from '../../components/with-native/InputField';
+import SelectField from '../../components/with-native/SelectField';
+import TextAreaField from '../../components/with-native/TextAreaField';
+import { UserProfile } from '../types';
 
 export default {
   title: 'With UI Libraries',

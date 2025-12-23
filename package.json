@@ -1,23 +1,23 @@
 {
-  "name": "react-headless-form",
+  "name": "blueform",
   "description": "Headless form component built on React Hook Form, - bring your own UI",
   "private": false,
   "version": "0.1.2",
   "packageManager": "pnpm@10.12.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bonniss/react-headless-form"
+    "url": "https://github.com/bonniss/blueform"
   },
-  "main": "./dist/react-headless-form.umd.js",
-  "module": "./dist/react-headless-form.es.js",
+  "main": "./dist/blueform.umd.js",
+  "module": "./dist/blueform.es.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/react-headless-form.es.js",
-      "require": "./dist/react-headless-form.umd.js"
+      "import": "./dist/blueform.es.js",
+      "require": "./dist/blueform.umd.js"
     },
-    "./styles.css": "./dist/react-headless-form.css"
+    "./styles.css": "./dist/blueform.css"
   },
   "engines": {
     "node": ">=18"
