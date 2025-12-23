@@ -1,14 +1,108 @@
 // setupForm.test.tsx
-import { BASE_MAPPING, defineFieldMapping, setupForm, useField } from "@/components"
-import { render, screen } from "@testing-library/react"
+import {
+  BASE_MAPPING,
+  defineFieldMapping,
+  setupForm,
+  useField,
+} from "@/components"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { createRef } from "react"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
 interface TestModel {
   name: string
 }
 
 describe("setupForm", () => {
+  it("works without passing any base config", async () => {
+    const [Form, defineConfig] = setupForm()
+
+    const doSubmit = vi.fn()
+
+    const { getByText } = render(
+      <Form
+        renderRoot={({ children, onSubmit }) => (
+          <form onSubmit={onSubmit}>{children}</form>
+        )}
+        onSubmit={doSubmit}
+        config={defineConfig({
+          name: {
+            type: "inline",
+            render: () => <div data-testid="inline">OK</div>,
+          },
+        })}
+      >
+        <button type="submit">Submit</button>
+      </Form>
+    )
+
+    fireEvent.click(getByText("Submit"))
+
+    await waitFor(() => {
+      expect(doSubmit).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it("includes all built-in field types even without base config", () => {
+    const [Form, defineConfig] = setupForm()
+
+    render(
+      <Form
+        renderRoot={({ children }) => <form>{children}</form>}
+        config={defineConfig({
+          inlineField: {
+            type: "inline",
+            render: () => <div data-testid="inline">INLINE</div>,
+          },
+
+          uiField: {
+            type: "ui",
+            render: () => <div data-testid="ui">UI</div>,
+          },
+
+          groupField: {
+            type: "group",
+            props: {
+              config: defineConfig({
+                nested: {
+                  type: "inline",
+                  render: () => (
+                    <div data-testid="group-inline">GROUP-INLINE</div>
+                  ),
+                },
+              }),
+            },
+          },
+
+          arrayField: {
+            type: "array",
+            props: {
+              config: defineConfig({
+                item: {
+                  type: "inline",
+                  render: () => (
+                    <div data-testid="array-inline">ARRAY-INLINE</div>
+                  ),
+                },
+              }),
+            },
+            render: ({ children }) => <div data-testid="array">{children}</div>,
+          },
+
+          hiddenField: {
+            type: "hidden",
+            defaultValue: "secret",
+          },
+        })}
+      />
+    )
+
+    expect(screen.getByTestId("inline")).toBeTruthy()
+    expect(screen.getByTestId("ui")).toBeTruthy()
+    expect(screen.getByTestId("group-inline")).toBeTruthy()
+    expect(screen.getByTestId("array")).toBeTruthy()
+  })
+
   it("returns a Form component and defineConfig function", () => {
     const [Form, defineConfig] = setupForm({ fieldMapping: {} as any })
 
@@ -108,7 +202,9 @@ describe("setupForm", () => {
 
   it("uses i18nConfig from Form props instead of setupForm", () => {
     const TextField = () => {
-      const {fieldProps: {label} } = useField()
+      const {
+        fieldProps: { label },
+      } = useField()
       return <div data-testid="label">{label}</div>
     }
 

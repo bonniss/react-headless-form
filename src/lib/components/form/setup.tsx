@@ -67,7 +67,7 @@ export type TypedFormComponent<TComponentMap extends ComponentMap> = {
 }
 
 export const setupForm = <TComponentMap extends ComponentMap>(
-  baseConfig: BlueFormBaseConfig<TComponentMap>
+  baseConfig?: BlueFormBaseConfig<TComponentMap>
 ) => {
   const defineConfig = createDefineConfigFn<TComponentMap>()
 
@@ -77,7 +77,7 @@ export const setupForm = <TComponentMap extends ComponentMap>(
     props: Omit<BlueFormProps<TModel, TComponentMap>, "fieldMapping">,
     ref: React.Ref<BlueFormRef<TModel>>
   ) {
-    // Exclude fieldMapping from props to prevent override
+    // Exclude fieldMapping from props to prevent override at runtime
     const { fieldMapping: _, ...allowedProps } = props as any
 
     return <BlueForm ref={ref} {...baseConfig} {...allowedProps} />
