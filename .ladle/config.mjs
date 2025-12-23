@@ -1,3 +1,5 @@
+import { themes } from "prism-react-renderer"
+
 /** @type {import('@ladle/react').UserConfig} */
 export default {
   base: "/blueform/",
@@ -6,6 +8,10 @@ export default {
   addons: {
     theme: {
       enabled: false,
+    },
+    source: {
+      themeLight: themes.dracula,
+      themeDark: themes.gruvboxMaterialLight,
     },
   },
 }
