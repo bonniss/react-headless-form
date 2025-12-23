@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@hookform/devtools':
-        specifier: ^4.4.0
-        version: 4.4.0(@types/react@19.2.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       just-debounce-it:
         specifier: ^3.2.0
         version: 3.2.0
@@ -18,8 +15,8 @@ importers:
         specifier: ^0.2.1
         version: 0.2.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-hook-form:
-        specifier: ^7.69.0
-        version: 7.69.0(react@18.3.1)
+        specifier: ^7.62.0
+        version: 7.62.0(react@18.3.1)
     devDependencies:
       '@babel/core':
         specifier: 7.27.4
@@ -27,6 +24,9 @@ importers:
       '@biomejs/biome':
         specifier: 2.0.4
         version: 2.0.4
+      '@hookform/devtools':
+        specifier: ^4.4.0
+        version: 4.4.0(@types/react@19.2.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@ladle/react':
         specifier: ^5.1.1
         version: 5.1.1(@types/node@24.0.3)(@types/react@19.2.7)(jiti@1.21.7)(less@4.3.0)(lightningcss@1.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sugarss@5.0.1(postcss@8.5.6))(terser@5.43.1)(typescript@5.8.3)(yaml@2.8.0)
@@ -3158,8 +3158,8 @@ packages:
       react: ^16.8.0 || ^17 || ^18 || ^19
       react-dom: ^16.8.0 || ^17 || ^18 || ^19
 
-  react-hook-form@7.69.0:
-    resolution: {integrity: sha512-yt6ZGME9f4F6WHwevrvpAjh42HMvocuSnSIHUGycBqXIJdhqGSPQzTpGF+1NLREk/58IdPxEMfPcFCjlMhclGw==}
+  react-hook-form@7.62.0:
+    resolution: {integrity: sha512-7KWFejc98xqG/F4bAxpL41NB3o1nnvQO1RWZT3TqRZYL8RryQETGfEdVnJN2fy1crCiBLLjkRBVK05j24FxJGA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -7626,7 +7626,7 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  react-hook-form@7.69.0(react@18.3.1):
+  react-hook-form@7.62.0(react@18.3.1):
     dependencies:
       react: 18.3.1
 
