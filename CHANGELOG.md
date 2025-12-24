@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/bonniss/react-headless-form/compare/v0.2.0...v0.2.1) (2025-12-24)
+
+
+### Bug Fixes
+
+* correct type extension for TextAreaFieldProps to use TextareaHTMLAttributes ([1e1ef5e](https://github.com/bonniss/react-headless-form/commit/1e1ef5e445f81ca275a220a1c51fd701f9f3b3bc))
+
 ## [0.2.0](https://github.com/bonniss/react-headless-form/compare/v0.1.6...v0.2.0) (2025-12-24)
 
 
