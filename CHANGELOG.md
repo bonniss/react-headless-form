@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/bonniss/blueform/compare/v0.1.5...v0.1.6) (2025-12-24)
+
+
+### Bug Fixes
+
+* update package name and references from BlueForm to react-headless-form ([388678d](https://github.com/bonniss/blueform/commit/388678df74f15610c638dddccf51030bceb79093))
+
 ## [0.1.5](https://github.com/bonniss/blueform/compare/v0.1.4...v0.1.5) (2025-12-24)
 
 
