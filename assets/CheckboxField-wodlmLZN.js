@@ -1,0 +1,1 @@
+import{j as l}from"./index-C3wzQlZL.js";import{b as n}from"./setup-uVdBVLT6.js";const u=r=>{const{fieldProps:{id:s,value:i,onChange:e,label:o,disabled:t,readOnly:a,visible:c}}=n();return c?l.jsxs("label",{id:s,children:[l.jsx("input",{type:"checkbox",checked:!!i,onChange:d=>e==null?void 0:e(d.target.checked),disabled:t,readOnly:a,...r}),o]}):null};export{u as C};

@@ -204,8 +204,8 @@
       "levels": [
         "With ui libraries"
       ],
-      "locStart": 25,
-      "locEnd": 133,
+      "locStart": 26,
+      "locEnd": 134,
       "filePath": "src/lib/__stories__/examples/with-ui-libraries/Antd.stories.tsx",
       "namedExport": "AntDesign",
       "meta": {}
