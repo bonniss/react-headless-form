@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/bonniss/blueform/compare/v0.1.4...v0.1.5) (2025-12-24)
+
+
+### Bug Fixes
+
+* update tsconfig.build.json to correct exclude patterns ([1b23cca](https://github.com/bonniss/blueform/commit/1b23cca96cb2d02c5e0ce36f7db5ae75796765af))
+
 ## [0.1.4](https://github.com/bonniss/blueform/compare/v0.1.3...v0.1.4) (2025-12-23)
 
 
