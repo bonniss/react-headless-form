@@ -4,6 +4,15 @@
 
 ![blueform-typesafety](docs/media/blueform-typesafety.gif)
 
+## ✨ Features
+
+- 🧩 **Bring your own UI** — `value`, `onChange`, `label`, and form field essentials at your fingertips, without fighting RHF or TypeScript. You define your own field types: `text`, `select`, or even a `superman` field.
+- ⚡ **Great DX** — set up the form once, get full type and prop hints from your TypeScript model, plus extra UI-only fields with zero TypeScript complaints.
+- 🌍 **i18n-ready** — plug in any i18n solution (`i18next`, `react-intl` or your own), configure once, and labels, descriptions, and validation messages ready to fields without caring about the app language.
+- 🧱 **Still just [React Hook Form](https://react-hook-form.com/)** — pass `useForm` options, access RHF hooks, and keep full control since fields live inside the form context.
+- 🔍 **Visual inspection** — inspect your form with RHF DevTools using a one-line config, with support for easily defining your own plugins.
+- 📱 **Platform-agnostic** — no web-specific assumptions. While not tested with React Native yet, compatibility should follow React Hook Form.
+
 ## Naming note
 
 The package was originally named `blueform`, but npm rejected the publication because the name was deemed too similar to an existing package. We then switched to **react-headless-form** — a clear and descriptive name, though somewhat verbose. Unfortunately, abbreviating it as “RHF” isn’t practical, as that acronym is almost universally associated with **React Hook Form** (for the skeptics — just try googling “RHF”).

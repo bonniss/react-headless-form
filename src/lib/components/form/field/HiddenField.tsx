@@ -10,19 +10,18 @@ const HiddenField: FunctionComponent<HiddenFieldProps> = () => {
   const {
     fieldProps: { value, path },
   } = useField()
-  const { register, setValue } = useFormContext()
+  const { setValue } = useFormContext()
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: on component mount
   useEffect(() => {
     if (path) {
-      register(path)
       setValue(path, value, {
         shouldDirty: false,
         shouldTouch: false,
         shouldValidate: false,
       })
     }
-  }, [])
+  }, [path, value])
 
   return null
 }
