@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/bonniss/react-headless-form/compare/v0.1.6...v0.2.0) (2025-12-24)
+
+
+### Features
+
+* add typecheck script and enhance form configuration types ([13b6b0d](https://github.com/bonniss/react-headless-form/commit/13b6b0d82464f9039e73aa3cb65cce57fc99ff5d))
+
 ## [0.1.6](https://github.com/bonniss/blueform/compare/v0.1.5...v0.1.6) (2025-12-24)
 
 
