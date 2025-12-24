@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/bonniss/react-headless-form/compare/v0.3.0...v0.3.1) (2025-12-24)
+
+
+### Bug Fixes
+
+* remove HiddenField register ([05537ec](https://github.com/bonniss/react-headless-form/commit/05537ecc1753f2c741d2799e186b32a94fbe597c))
+
 ## [0.3.0](https://github.com/bonniss/react-headless-form/compare/v0.2.1...v0.3.0) (2025-12-24)
 
 
