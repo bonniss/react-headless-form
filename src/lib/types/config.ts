@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { ComponentProps, ComponentType, ReactNode } from "react"
-import type { FieldValues } from "react-hook-form"
+import type { FieldValues, Path } from "react-hook-form"
 import type { TranslatableText } from "@/components/i18n"
 import type { FieldResolvedProps } from "./input"
 import type { ValidationRules } from "./rule"
@@ -133,5 +133,5 @@ export type FormConfig<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap
 > = {
-  [K in keyof TModel]?: FieldConfigUnion<TModel, TComponentMap>
+  [K in Path<TModel>]?: FieldConfigUnion<TModel, TComponentMap>
 }

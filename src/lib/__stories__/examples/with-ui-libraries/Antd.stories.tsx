@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/correctness/useHookAtTopLevel: <explanation> */
 import { useArrayField } from "@/components"
 import { defineFieldMapping, setupForm } from "@/components/form/setup"
 import { Story, StoryDefault } from "@ladle/react"
@@ -11,7 +12,7 @@ import TextAreaField from "../../components/with-antd/TextAreaField"
 
 export default {
   title: "With UI Libraries",
-} satisfies StoryDefault;
+} satisfies StoryDefault
 
 const [Form, defineConfig] = setupForm({
   fieldMapping: defineFieldMapping({

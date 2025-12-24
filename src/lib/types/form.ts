@@ -4,6 +4,7 @@ import type { BaseSyntheticEvent, PropsWithChildren, ReactNode } from "react"
 import type {
   FieldErrors,
   FieldValues,
+  Path,
   SubmitErrorHandler,
   SubmitHandler,
   UseFormProps,
