@@ -2,10 +2,13 @@
   "extends": "./tsconfig.json",
   "include": ["src"],
   "exclude": [
-    "./src/**/*.stories.*",
-    "./src/**/*.test.*",
+    "**/*.test.*",
+    "**/*.spec.*",
     "**/__test__/**/*",
     "**/__tests__/**/*",
-    "**/__stories__/**/*"
+    "**/*.stories.*",
+    "**/__stories__/**/*",
+    ".ladle/**/*",
+    ".storybook/**/*"
   ]
 }
