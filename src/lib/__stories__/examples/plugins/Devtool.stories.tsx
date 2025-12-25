@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/correctness/useHookAtTopLevel: <explanation> */
 import { useArrayField } from "@/components"
 import { defineMapping, setupForm } from "@/components/form/setup"
-import devToolPlugin from "@/components/plugins/devtool"
+import { devToolPlugin } from "@/components/plugins/devtool"
 import { Story, StoryDefault } from "@ladle/react"
 import CheckboxField from "../../components/with-native/CheckboxField"
 import InputField from "../../components/with-native/InputField"

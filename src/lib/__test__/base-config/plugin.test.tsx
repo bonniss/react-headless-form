@@ -1,5 +1,5 @@
 import BlueForm from "@/components/form/BlueForm"
-import devToolPlugin from "@/components/plugins/devtool"
+import { devToolPlugin } from "@/components/plugins/devtool"
 import { fireEvent, screen, waitFor } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 import { renderWithBlueFormProvider } from "../_utils/render-form"

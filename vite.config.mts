@@ -26,10 +26,13 @@ const app = async (): Promise<UserConfigExport> => {
     ],
     build: {
       lib: {
-        entry: path.resolve(__dirname, "src/lib/index.ts"),
+        entry: {
+          index: path.resolve(__dirname, "src/lib/index.ts"),
+          // platform: path.resolve(__dirname, "src/lib/platform/index.tsx"),
+          // plugins: path.resolve(__dirname, "src/lib/plugins/index.tsx"),
+        },
         name: formattedName,
-        formats: ["es", "umd"],
-        fileName: (format) => `${formattedName}.${format}.js`,
+        formats: ["es"],
       },
       rollupOptions: {
         external: ["react", "react/jsx-runtime", "react-dom", "tailwindcss"],
@@ -40,12 +43,17 @@ const app = async (): Promise<UserConfigExport> => {
             "react-dom": "ReactDOM",
             tailwindcss: "tailwindcss",
           },
+          preserveModules: true,
+          preserveModulesRoot: "src/lib",
+          entryFileNames: "[name].js",
+          chunkFileNames: "[name].js",
         },
       },
     },
     test: {
       globals: true,
       environment: "jsdom",
+      setupFiles: "./vitest.setup.ts",
       coverage: {
         exclude: [
           ...(configDefaults.coverage.exclude ?? []),
