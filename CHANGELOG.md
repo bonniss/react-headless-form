@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/bonniss/react-headless-form/compare/v0.3.1...v0.4.0) (2026-01-12)
+
+
+### Features
+
+* include types and hooks from react-hook-form ([2148754](https://github.com/bonniss/react-headless-form/commit/21487540c3c571ef072ee981cdaa2f1141629dc5))
+
 ## [0.3.1](https://github.com/bonniss/react-headless-form/compare/v0.3.0...v0.3.1) (2025-12-24)
 
 
