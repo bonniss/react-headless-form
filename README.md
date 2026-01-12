@@ -9,8 +9,8 @@
 - 🧩 **Bring your own UI** — `value`, `onChange`, `label`, and form field essentials at your fingertips, without fighting RHF or TypeScript. You define your own field types: `text`, `select`, or even a `superman` field.
 - ⚡ **Great DX** — set up the form once, get full type and prop hints from your TypeScript model, plus extra UI-only fields with zero TypeScript complaints.
 - 🌍 **i18n-ready** — plug in any i18n solution (`i18next`, `react-intl` or your own), configure once, and labels, descriptions, and validation messages ready to fields without caring about the app language.
+- 🛠️ **Extensible Form Root** — Empower your form shell by easily injecting DevTools, status bars, error summaries, or any custom logic via `renderRoot`.
 - 🧱 **Still just [React Hook Form](https://react-hook-form.com/)** — pass `useForm` options, access RHF hooks, and keep full control since fields live inside the form context.
-- 🔍 **Visual inspection** — inspect your form with RHF DevTools using a one-line config, with support for easily defining your own plugins.
 - 📱 **Platform-agnostic** — no web-specific assumptions. While not tested with React Native yet, compatibility should follow React Hook Form.
 
 ## Naming note
@@ -993,15 +993,60 @@ const [Form] = setupForm({
 }
 ```
 
-## Devtools
+## DevTools
 
-BlueForm ships with an optional integration for [React Hook Form DevTools](https://react-hook-form.com/dev-tools), allowing you to inspect form state in real time during development.
-
-This integration is designed as a plugin, not a core requirement.
+[DevTools](https://www.react-hook-form.com/dev-tools/) are not built into the form engine by default. The example below shows how they can be composed per form using `renderRoot`.
 
 ```tsx
-import devToolPlugin from "react-headless-form"
-;<Form renderRoot={TestRoot} plugins={[devToolPlugin()]} />
+import { DevTool } from "@hookform/devtools";
+
+export const webFormRoot =
+  (
+    props: Omit<
+      React.FormHTMLAttributes<HTMLFormElement>,
+      "onSubmit" | "children"
+    > & {
+      enableDevTool?: boolean;
+    } = {},
+  ) =>
+  ({ children, onSubmit, formMethods: { control } }: any) => {
+    const { enableDevTool, ...formProps } = props;
+
+    return (
+      <>
+        <form onSubmit={onSubmit} {...formProps}>
+          {children}
+        </form>
+
+        {enableDevTool && (
+          <DevTool control={control} />
+        )}
+      </>
+    );
+  };
+```
+
+```tsx
+export const [Form] = setupForm({
+  renderRoot: webFormRoot({
+    enableDevTool: true,
+    // ...other options
+  }),
+});
+```
+
+Usage:
+
+```tsx
+<Form<FormData>
+  renderRoot={webFormRoot({
+    id: "my-form",
+    enableDevTool: false,
+  })}
+  onSubmit={(fd) => {
+    console.info(fd);
+  }}
+/>
 ```
 
 ## License
