@@ -527,18 +527,20 @@ BlueForm ships with a small set of built-in field types.
 
 Inline fields are **one-off custom fields** defined directly in the form configuration.
 
-```
-nickname: {
-  type: "inline",
-  label: "Nickname",
-  render: ({ fieldProps }) => (
-    <input
-      value={fieldProps.value ?? ""}
-      onChange={(e) =>
-        fieldProps.onChange?.(e.target.value)
-      }
-    />
-  ),
+```tsx
+{
+  nickname: {
+    type: "inline", 
+    label: "Nickname",
+    render: ({ fieldProps }) => (
+      <input
+        value={fieldProps.value ?? ""}
+        onChange={(e) =>
+          fieldProps.onChange?.(e.target.value)
+        }
+      />
+    ),
+  }
 }
 ```
 
