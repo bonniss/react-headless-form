@@ -9,7 +9,7 @@ import {
 
 import { BlueFormRef } from "@/types/form"
 import type { BlueFormProps, ComponentMap } from "../../types"
-import { BlueFormInteralProvider } from "./internal/BlueFormInteralProvider"
+import { BlueFormInternalProvider } from "./internal/BlueFormInternalProvider"
 import { BlueFormContent } from "./internal/BlueFormContent"
 
 export function BlueFormInner<
@@ -30,9 +30,9 @@ export function BlueFormInner<
 
   return (
     <FormProvider {...form}>
-      <BlueFormInteralProvider defaultValue={blueFormProps}>
+      <BlueFormInternalProvider defaultValue={blueFormProps}>
         <BlueFormContent<TModel, TComponentMap> />
-      </BlueFormInteralProvider>
+      </BlueFormInternalProvider>
     </FormProvider>
   )
 }

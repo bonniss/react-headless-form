@@ -17,7 +17,7 @@ import HiddenField from "../field/HiddenField"
 import InlineField from "../field/InlineField"
 import { FieldArrayProvider } from "../provider"
 import { FieldProvider } from "../provider/FieldProvider"
-import { useBlueFormInternal } from "./BlueFormInteralProvider"
+import { useBlueFormInternal } from "./BlueFormInternalProvider"
 
 interface BlueFormEngineProps<
   TModel extends FieldValues,

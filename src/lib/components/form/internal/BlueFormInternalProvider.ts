@@ -7,11 +7,11 @@ import type { BlueFormProps } from "@/types"
 import type { I18nResolvedConfig } from "@/types/form"
 import { useBlueFormProvider } from "../provider"
 
-export const [useBlueFormInternal, BlueFormInteralProvider] = createProvider(
+export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
   (
     blueFormProps: BlueFormProps<any, any> = {
       config: {},
-    }
+    },
   ) => {
     const {
       fieldMapping: fieldMapping_,
@@ -36,7 +36,7 @@ export const [useBlueFormInternal, BlueFormInteralProvider] = createProvider(
 
     if (!renderRoot) {
       throw new Error(
-        "No `renderRoot` was provided. A `renderRoot` is required to control how the form is rendered."
+        "No `renderRoot` was provided. A `renderRoot` is required to control how the form is rendered.",
       )
     }
 
@@ -51,7 +51,7 @@ export const [useBlueFormInternal, BlueFormInteralProvider] = createProvider(
       Object.keys(i18nConfig.validationTranslation).length
     ) {
       for (const validationType of typedKeys(
-        i18nConfig.validationTranslation
+        i18nConfig.validationTranslation,
       )) {
         const messageKey = i18nConfig.validationTranslation[validationType]
         if (!messageKey) continue
@@ -77,10 +77,10 @@ export const [useBlueFormInternal, BlueFormInteralProvider] = createProvider(
                 typeof rule === "number"
                   ? rule
                   : typeof rule === "string"
-                  ? Number(rule)
-                  : typeof rule === "object"
-                  ? Number(rule.value)
-                  : NaN
+                    ? Number(rule)
+                    : typeof rule === "object"
+                      ? Number(rule.value)
+                      : NaN
 
               if (!Number.isFinite(value)) return undefined
 
@@ -132,5 +132,5 @@ export const [useBlueFormInternal, BlueFormInteralProvider] = createProvider(
       readOnlyEmptyFallback,
       ...props,
     }
-  }
+  },
 )
