@@ -17,16 +17,16 @@
       "namedExport": "ArrayFields",
       "meta": {}
     },
-    "core--builtin-types--nested-field": {
-      "name": "Nested field",
+    "core--builtin-types--section-nested-": {
+      "name": "Section nested ",
       "levels": [
         "Core",
         "Builtin types"
       ],
-      "locStart": 29,
-      "locEnd": 63,
+      "locStart": 32,
+      "locEnd": 67,
       "filePath": "src/lib/__stories__/examples/basic/group-field.stories.tsx",
-      "namedExport": "GroupAndNestedFields",
+      "namedExport": "SectionNestedFields",
       "meta": {}
     },
     "core--hello-world": {
@@ -88,6 +88,18 @@
       "namedExport": "InlineField",
       "meta": {}
     },
+    "core--builtin-types--section-component-owned-": {
+      "name": "Section component owned ",
+      "levels": [
+        "Core",
+        "Builtin types"
+      ],
+      "locStart": 75,
+      "locEnd": 93,
+      "filePath": "src/lib/__stories__/examples/basic/section-field.stories.tsx",
+      "namedExport": "SectionWithComponent",
+      "meta": {}
+    },
     "core--type-safe-schema": {
       "name": "Type safe schema",
       "levels": [
@@ -99,16 +111,27 @@
       "namedExport": "TypeSafeSchema",
       "meta": {}
     },
-    "core--builtin-types--ui-only-field": {
-      "name": "Ui only field",
+    "core--builtin-types--section-pure-ui-": {
+      "name": "Section pure ui ",
       "levels": [
         "Core",
         "Builtin types"
       ],
       "locStart": 24,
-      "locEnd": 53,
+      "locEnd": 54,
       "filePath": "src/lib/__stories__/examples/basic/ui-field.stories.tsx",
-      "namedExport": "PureUIFields",
+      "namedExport": "PureUISections",
+      "meta": {}
+    },
+    "mixed--array-component-section": {
+      "name": "Array component section",
+      "levels": [
+        "Mixed"
+      ],
+      "locStart": 64,
+      "locEnd": 131,
+      "filePath": "src/lib/__stories__/examples/mixed/array-sections.stories.tsx",
+      "namedExport": "ArrayComponentSection",
       "meta": {}
     },
     "mixed--conditional-fields": {
@@ -144,13 +167,13 @@
       "namedExport": "MixedLayoutForm",
       "meta": {}
     },
-    "mixed--multi-tab-form": {
-      "name": "Multi tab form",
+    "mixed--multi-tab-section-component-": {
+      "name": "Multi tab section component ",
       "levels": [
         "Mixed"
       ],
-      "locStart": 35,
-      "locEnd": 126,
+      "locStart": 84,
+      "locEnd": 143,
       "filePath": "src/lib/__stories__/examples/mixed/tabs.stories.tsx",
       "namedExport": "MultiTabForm",
       "meta": {}
@@ -172,18 +195,18 @@
         "Mixed"
       ],
       "locStart": 59,
-      "locEnd": 231,
+      "locEnd": 234,
       "filePath": "src/lib/__stories__/examples/mixed/wizard-with-guard.stories.tsx",
       "namedExport": "WizardWithValidationGuard",
       "meta": {}
     },
-    "mixed--wizard-form": {
-      "name": "Wizard form",
+    "mixed--wizard-section-component-": {
+      "name": "Wizard section component ",
       "levels": [
         "Mixed"
       ],
-      "locStart": 42,
-      "locEnd": 176,
+      "locStart": 114,
+      "locEnd": 195,
       "filePath": "src/lib/__stories__/examples/mixed/wizard.stories.tsx",
       "namedExport": "WizardForm",
       "meta": {}
@@ -194,7 +217,7 @@
         "Plugins"
       ],
       "locStart": 25,
-      "locEnd": 136,
+      "locEnd": 137,
       "filePath": "src/lib/__stories__/examples/plugins/Devtool.stories.tsx",
       "namedExport": "DevTool",
       "meta": {}
@@ -205,7 +228,7 @@
         "With ui libraries"
       ],
       "locStart": 26,
-      "locEnd": 134,
+      "locEnd": 135,
       "filePath": "src/lib/__stories__/examples/with-ui-libraries/Antd.stories.tsx",
       "namedExport": "AntDesign",
       "meta": {}
@@ -216,7 +239,7 @@
         "With ui libraries"
       ],
       "locStart": 27,
-      "locEnd": 133,
+      "locEnd": 134,
       "filePath": "src/lib/__stories__/examples/with-ui-libraries/Mantine.stories.tsx",
       "namedExport": "Mantine",
       "meta": {}
@@ -227,7 +250,7 @@
         "With ui libraries"
       ],
       "locStart": 26,
-      "locEnd": 156,
+      "locEnd": 157,
       "filePath": "src/lib/__stories__/examples/with-ui-libraries/tailwind.stories.tsx",
       "namedExport": "Tailwind",
       "meta": {}
