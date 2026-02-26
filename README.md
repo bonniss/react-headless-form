@@ -4,6 +4,9 @@
 
 ![blueform-typesafety](docs/media/blueform-typesafety.gif)
 
+> [!WARNING]
+> This project is still under active developmen. Expect breaking changes until `v1.0.0` is reached.
+
 ## ✨ Features
 
 - 🧩 **Bring your own UI** — `value`, `onChange`, `label`, and form field essentials at your fingertips, without fighting RHF or TypeScript. You define your own field types: `text`, `select`, or even a `superman` field.
@@ -14,22 +17,26 @@
 - 🧱 **Still just [React Hook Form](https://react-hook-form.com/)** — pass `useForm` options, access RHF hooks, and keep full control since fields live inside the form context.
 - 📱 **Platform-agnostic** — no web-specific assumptions. While not tested with React Native yet, compatibility should follow React Hook Form.
 
-## Naming note
-
-The package was originally named `blueform`, but npm rejected the publication because the name was deemed too similar to an existing package. We then switched to **react-headless-form** — a clear and descriptive name, though somewhat verbose. Unfortunately, abbreviating it as “RHF” isn’t practical, as that acronym is almost universally associated with **React Hook Form** (for the skeptics — just try googling “RHF”).
-
-For this reason, throughout the documentation we refer to the library simply as **BlueForm**. This is a short, memorable codename carried over from the original `blueform` name, and it’s the term we’ve consistently used during development and design discussions.
-
 ## Introduction
+
+> [!NOTE]
+>
+> The package was originally named `blueform`, but npm rejected the publication because the name was deemed too similar to an existing package. We then switched to **react-headless-form** — a clear and descriptive name, though somewhat verbose. Unfortunately, abbreviating it as “RHF” isn’t practical, as that acronym is almost universally associated with **React Hook Form** (for the skeptics — just try googling “RHF”).
+>
+> For this reason, throughout the documentation we refer to the library simply as **BlueForm**. This is a short, memorable codename carried over from the original `blueform` name, and it’s the term we’ve consistently used during development and design discussions.
 
 React Hook Form (RHF) is brilliant. It removes a large amount of boilerplate and makes building forms faster and easier. But as applications grow, the patterns used to wire RHF itself often become the next layer of boilerplate.
 
-You copy and paste setup logic from previous apps, slightly adjusting it each time. You stop to think about questions about wiring details: should this input use register, useController, or `<Controller />` to integrate this field with a new UI library? These decisions are not hard individually, but they add friction. Over time, teams accumulate multiple patterns for doing essentially the same thing. The real challenge becomes orchestration: how fields are described, how they are composed, how behavior is expressed, and how form logic stays consistent as complexity grows.
+You copy setup patterns from previous projects, yet still hesitate over: should this field of the new UI library use `register`, `useController`, or `<Controller />`? Do we introduce helpers to separate logic from layout? Do we wrap everything in context-aware components? Each project tweaks the pattern slightly, and those tweaks accumulate.
 
-With **BlueForm**, building a form becomes a structured process:
+Individually, these decisions are trivial. Collectively, they create architectural noise.
 
-**0. Define your fields**
-Create your own reusable building blocks: selects, checkbox groups, or any domain-specific UI. In BlueForm, this is called `fieldMapping`. The built-in field types allow you to start even without defining one.
+Input wiring should not be the dominant concern in a form system. It should fade into the background, so teams can focus on structure, composition, and behavior — the parts that actually define how a form works as a whole.
+
+With **BlueForm**, building a form becomes a clear process:
+
+**0. Define your fields (optional, incremental)**
+Register reusable building blocks through `fieldMapping`, which maps a type name to a React component. The mapping is entirely yours. This step is optional, as BlueForm includes built-in primitives that are sufficient for many use cases, allowing you to start immediately and extend incrementally as your design system grows.
 
 **1. Define how your root form element is rendered**
 Decide how the form itself is structured: form, grid layout, wizard container, or anything else.
@@ -40,9 +47,7 @@ Compose your form using your own fields, validation rules, layout-related proper
 **3. Define form behavior**
 Handle submission, side effects, conditional visibility, and integrations—without coupling them to layout.
 
-**4. (Not really a step — you now have a working form.)**
-
-The reason step **0** comes first is intentional. In most applications, fields are defined far less frequently than forms themselves. You usually have a clear idea of the input shapes your domain requires, and once those fields exist, they are reused across many forms. Similarly, step **1** is often optional. Many applications share the same root form structure, meaning you define it once and rarely touch it again.
+And that's it - you now have a working form. The reason step **0** comes first is intentional. In most applications, fields are defined far less frequently than forms themselves. You typically know the input shapes your domain requires, and once those field types are established, they are reused across many forms. Similarly, step **1** is often optional. Many applications share the same root form structure, meaning you define it once and rarely touch it again.
 
 With BlueForm, you focus on form structure — how fields are organized, how they relate to each other, and how the form behaves as a whole. UI becomes an implementation detail, not the driving concern.
 
@@ -52,6 +57,10 @@ With BlueForm, you focus on form structure — how fields are organized, how the
 
 ```sh
 npm install react-headless-form
+# or
+pnpm add react-headless-form
+# or
+yarn add react-headless-form
 ```
 
 ### Your first form - A login form
@@ -460,7 +469,7 @@ type User = {
     city: string
   }[]
 }
-````
+```
 
 For simple, non-nested fields like `name`, keys map directly to model properties:
 
@@ -473,8 +482,6 @@ For simple, non-nested fields like `name`, keys map directly to model properties
 ```
 
 For nested fields, there are two supported approaches.
-
----
 
 ### Option A: Using structural primitives
 
@@ -510,8 +517,6 @@ Use `array` for arrays of objects:
 ```
 
 When using `section` (nested) or `array`, you must call `defineConfig` for the nested model (`User["profile"]`, `User["addresses"][number]`), because TypeScript cannot automatically infer nested object shapes across abstraction boundaries.
-
----
 
 ### Option B: Using flat nested keys
 
@@ -624,7 +629,7 @@ BlueForm ships with a minimal set of composable primitives.
 | `array`   | Field list | ✓             | ✓         |
 | `hidden`  | Hidden     | ✓             | ✓         |
 
-¹ `section` participates in form state only when `nested: true` and a `config` is provided.  
+¹ `section` participates in form state only when `nested: true` and a `config` is provided.
 Otherwise, it acts as a structural container.
 
 ### `inline`
@@ -634,7 +639,7 @@ Inline fields are **one-off custom fields** defined directly in the form configu
 ```tsx
 {
   nickname: {
-    type: "inline", 
+    type: "inline",
     label: "Nickname",
     render: ({ fieldProps }) => (
       <input
@@ -783,8 +788,6 @@ token: {
 }
 ```
 
----
-
 With just these built-in field types, you can cover quite of use cases. For example, the login form shown earlier can be implemented entirely using `inline` fields.
 
 ```tsx
@@ -829,8 +832,6 @@ With just these built-in field types, you can cover quite of use cases. For exam
   }}
 />
 ```
-
----
 
 ## Field authoring
 
