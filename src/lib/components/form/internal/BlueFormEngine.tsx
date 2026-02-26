@@ -90,9 +90,9 @@ function BlueFormEngine<
 
         const resolvedProps = {
           id: path,
+          namespace,
           path,
           name: key,
-          namespace,
           type,
           label: translatedLabel,
           description: translatedDescription,
@@ -134,24 +134,50 @@ function BlueFormEngine<
               TModel,
               TComponentMap
             >
-            const nested = sectionProps?.nested ?? false
-            const contentConfig = sectionProps?.config
             let children = null
-            if (contentConfig) {
+
+            const nested = sectionProps?.nested ?? false
+            const effectiveNamespace = nested ? path : namespace
+            const sectionResolvedProps = {
+              ...resolvedProps,
+              namespace: effectiveNamespace,
+            } as FieldResolvedProps
+
+            const contentConfig = sectionProps?.config
+            const SectionComponent = sectionProps?.component
+
+            if (SectionComponent) {
+              if (contentConfig) {
+                console.warn(
+                  `[react-headless-form] Section "${path}" has both "component" and "config". ` +
+                    `"component" will be used and "config" will be ignored.`,
+                )
+              }
+              children = <SectionComponent />
+            } else if (contentConfig) {
               children = (
                 <BlueFormEngine
                   config={contentConfig}
-                  namespace={nested ? path : namespace}
+                  namespace={effectiveNamespace}
                 />
               )
             }
 
-            component =
+            const node =
               render?.({
-                fieldProps: resolvedProps,
+                fieldProps: sectionResolvedProps,
                 children,
                 props: componentProps,
               }) ?? children
+
+            // allow deeply access to fieldProps for form section
+            component = (
+              <FieldProvider
+                defaultValue={{ resolved: sectionResolvedProps, config: field }}
+              >
+                {node}
+              </FieldProvider>
+            )
 
             break
           }
