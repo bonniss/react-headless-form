@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/bonniss/react-headless-form/compare/v0.4.1...v0.5.0) (2026-02-26)
+
+
+### Features
+
+* replace `ui` and `group` with unified `section` type and refine form composition model ([#17](https://github.com/bonniss/react-headless-form/issues/17)) ([4f97467](https://github.com/bonniss/react-headless-form/commit/4f97467131a31108eae7695390a2333851c6c27c))
+
 ## [0.4.1](https://github.com/bonniss/react-headless-form/compare/v0.4.0...v0.4.1) (2026-01-12)
 
 
