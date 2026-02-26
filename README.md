@@ -5,7 +5,7 @@
 ![blueform-typesafety](docs/media/blueform-typesafety.gif)
 
 > [!WARNING]
-> This project is still under active developmen. Expect breaking changes until `v1.0.0` is reached.
+> This project is still under active development. Expect breaking changes until `v1.0.0` is reached.
 
 ## ✨ Features
 
@@ -375,6 +375,7 @@ import { loginFormConfig } from "./login.form"
   <button type="submit">Login</button>
 </Form>
 ```
+
 ### `Section` for reusable composition
 
 `setupForm()` returns a tuple: `[Form, defineConfig, Section]`.
