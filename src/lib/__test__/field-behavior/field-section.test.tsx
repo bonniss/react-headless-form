@@ -4,6 +4,7 @@ import { HiddenField } from "@/components/form/field"
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { renderWithBlueFormProvider } from "../_utils/render-form"
+import { useArrayField } from "@/components"
 
 /**
  * A minimal root renderer for BlueForm tests.
@@ -679,6 +680,181 @@ describe("BlueForm – section", () => {
         expect.any(Object),
         expect.anything(),
       )
+    })
+  })
+})
+
+describe("BlueForm – section inside array", () => {
+  it("nests fields under section key inside an array when nested=true", async () => {
+    let submitted: any = null
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onSubmit={(v) => (submitted = v)}
+        config={{
+          users: {
+            type: "array",
+            render: ({ children }) => {
+              const { controller } = useArrayField()
+              // Append một object có data ban đầu để test
+              return (
+                <div>
+                  {children}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      controller.append({
+                        profile: { name: "New User" },
+                      })
+                    }
+                  >
+                    Add
+                  </button>
+                </div>
+              )
+            },
+            props: {
+              config: {
+                profile: {
+                  type: "section",
+                  props: {
+                    nested: true,
+                    config: {
+                      name: { type: "hidden" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }}
+        fieldMapping={{ hidden: HiddenField }}
+      />,
+    )
+
+    // Click Add để tạo row
+    fireEvent.click(screen.getByText("Add"))
+    // Submit form
+    fireEvent.click(screen.getByText("Submit"))
+
+    await waitFor(() => {
+      expect(submitted).toEqual({
+        users: [{ profile: { name: "New User" } }],
+      })
+    })
+  })
+
+  it("keeps fields flat inside an array when section has nested=false", async () => {
+    let submitted: any = null
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onSubmit={(v) => (submitted = v)}
+        config={{
+          items: {
+            type: "array",
+            render: ({ children }) => {
+              const { controller } = useArrayField()
+              return (
+                <div>
+                  {children}
+                  <button
+                    type="button"
+                    onClick={() => controller.append({ sku: "ABC" })}
+                  >
+                    Add Item
+                  </button>
+                </div>
+              )
+            },
+            props: {
+              config: {
+                metadata: {
+                  type: "section",
+                  props: {
+                    nested: false,
+                    config: {
+                      sku: { type: "hidden" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }}
+        fieldMapping={{ hidden: HiddenField }}
+      />,
+    )
+
+    fireEvent.click(screen.getByText("Add Item"))
+    fireEvent.click(screen.getByText("Submit"))
+
+    await waitFor(() => {
+      expect(submitted).toEqual({
+        items: [{ sku: "ABC" }], // Không có key 'metadata' vì nested=false
+      })
+    })
+  })
+
+  it("supports array nested inside a section", async () => {
+    let submitted: any = null
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onSubmit={(v) => (submitted = v)}
+        config={{
+          group: {
+            type: "section",
+            props: {
+              nested: true,
+              config: {
+                tags: {
+                  type: "array",
+                  render: ({ children }) => {
+                    const { controller } = useArrayField()
+                    return (
+                      <div>
+                        {children}
+                        <button
+                          type="button"
+                          onClick={() => controller.append("react")}
+                        >
+                          Add Tag
+                        </button>
+                      </div>
+                    )
+                  },
+                  // Array đơn giản (primitive)
+                  props: {
+                    config: {
+                      $el: { type: "hidden" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }}
+        fieldMapping={{ hidden: HiddenField }}
+      />,
+    )
+
+    fireEvent.click(screen.getByText("Add Tag"))
+    fireEvent.click(screen.getByText("Submit"))
+
+    await waitFor(() => {
+      expect(submitted).toEqual({
+        group: {
+          tags: [
+            {
+              $el: undefined,
+            },
+          ],
+        },
+      })
     })
   })
 })
