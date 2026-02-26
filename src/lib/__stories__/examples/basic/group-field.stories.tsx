@@ -32,7 +32,7 @@ export const GroupAndNestedFields: Story = () => {
       onSubmit={(data) => alert(JSON.stringify(data, null, 2))}
       config={{
         personal: {
-          type: "group",
+          type: "section",
           label: "Personal Information",
           render: ({ children, fieldProps: { label } }) => (
             <fieldset>
@@ -41,6 +41,7 @@ export const GroupAndNestedFields: Story = () => {
             </fieldset>
           ),
           props: {
+            nested: true,
             config: defineConfig<UserProfile["personal"]>({
               firstName: {
                 type: "text",

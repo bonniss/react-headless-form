@@ -23,8 +23,9 @@ describe("BlueForm – onSubmit", () => {
         }}
         config={{
           profile: {
-            type: "group",
+            type: "section",
             props: {
+              nested: true,
               config: {
                 userId: {
                   type: "hidden",
@@ -38,7 +39,7 @@ describe("BlueForm – onSubmit", () => {
           group: ({ children }: any) => children,
           hidden: HiddenField,
         }}
-      />
+      />,
     )
 
     fireEvent.click(screen.getByText("Submit"))

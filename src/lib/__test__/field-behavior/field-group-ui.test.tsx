@@ -22,8 +22,9 @@ describe("BlueForm – group & ui", () => {
         onSubmit={(v) => (submitted = v)}
         config={{
           profile: {
-            type: "group",
+            type: "section",
             props: {
+              nested: true,
               config: {
                 name: {
                   type: "hidden",
@@ -59,8 +60,9 @@ describe("BlueForm – group & ui", () => {
         onSubmit={(data) => (submitted = data)}
         config={{
           profile: {
-            type: "group",
+            type: "section",
             props: {
+              nested: true,
               config: {
                 userId: {
                   type: "hidden",
@@ -73,7 +75,7 @@ describe("BlueForm – group & ui", () => {
         fieldMapping={{
           hidden: HiddenField,
         }}
-      />
+      />,
     )
 
     fireEvent.click(screen.getByText("Submit"))
@@ -96,12 +98,14 @@ describe("BlueForm – group & ui", () => {
         onSubmit={(data) => (submitted = data)}
         config={{
           profile: {
-            type: "group",
+            type: "section",
             props: {
+              nested: true,
               config: {
                 address: {
-                  type: "group",
+                  type: "section",
                   props: {
+                    nested: true,
                     config: {
                       city: {
                         type: "hidden",
@@ -117,7 +121,7 @@ describe("BlueForm – group & ui", () => {
         fieldMapping={{
           hidden: HiddenField,
         }}
-      />
+      />,
     )
 
     fireEvent.click(screen.getByText("Submit"))
@@ -142,7 +146,7 @@ describe("BlueForm – group & ui", () => {
         onSubmit={(v) => (submitted = v)}
         config={{
           layout: {
-            type: "ui",
+            type: "section",
             props: {
               config: {
                 name: {
@@ -177,7 +181,7 @@ describe("BlueForm – group & ui", () => {
         onSubmit={(data) => (submitted = data)}
         config={{
           layout: {
-            type: "ui",
+            type: "section",
             props: {
               config: {
                 userId: {
@@ -212,12 +216,13 @@ describe("BlueForm – group & ui", () => {
         onSubmit={(data) => (submitted = data)}
         config={{
           layout: {
-            type: "ui",
+            type: "section",
             props: {
               config: {
                 profile: {
-                  type: "group",
+                  type: "section",
                   props: {
+                    nested: true,
                     config: {
                       userId: {
                         type: "hidden",
@@ -233,7 +238,7 @@ describe("BlueForm – group & ui", () => {
         fieldMapping={{
           hidden: HiddenField,
         }}
-      />
+      />,
     )
 
     fireEvent.click(screen.getByText("Submit"))
@@ -256,11 +261,9 @@ describe("BlueForm – group & ui", () => {
         onSubmit={(data) => (submitted = data)}
         config={{
           profile: {
-            type: "group",
-            render: ({ children }) => (
-              <div data-testid="wrapper">{children}</div>
-            ),
+            type: "section",
             props: {
+              nested: true,
               config: {
                 userId: {
                   type: "hidden",
@@ -268,12 +271,15 @@ describe("BlueForm – group & ui", () => {
                 },
               },
             },
+            render: ({ children }) => (
+              <div data-testid="wrapper">{children}</div>
+            ),
           },
         }}
         fieldMapping={{
           hidden: HiddenField,
         }}
-      />
+      />,
     )
 
     expect(screen.getByTestId("wrapper")).toBeDefined()
@@ -452,8 +458,9 @@ describe("BlueForm – group & ui", () => {
         )}
         config={{
           profile: {
-            type: "group",
+            type: "section",
             props: {
+              nested: true,
               config: {
                 email: {
                   type: "inline",
@@ -481,7 +488,7 @@ describe("BlueForm – group & ui", () => {
         }}
       >
         <button type="submit">Submit</button>
-      </BlueForm>
+      </BlueForm>,
     )
 
     fireEvent.change(screen.getByTestId("email"), {
@@ -518,12 +525,14 @@ describe("BlueForm – group & ui", () => {
         )}
         config={{
           settings: {
-            type: "group",
+            type: "section",
             props: {
+              nested: true,
               config: {
                 theme: {
-                  type: "group",
+                  type: "section",
                   props: {
+                    nested: true,
                     config: {
                       mode: {
                         type: "inline",
@@ -556,7 +565,7 @@ describe("BlueForm – group & ui", () => {
         }}
       >
         <button type="submit">Submit</button>
-      </BlueForm>
+      </BlueForm>,
     )
 
     fireEvent.change(screen.getByTestId("mode"), {

@@ -95,7 +95,7 @@ export const WizardSummaryStep: Story = () => {
          * Step 3 – summary
          */
         __summary: {
-          type: "ui",
+          type: "section",
           visible: () => step === 2,
           render: () => <SummaryStep />,
         },

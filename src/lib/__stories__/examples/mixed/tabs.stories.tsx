@@ -73,10 +73,11 @@ export const MultiTabForm: Story = () => {
          * Tab: Basic information
          */
         basic: {
-          type: "group",
+          type: "section",
           label: "Basic",
           visible: () => activeTab === "basic",
           props: {
+            nested: true,
             config: defineConfig<Profile["basic"]>({
               name: {
                 type: "text",
@@ -101,10 +102,11 @@ export const MultiTabForm: Story = () => {
          * Tab: Preferences
          */
         preferences: {
-          type: "group",
+          type: "section",
           label: "Preferences",
           visible: () => activeTab === "preferences",
           props: {
+            nested: true,
             config: defineConfig<Profile["preferences"]>({
               newsletter: {
                 type: "checkbox",

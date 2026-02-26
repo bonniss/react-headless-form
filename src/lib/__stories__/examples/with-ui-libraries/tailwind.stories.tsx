@@ -66,17 +66,10 @@ export const Tailwind: Story = () => {
             },
           },
           settings: {
-            type: "group",
+            type: "section",
             label: "Settings",
-            render: ({ children, fieldProps: { label } }) => (
-              <fieldset className="rounded-md border border-gray-200 p-4 space-y-4">
-                <legend className="px-2 text-sm font-semibold text-gray-700">
-                  {label}
-                </legend>
-                {children}
-              </fieldset>
-            ),
             props: {
+              nested: true,
               config: defineConfig<UserProfile["settings"]>({
                 newsletter: {
                   type: "checkbox",
@@ -94,6 +87,14 @@ export const Tailwind: Story = () => {
                 },
               }),
             },
+            render: ({ children, fieldProps: { label } }) => (
+              <fieldset className="rounded-md border border-gray-200 p-4 space-y-4">
+                <legend className="px-2 text-sm font-semibold text-gray-700">
+                  {label}
+                </legend>
+                {children}
+              </fieldset>
+            ),
           },
           addresses: {
             type: "array",

@@ -67,16 +67,10 @@ export const AntDesign: Story = () => {
             },
           },
           settings: {
-            type: "group",
+            type: "section",
             label: "Settings",
-            render: ({ children, fieldProps: { label } }) => {
-              return (
-                <Card title={label} variant="outlined">
-                  {children}
-                </Card>
-              )
-            },
             props: {
+              nested: true,
               config: defineConfig<UserProfile["settings"]>({
                 newsletter: {
                   type: "checkbox",
@@ -93,6 +87,13 @@ export const AntDesign: Story = () => {
                   },
                 },
               }),
+            },
+            render: ({ children, fieldProps: { label } }) => {
+              return (
+                <Card title={label} variant="outlined">
+                  {children}
+                </Card>
+              )
             },
           },
           addresses: {

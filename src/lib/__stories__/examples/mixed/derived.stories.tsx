@@ -78,7 +78,7 @@ export const DerivedFields: Story = () => {
          * This is not part of form submission.
          */
         fullNamePreview: {
-          type: "ui",
+          type: "section",
           render: () => <FullNamePreview />,
         },
       }}

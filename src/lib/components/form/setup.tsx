@@ -3,7 +3,7 @@ import type {
   BlueFormProps,
   ComponentMap,
   FormConfig,
-  NestedFieldProps,
+  FormSectionProps,
 } from "@/types"
 import type { BlueFormRef } from "@/types/form"
 import type { ComponentType, JSX } from "react"
@@ -12,7 +12,7 @@ import type { FieldValues } from "react-hook-form"
 import BlueForm from "./BlueForm"
 
 const PlaceholderForNestedField = null as unknown as ComponentType<
-  NestedFieldProps<any, any>
+  FormSectionProps<any, any>
 >
 const PlaceholderForHidden = null as unknown as ComponentType<any>
 const PlaceholderForInline = null as unknown as ComponentType<any>
@@ -21,8 +21,7 @@ export const BASE_MAPPING = {
   hidden: PlaceholderForHidden,
   inline: PlaceholderForInline,
   array: PlaceholderForNestedField,
-  group: PlaceholderForNestedField,
-  ui: PlaceholderForNestedField,
+  section: PlaceholderForNestedField
 } as const satisfies ComponentMap
 type DefaultComponentMap = typeof BASE_MAPPING
 

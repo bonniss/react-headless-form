@@ -12,8 +12,9 @@ describe('HiddenField – nested object', () => {
       <BlueForm
         config={{
           profile: {
-            type: 'group',
+            type: 'section',
             props: {
+              nested: true,
               config: {
                 userId: {
                   type: 'hidden',

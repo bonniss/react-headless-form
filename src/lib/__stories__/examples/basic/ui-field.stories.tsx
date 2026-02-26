@@ -29,7 +29,7 @@ export const PureUIFields: Story = () => {
       )}
       config={{
         __notice: {
-          type: "ui",
+          type: "section",
           render: () => (
             <div style={{ padding: 12, background: "#f5f5f5" }}>
               This is a render-only UI block.
@@ -37,7 +37,7 @@ export const PureUIFields: Story = () => {
           ),
         },
         __name: {
-          type: "ui",
+          type: "section",
           render: ({ fieldProps }) => (
             <div>
               <strong>Static field:</strong> {fieldProps.label}

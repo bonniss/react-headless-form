@@ -30,7 +30,13 @@ import type { WithKnownKeys } from "./utils"
  *   Ignored by default in automatic rendering; requires full control from the developer.
  *
  */
-export type CoreFieldType = "ui" | "group" | "array" | "hidden" | "inline"
+export type CoreFieldType =
+  | "ui" // @deprecated
+  | "group" // @deprecated
+  | "section" // aim to replace both `group` and `ui`
+  | "array"
+  | "hidden"
+  | "inline"
 export type ComponentMap = WithKnownKeys<CoreFieldType, ComponentType<any>>
 
 /**
@@ -43,7 +49,7 @@ export type ComponentMap = WithKnownKeys<CoreFieldType, ComponentType<any>>
 export type FormFieldConfig<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap,
-  TFieldType extends keyof TComponentMap = keyof TComponentMap
+  TFieldType extends keyof TComponentMap = keyof TComponentMap,
 > = {
   /**
    * The type of field, used to select the appropriate renderer component.
@@ -122,7 +128,7 @@ export type FormFieldConfig<
 
 type FieldConfigUnion<
   TModel extends FieldValues,
-  TComponentMap extends ComponentMap
+  TComponentMap extends ComponentMap,
 > = {
   [K in keyof TComponentMap]: FormFieldConfig<TModel, TComponentMap, K> & {
     type: K
@@ -133,7 +139,7 @@ type VirtualFieldKey = `__${string}`
 
 export type FormConfig<
   TModel extends FieldValues,
-  TComponentMap extends ComponentMap
+  TComponentMap extends ComponentMap,
 > = {
   [K in Path<TModel> | VirtualFieldKey]?: FieldConfigUnion<
     TModel,
