@@ -1,10 +1,10 @@
 /**
- * Demonstrates UI-only fields in the form schema.
+ * Demonstrates UI-only nodes using the `section` builtin type.
  *
- * UI fields are first-class schema nodes that:
- * - Do not participate in form state
- * - Do not require fieldMapping
- * - Are rendered purely via custom render functions
+ * `section` can be used as a first-class schema node for layout / UI blocks:
+ * - It does not have to provide `props.config`
+ * - It can be rendered purely via `render()`
+ * - It does not require a renderer in `fieldMapping`
  *
  * This allows the schema to describe both:
  * - Form fields
@@ -21,7 +21,7 @@ const [Form] = setupForm({
   fieldMapping: defineMapping(),
 })
 
-export const PureUIFields: Story = () => {
+export const PureUISections: Story = () => {
   return (
     <Form<{}>
       renderRoot={({ children, onSubmit }) => (
@@ -30,6 +30,7 @@ export const PureUIFields: Story = () => {
       config={{
         __notice: {
           type: "section",
+          // UI-only block (no config, no component)
           render: () => (
             <div style={{ padding: 12, background: "#f5f5f5" }}>
               This is a render-only UI block.
@@ -38,18 +39,18 @@ export const PureUIFields: Story = () => {
         },
         __name: {
           type: "section",
+          label: "Name placeholder",
+          // Still UI-only: label is resolved but this section does not
+          // participate in form state unless it renders child fields.
           render: ({ fieldProps }) => (
             <div>
-              <strong>Static field:</strong> {fieldProps.label}
+              <strong>Static label:</strong> {fieldProps.label}
             </div>
           ),
-          label: "Name placeholder",
         },
       }}
-    >
-      <button type="submit">Submit</button>
-    </Form>
+    />
   )
 }
 
-PureUIFields.storyName = "Builtin types: UI-only field"
+PureUISections.storyName = "Builtin types: Section (pure UI)"
