@@ -24,3 +24,44 @@ FormContext
   -> Form
     -> Field
 ```
+
+## Notes on RHF
+
+### `getValues` vs `watch` vs `useWatch`
+
+An optimized helper for reading form values. The difference between `watch` and `getValues` is that `getValues` will not trigger re-renders or subscribe to input changes.
+
+`getValues` = đọc form state giống đọc biến thường
+Không subscribe, không re-render.
+
+Khi nên dùng
+
+✅ Trong event handler không cần reactive UI
+
+```ts
+const onClick = () => {
+  const values = getValues()
+  doSomething(values)
+}
+```
+
+✅ Trong effect chạy 1 lần
+
+```ts
+useEffect(() => {
+  console.log(getValues())
+}, [])
+```
+
+Khi KHÔNG nên dùng
+
+❌ Muốn UI update khi giá trị thay đổi
+→ getValues không trigger re-render.
+
+| API         | Reactive | Trigger re-render | Scope     | Dùng khi              |
+| ----------- | -------- | ----------------- | --------- | --------------------- |
+| getValues   | ❌        | ❌                 | none      | đọc snapshot          |
+| watch() all | ✅        | component gọi     | toàn form | debug / form nhỏ      |
+| watch('a')  | ✅        | component gọi     | 1 field   | simple conditional    |
+| useWatch    | ✅        | component đó      | granular  | form lớn / clean arch |
+

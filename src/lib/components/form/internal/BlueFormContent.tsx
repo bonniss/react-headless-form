@@ -9,7 +9,7 @@ import {
   WatchObserver,
 } from 'react-hook-form';
 import BlueFormEngine from './BlueFormEngine';
-import { useBlueFormInternal } from './BlueFormInteralProvider';
+import { useBlueFormInternal } from './BlueFormInternalProvider';
 
 export function BlueFormContent<
   TModel extends FieldValues,

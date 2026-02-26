@@ -68,7 +68,7 @@ export const DevTool: Story = () => {
             },
           },
           settings: {
-            type: "group",
+            type: "section",
             label: "Settings",
             render: ({ children, fieldProps: { label } }) => {
               return (
@@ -79,6 +79,7 @@ export const DevTool: Story = () => {
               )
             },
             props: {
+              nested: true,
               config: defineConfig<UserProfile["settings"]>({
                 newsletter: {
                   type: "checkbox",

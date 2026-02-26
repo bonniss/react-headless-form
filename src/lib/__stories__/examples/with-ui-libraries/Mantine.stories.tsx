@@ -70,12 +70,10 @@ export const Mantine: Story = () => {
             },
           },
           settings: {
-            type: "group",
+            type: "section",
             label: "Settings",
-            render: ({ children, fieldProps: { label } }) => {
-              return <Fieldset legend={label}>{children}</Fieldset>
-            },
             props: {
+              nested: true,
               config: defineConfig<UserProfile["settings"]>({
                 newsletter: {
                   type: "checkbox",
@@ -92,6 +90,9 @@ export const Mantine: Story = () => {
                   },
                 },
               }),
+            },
+            render: ({ children, fieldProps: { label } }) => {
+              return <Fieldset legend={label}>{children}</Fieldset>
             },
           },
           addresses: {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Fragment } from "react"
-import { FieldValues, useFormContext } from "react-hook-form"
+import { type FieldValues, useFormContext } from "react-hook-form"
 
 import type {
   BlueFormProps,
@@ -8,7 +8,7 @@ import type {
   CoreFieldType,
   FieldResolvedProps,
   FormFieldConfig,
-  NestedFieldProps,
+  FormSectionProps,
 } from "@/types"
 
 import { typedKeys } from "../../helper/typed-keys"
@@ -17,18 +17,18 @@ import HiddenField from "../field/HiddenField"
 import InlineField from "../field/InlineField"
 import { FieldArrayProvider } from "../provider"
 import { FieldProvider } from "../provider/FieldProvider"
-import { useBlueFormInternal } from "./BlueFormInteralProvider"
+import { useBlueFormInternal } from "./BlueFormInternalProvider"
 
 interface BlueFormEngineProps<
   TModel extends FieldValues,
-  TComponentMap extends ComponentMap
+  TComponentMap extends ComponentMap,
 > extends Pick<BlueFormProps<TModel, TComponentMap>, "config"> {
   namespace?: string
 }
 
 function BlueFormEngine<
   TModel extends FieldValues,
-  TComponentMap extends ComponentMap
+  TComponentMap extends ComponentMap,
 >({ config, namespace }: BlueFormEngineProps<TModel, TComponentMap>) {
   const {
     i18nConfig: { t, validationResolver },
@@ -90,9 +90,9 @@ function BlueFormEngine<
 
         const resolvedProps = {
           id: path,
+          namespace,
           path,
           name: key,
-          namespace,
           type,
           label: translatedLabel,
           description: translatedDescription,
@@ -110,7 +110,7 @@ function BlueFormEngine<
             const ArrayField = fieldMapping?.["array"]
             if (!ArrayField && !render) {
               throw new Error(
-                `Array field "${resolvedProps.name}" requires either a fieldMapping["array"] component or a render() function in its config.`
+                `Array field "${resolvedProps.name}" requires either a fieldMapping["array"] component or a render() function in its config.`,
               )
             }
 
@@ -128,32 +128,60 @@ function BlueFormEngine<
 
             break
           }
-          case "group":
-          case "ui": {
-            const contentConfig = (
-              componentProps as NestedFieldProps<TModel, TComponentMap>
-            )?.config
+
+          case "section": {
+            const sectionProps = componentProps as FormSectionProps<
+              TModel,
+              TComponentMap
+            >
             let children = null
 
-            if (contentConfig) {
+            const nested = sectionProps?.nested ?? false
+            const effectiveNamespace = nested ? path : namespace
+            const sectionResolvedProps = {
+              ...resolvedProps,
+              namespace: effectiveNamespace,
+            } as FieldResolvedProps
+
+            const contentConfig = sectionProps?.config
+            const SectionComponent = sectionProps?.component
+
+            if (SectionComponent) {
+              if (contentConfig) {
+                console.warn(
+                  `[react-headless-form] Section "${path}" has both "component" and "config". ` +
+                    `"component" will be used and "config" will be ignored.`,
+                )
+              }
+              children = <SectionComponent />
+            } else if (contentConfig) {
               children = (
                 <BlueFormEngine
                   config={contentConfig}
-                  namespace={
-                    (type as CoreFieldType) === "ui" ? namespace : path
-                  }
+                  namespace={effectiveNamespace}
                 />
               )
             }
 
-            component =
+            const node =
               render?.({
-                fieldProps: resolvedProps,
+                fieldProps: sectionResolvedProps,
                 children,
                 props: componentProps,
               }) ?? children
+
+            // allow deeply access to fieldProps for form section
+            component = (
+              <FieldProvider
+                defaultValue={{ resolved: sectionResolvedProps, config: field }}
+              >
+                {node}
+              </FieldProvider>
+            )
+
             break
           }
+
           default: {
             let Component = fieldMapping?.[type]
             if (!Component && (type as CoreFieldType) === "hidden") {
@@ -172,7 +200,7 @@ function BlueFormEngine<
               )
             } else {
               throw new Error(
-                `No renderer found for field **${path}** with type **${type}**`
+                `No renderer found for field **${path}** with type **${type}**`,
               )
             }
             break

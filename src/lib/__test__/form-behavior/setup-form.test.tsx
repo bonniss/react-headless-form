@@ -54,14 +54,14 @@ describe("setupForm", () => {
             type: "inline",
             render: () => <div data-testid="inline">INLINE</div>,
           },
-
           uiField: {
-            type: "ui",
+            type: "section",
             render: () => <div data-testid="ui">UI</div>,
           },
           groupField: {
-            type: "group",
+            type: "section",
             props: {
+              nested: true,
               config: defineConfig({
                 nested: {
                   type: "inline",
@@ -140,8 +140,7 @@ describe("setupForm", () => {
     expect(mapping).toHaveProperty("hidden")
     expect(mapping).toHaveProperty("inline")
     expect(mapping).toHaveProperty("array")
-    expect(mapping).toHaveProperty("group")
-    expect(mapping).toHaveProperty("ui")
+    expect(mapping).toHaveProperty("section")
   })
 
   it("merges user mapping on top of base mapping", () => {
@@ -351,8 +350,9 @@ describe("setupForm", () => {
         renderRoot={({ children }) => <form>{children}</form>}
         config={{
           profile: {
-            type: "group",
+            type: "section",
             props: {
+              nested: true,
               config: defineConfig<User["profile"]>({
                 name: {
                   type: "inline",
@@ -362,7 +362,7 @@ describe("setupForm", () => {
             },
           },
         }}
-      />
+      />,
     )
 
     expect(screen.getByTestId("group-name")).toBeTruthy()

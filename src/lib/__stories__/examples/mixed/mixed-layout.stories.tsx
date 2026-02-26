@@ -128,12 +128,12 @@ export const MixedLayoutForm: Story = () => {
          * UI-only layout blocks
          */
         __preview: {
-          type: "ui",
+          type: "section",
           render: () => <PreviewPanel />,
         },
 
         __actions: {
-          type: "ui",
+          type: "section",
           render: () => <ActionPanel />,
         },
       }}

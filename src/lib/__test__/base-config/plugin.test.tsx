@@ -22,11 +22,11 @@ describe("BlueForm – plugins", () => {
         config={{
           // empty is ok if your engine allows it; if not, keep a ui/inline placeholder
           _ui: {
-            type: "ui",
+            type: "section",
             props: { config: {} },
           } as any,
         }}
-      />
+      />,
     )
 
     expect(screen.getByTestId("plugin-node")).toBeDefined()
@@ -45,9 +45,9 @@ describe("BlueForm – plugins", () => {
         renderRoot={TestRoot}
         plugins={[plugin]}
         config={{
-          _ui: { type: "ui", props: { config: {} } } as any,
+          _ui: { type: "section", props: { config: {} } } as any,
         }}
-      />
+      />,
     )
 
     expect(screen.getByTestId("has-control").textContent).toBe("true")
@@ -65,9 +65,9 @@ describe("BlueForm – plugins", () => {
         renderRoot={TestRoot}
         plugins={plugins}
         config={{
-          _ui: { type: "ui", props: { config: {} } } as any,
+          _ui: { type: "section", props: { config: {} } } as any,
         }}
-      />
+      />,
     )
 
     const nodes = screen.getAllByTestId("p")
@@ -83,10 +83,10 @@ describe("BlueForm – plugins", () => {
           renderRoot={TestRoot}
           plugins={[plugin]}
           config={{
-            _ui: { type: "ui", props: { config: {} } } as any,
+            _ui: { type: "section", props: { config: {} } } as any,
           }}
-        />
-      )
+        />,
+      ),
     ).not.toThrow()
   })
 
@@ -118,7 +118,7 @@ describe("BlueForm – plugins", () => {
             ),
           },
         }}
-      />
+      />,
     )
 
     fireEvent.click(screen.getByText("Change"))
@@ -136,10 +136,10 @@ describe("BlueForm – plugins", () => {
           renderRoot={TestRoot}
           plugins={[devToolPlugin()]}
           config={{
-            _ui: { type: "ui", props: { config: {} } } as any,
+            _ui: { type: "section", props: { config: {} } } as any,
           }}
-        />
-      )
+        />,
+      ),
     ).not.toThrow()
   })
 

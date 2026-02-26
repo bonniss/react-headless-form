@@ -1,6 +1,9 @@
 /**
- * Demonstrates grouped and nested form structures.
- * Groups introduce a namespace and allow custom layout rendering.
+ * Demonstrates nested form structures using the `section` builtin type.
+ *
+ * - `nested: true` creates a new namespace under the section key (object nesting).
+ * - `config` defines the child fields to render within the section.
+ * - `render` wraps the section UI without affecting namespace behavior.
  */
 import { defineMapping, setupForm } from "@/components/form/setup"
 import { Story, StoryDefault } from "@ladle/react"
@@ -26,21 +29,16 @@ const [Form, defineConfig] = setupForm({
   }),
 })
 
-export const GroupAndNestedFields: Story = () => {
+export const SectionNestedFields: Story = () => {
   return (
     <Form<UserProfile>
       onSubmit={(data) => alert(JSON.stringify(data, null, 2))}
       config={{
         personal: {
-          type: "group",
+          type: "section",
           label: "Personal Information",
-          render: ({ children, fieldProps: { label } }) => (
-            <fieldset>
-              <legend>{label}</legend>
-              {children}
-            </fieldset>
-          ),
           props: {
+            nested: true,
             config: defineConfig<UserProfile["personal"]>({
               firstName: {
                 type: "text",
@@ -54,6 +52,12 @@ export const GroupAndNestedFields: Story = () => {
               },
             }),
           },
+          render: ({ children, fieldProps: { label } }) => (
+            <fieldset>
+              <legend>{label}</legend>
+              {children}
+            </fieldset>
+          ),
         },
       }}
     >
@@ -62,4 +66,4 @@ export const GroupAndNestedFields: Story = () => {
   )
 }
 
-GroupAndNestedFields.storyName = "Builtin types: Nested field"
+SectionNestedFields.storyName = "Builtin types: Section (nested)"

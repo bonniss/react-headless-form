@@ -134,17 +134,11 @@ export const WizardWithValidationGuard: Story = () => {
          * Step 1: Account
          */
         account: {
-          type: "group",
+          type: "section",
           label: "Account",
           visible: () => step === 0,
-          render: ({ children, fieldProps: { label, visible } }) =>
-            visible && (
-              <fieldset>
-                <legend>{label}</legend>
-                {children}
-              </fieldset>
-            ),
           props: {
+            nested: true,
             config: defineConfig<WizardForm["account"]>({
               email: {
                 type: "text",
@@ -166,15 +160,6 @@ export const WizardWithValidationGuard: Story = () => {
               },
             }),
           },
-        },
-
-        /**
-         * Step 2: Profile
-         */
-        profile: {
-          type: "group",
-          label: "Profile",
-          visible: () => step === 1,
           render: ({ children, fieldProps: { label, visible } }) =>
             visible && (
               <fieldset>
@@ -182,7 +167,17 @@ export const WizardWithValidationGuard: Story = () => {
                 {children}
               </fieldset>
             ),
+        },
+
+        /**
+         * Step 2: Profile
+         */
+        profile: {
+          type: "section",
+          label: "Profile",
+          visible: () => step === 1,
           props: {
+            nested: true,
             config: defineConfig<WizardForm["profile"]>({
               firstName: {
                 type: "text",
@@ -200,15 +195,6 @@ export const WizardWithValidationGuard: Story = () => {
               },
             }),
           },
-        },
-
-        /**
-         * Step 3: Preferences
-         */
-        preferences: {
-          type: "group",
-          label: "Preferences",
-          visible: () => step === 2,
           render: ({ children, fieldProps: { label, visible } }) =>
             visible && (
               <fieldset>
@@ -216,7 +202,17 @@ export const WizardWithValidationGuard: Story = () => {
                 {children}
               </fieldset>
             ),
+        },
+
+        /**
+         * Step 3: Preferences
+         */
+        preferences: {
+          type: "section",
+          label: "Preferences",
+          visible: () => step === 2,
           props: {
+            nested: true,
             config: defineConfig<WizardForm["preferences"]>({
               newsletter: {
                 type: "checkbox",
@@ -224,6 +220,13 @@ export const WizardWithValidationGuard: Story = () => {
               },
             }),
           },
+          render: ({ children, fieldProps: { label, visible } }) =>
+            visible && (
+              <fieldset>
+                <legend>{label}</legend>
+                {children}
+              </fieldset>
+            ),
         },
       }}
     />

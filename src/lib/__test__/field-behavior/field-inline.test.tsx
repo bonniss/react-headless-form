@@ -76,8 +76,9 @@ describe("BlueForm – inline & custom field", () => {
         onSubmit={(v) => (submitted = v)}
         config={{
           profile: {
-            type: "group",
+            type: "section",
             props: {
+              nested: true,
               config: {
                 name: {
                   type: "inline",
@@ -94,7 +95,7 @@ describe("BlueForm – inline & custom field", () => {
             },
           },
         }}
-      />
+      />,
     )
 
     fireEvent.click(screen.getByText("Set Name"))
@@ -192,12 +193,13 @@ describe("BlueForm – inline & custom field", () => {
         onSubmit={(v) => (submitted = v)}
         config={{
           layout: {
-            type: "ui",
+            type: "section",
             props: {
               config: {
                 profile: {
-                  type: "group",
+                  type: "section",
                   props: {
+                    nested: true,
                     config: {
                       code: {
                         type: "custom",
@@ -212,7 +214,7 @@ describe("BlueForm – inline & custom field", () => {
         fieldMapping={{
           custom: CustomField,
         }}
-      />
+      />,
     )
 
     fireEvent.click(screen.getByText("Set Value"))

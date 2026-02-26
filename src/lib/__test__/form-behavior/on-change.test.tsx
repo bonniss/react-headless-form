@@ -63,8 +63,9 @@ describe("BlueForm – change behavior", () => {
         }}
         config={{
           profile: {
-            type: "group",
+            type: "section",
             props: {
+              nested: true,
               config: {
                 userId: {
                   type: "inline",
@@ -84,7 +85,7 @@ describe("BlueForm – change behavior", () => {
             },
           },
         }}
-      />
+      />,
     )
 
     fireEvent.click(screen.getByTestId("change"))
@@ -216,8 +217,9 @@ describe("BlueForm – change behavior", () => {
         }}
         config={{
           profile: {
-            type: "group",
+            type: "section",
             props: {
+              nested: true,
               config: {
                 userId: {
                   type: "inline",
@@ -242,7 +244,7 @@ describe("BlueForm – change behavior", () => {
         fieldMapping={{
           group: ({ children }: any) => children,
         }}
-      />
+      />,
     )
 
     fireEvent.click(screen.getByTestId("change"))
