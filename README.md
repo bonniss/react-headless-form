@@ -8,6 +8,7 @@
 
 - 🧩 **Bring your own UI** — `value`, `onChange`, `label`, and form field essentials at your fingertips, without fighting RHF or TypeScript. You define your own field types: `text`, `select`, or even a `superman` field.
 - ⚡ **Great DX** — set up the form once, get full type and prop hints from your TypeScript model, plus extra UI-only fields with zero TypeScript complaints.
+- 🧠 **Powerful Composition Model** — build forms from reusable schema blocks and assemble them like Lego into workflows of any complexity.
 - 🌍 **i18n-ready** — plug in any i18n solution (`i18next`, `react-intl` or your own), configure once, and labels, descriptions, and validation messages ready to fields without caring about the app language.
 - 🛠️ **Extensible Form Root** — Empower your form shell by easily injecting DevTools, status bars, error summaries, or any custom logic via `renderRoot`.
 - 🧱 **Still just [React Hook Form](https://react-hook-form.com/)** — pass `useForm` options, access RHF hooks, and keep full control since fields live inside the form context.
@@ -179,7 +180,7 @@ When a `Form` is created, it is bound to a specific field mapping.
 This mapping defines which field types are available and how they are rendered.
 
 By default, BlueForm provides a set of built-in field types
-(`inline`, `ui`, `group`, `array`, `hidden`).
+(`inline`, `section`, `array`, `hidden`).
 Calling `setupForm()` with no arguments uses only these built-in types.
 
 ```ts
@@ -210,7 +211,7 @@ config={{
     type: "text", // ✅ custom
   },
   profile: {
-    type: "group", // ✅ built-in
+    type: "section", // ✅ built-in
   },
   age: {
     type: "number", // ❌ compile-time error
@@ -304,7 +305,7 @@ const [Form, defineConfig] = setupForm({
 <Form<LoginData>
   config={{
     account: {
-      type: "group",
+      type: "section",
       config: defineConfig<LoginData["account"]>({
         username: {
           type: "text",
@@ -365,6 +366,79 @@ import { loginFormConfig } from "./login.form"
   <button type="submit">Login</button>
 </Form>
 ```
+### `Section` for reusable composition
+
+`setupForm()` returns a tuple: `[Form, defineConfig, Section]`.
+
+The third item, `Section`, is a helper component for authoring a **typed config fragment** from inside another component.
+
+```tsx
+const [Form, defineConfig, Section] = setupForm({
+  fieldMapping: defineMapping({
+    text: InputField,
+  }),
+})
+```
+
+This is designed to be used together with `type: "section"` in your schema, where the section “owns” its UI via `section.props.component`, and the component “owns” the fields it contains via `<Section />`.
+
+In the wizard example below, each step is a `section`:
+
+- the **wizard UI state** (`step`) lives outside the form engine
+- each step’s `section.visible()` decides whether that step is currently shown
+- all steps still share **one RHF form state** (the form engine doesn’t know anything about “steps”)
+
+```tsx
+const [Form, defineConfig, Section] = setupForm({ ... })
+
+<Form<WizardForm>
+  config={{
+    account: {
+      type: "section",
+      visible: () => step === 0,
+      props: { nested: true, component: AccountStep },
+    },
+    profile: {
+      type: "section",
+      visible: () => step === 1,
+      props: { nested: true, component: ProfileStep },
+    },
+    preferences: {
+      type: "section",
+      visible: () => step === 2,
+      props: { nested: true, component: PreferencesStep },
+    },
+  }}
+/>
+```
+
+Inside each step component (e.g. `AccountStep`), the component is rendered *as the section*, so it can read section-level props like `label` and `visible` via `useField()`:
+
+```tsx
+function AccountStep() {
+  const { fieldProps } = useField()
+  if (!fieldProps.visible) return null
+
+  return (
+    <fieldset>
+      <legend>{fieldProps.label}</legend>
+
+      <Section<WizardForm["account"]>
+        config={{
+          email: { type: "text", label: "Email" },
+          password: { type: "text", label: "Password", props: { type: "password" } },
+        }}
+      />
+    </fieldset>
+  )
+}
+```
+
+Key idea: **the parent schema declares the section boundary**, and the step component fills that boundary with a **typesafe config fragment**. This makes it easy to:
+
+* split a complex form into small, focused section components
+* reuse those section components across pages/forms
+* build “any complexity” flows (wizard, tabs, conditional layouts) without introducing special form concepts — it’s still just `section` + composition
 
 ### More examples
 
@@ -386,7 +460,7 @@ type User = {
     city: string
   }[]
 }
-```
+````
 
 For simple, non-nested fields like `name`, keys map directly to model properties:
 
@@ -398,17 +472,20 @@ For simple, non-nested fields like `name`, keys map directly to model properties
 }
 ```
 
-For nested fields, there are two options.
+For nested fields, there are two supported approaches.
 
-**Option A: Using built-in structural types**
+---
 
-Use `group` for nested objects:
+### Option A: Using structural primitives
+
+Use `section` (with `nested: true`) for nested objects:
 
 ```ts
 {
   profile: {
-    type: "group",
+    type: "section",
     props: {
+      nested: true,
       config: defineConfig<User["profile"]>({
         email: { type: "text" },
       }),
@@ -432,11 +509,13 @@ Use `array` for arrays of objects:
 }
 ```
 
-When using `group` or `array`, you must call `defineConfig` again for the nested model (`User["profile"]`, `User["addresses"][number]`), since TypeScript cannot automatically infer nested object shapes across abstraction boundaries.
+When using `section` (nested) or `array`, you must call `defineConfig` for the nested model (`User["profile"]`, `User["addresses"][number]`), because TypeScript cannot automatically infer nested object shapes across abstraction boundaries.
 
-**Option B: Using flat nested keys**
+---
 
-Alternatively, you can use flat keys with dot notation without defining a nested config:
+### Option B: Using flat nested keys
+
+You can also reference nested object paths using dot notation:
 
 ```ts
 {
@@ -446,7 +525,7 @@ Alternatively, you can use flat keys with dot notation without defining a nested
 }
 ```
 
-Invalid paths are caught by Typescript:
+Invalid paths are caught at compile time:
 
 ```ts
 "profile.age" // ❌ Type error – not part of User
@@ -482,9 +561,18 @@ defineConfig<User>({
 })
 ```
 
-### Virtual configuration key
+### Virtual configuration keys
 
-In many forms, some nodes exist purely for layout or presentation like previews, separators, fieldset. Typically no one should modify the form model just to accommodate UI concerns. These elements simply **should not be checked against the form model**. BlueForm uses a simple convention: configuration keys starting with `__` are treated as **virtual keys**, and TypeScript will not complain about them.
+In many forms, some nodes exist purely for layout or presentation — such as previews, separators, banners, or structural containers.
+
+You should not have to modify your form model just to accommodate UI concerns.
+These nodes simply **should not be validated against the form model keys**.
+
+BlueForm uses a simple convention:
+
+> Any configuration key starting with `__` is treated as a **virtual key**.
+
+Virtual keys are excluded from model key checking, so TypeScript will not raise errors for them.
 
 ```tsx
 <Form<UserForm>
@@ -492,36 +580,52 @@ In many forms, some nodes exist purely for layout or presentation like previews,
     firstName: { type: "text" },
     lastName: { type: "text" },
 
-    // Typescript will not rant this key
+    // Virtual key (not checked against UserForm)
     __fullNamePreview: {
-      type: "ui",
+      type: "section",
       render: () => <FullNamePreview />,
     },
   }}
 />
 ```
 
-There are a few important caveats to be aware of. If your form model itself contains fields starting with `__`, those fields will no longer receive type suggestions in the configuration, as the prefix is reserved for virtual keys. Additionally, if you want a field to be type-safe and checked against the model, it must not be virtual—even if it uses a `ui`-like field type. In that case, the field must exist in the model.
+Virtual keys are ideal for:
 
-### It's just type guidance, not runtime guarantee
+* layout containers
+* computed previews
+* dividers or separators
+* informational blocks
+* any composition node that should not exist in the data model
+
+#### Caveats
+
+* If your actual form model contains fields starting with `__`, they will not receive key suggestions in the configuration, since the prefix is reserved for virtual nodes.
+* If a field should be type-safe and checked against the model, it must **not** use the `__` prefix — even if it renders only UI.
+
+#### Type guidance, not runtime enforcement
 
 > [!IMPORTANT]
 >
-> The conventions described above are primarily designed to **support the type system and authoring experience**. They are not intended to strictly enforce runtime behavior.
+> Virtual keys are a **type-level convention** designed to improve authoring experience and maintain separation between data and UI.
 >
-> Fields still have full access to React Hook Form’s `useFormContext`, which means runtime side effects—such as reading or mutating form state—are always possible. It is therefore up to the developer to follow these conventions with intent and discipline, ensuring that UI-only nodes do not unintentionally modify form state.
+> They do not enforce runtime isolation.
+> All fields still have access to React Hook Form’s `useFormContext`, meaning runtime reads or mutations of form state remain possible.
+>
+> It is the developer’s responsibility to follow the convention intentionally and ensure that virtual nodes do not introduce unintended side effects.
 
 ## Built-in types
 
-BlueForm ships with a small set of built-in field types.
+BlueForm ships with a minimal set of composable primitives.
 
-| Type     | Renders UI | In form state | Submitted |
-| -------- | ---------- | ------------- | --------- |
-| `inline` | ✓          | ✓             | ✓         |
-| `ui`     | ✓          | ✗             | ✗         |
-| `group`  | ✓          | ✓             | ✓         |
-| `array`  | ✓          | ✓             | ✓         |
-| `hidden` | ✗          | ✓             | ✓         |
+| Type      | Purpose     | In form state | Submitted |
+|-----------|------------|---------------|-----------|
+| `inline`  | Field      | ✓             | ✓         |
+| `section` | Container  | Optional¹     | Optional¹ |
+| `array`   | Field list | ✓             | ✓         |
+| `hidden`  | Hidden     | ✓             | ✓         |
+
+¹ `section` participates in form state only when `nested: true` and a `config` is provided.  
+Otherwise, it acts as a structural container.
 
 ### `inline`
 
@@ -549,25 +653,25 @@ Use `inline` when:
 - the field is highly specific or not reused elsewhere
 - defining a reusable field component is unnecessary
 
-### `ui`
+### `section`
 
-UI fields are **render-only nodes**. It should meant to be for purely for layout or visual structure, and should be named as a virtual field.
+`section` is the core container primitive of BlueForm that can:
+
+* wrap other fields for layout
+* introduce a namespace boundary
+* render custom UI
+* encapsulate reusable form modules
+* contain other sections recursively
+
+#### Container (no namespace)
+
+When `nested` is omitted or `false`, `section` acts as a structural container.
+Fields remain at the current level in the form state.
 
 ```tsx
-__notice: {
-  type: "ui",
-  render: () => <Divider />,
-}
-```
-
-### `group`
-
-Groups allow you to nest fields and structure the form hierarchically.
-
-```tsx
-profile: {
-  type: "group",
-  label: "Profile",
+layout: {
+  type: "section",
+  render: ({ children }) => <Card>{children}</Card>,
   props: {
     config: defineConfig({
       firstName: { type: "inline" },
@@ -576,6 +680,78 @@ profile: {
   },
 }
 ```
+
+Submission shape:
+
+```ts
+{
+  firstName: string
+  lastName: string
+}
+```
+
+Use case:
+
+* layout grouping
+* visual structure
+* card / tab / panel wrappers
+
+#### Namespace Boundary (`nested: true`)
+
+When `nested: true` is provided, the section key becomes a namespace in the form state and submission payload.
+
+```tsx
+profile: {
+  type: "section",
+  props: {
+    nested: true,
+    config: defineConfig({
+      firstName: { type: "inline" },
+      lastName: { type: "inline" },
+    }),
+  },
+}
+```
+
+Submission shape:
+
+```ts
+{
+  profile: {
+    firstName: string
+    lastName: string
+  }
+}
+```
+
+Use case:
+
+* mirroring domain models
+* grouping related data
+* building structured payloads
+
+#### Component Mode
+
+Instead of inline `config`, a `section` can delegate rendering to a reusable component.
+
+```tsx
+address: {
+  type: "section",
+  props: {
+    nested: true,
+    component: AddressSection,
+  },
+}
+```
+
+This enables:
+
+* splitting large forms into smaller modules
+* reusing form blocks across pages
+* encapsulating complex form logic
+* composing forms like Lego pieces
+
+Because `section` is recursive, complex forms are built by composing smaller sections — allowing you to scale from simple inputs to arbitrarily complex form systems without introducing new schema concepts.
 
 ### `array`
 
