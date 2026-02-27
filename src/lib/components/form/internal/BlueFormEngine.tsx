@@ -18,6 +18,7 @@ import InlineField from "../field/InlineField"
 import { FieldArrayProvider } from "../provider"
 import { FieldProvider } from "../provider/FieldProvider"
 import { useBlueFormInternal } from "./BlueFormInternalProvider"
+import { resolveRules } from "@/components/helper/resolve-rules"
 
 interface BlueFormEngineProps<
   TModel extends FieldValues,
@@ -68,25 +69,7 @@ function BlueFormEngine<
           typeof disabled === "function" ? disabled(values) : !!disabled
         const isReadonly = Boolean(isFormReadOnly ?? isFieldReadOnly)
         const isRequired = Boolean(rules?.required)
-
-        if (
-          Object.keys(rules).length &&
-          Object.keys(validationResolver).length
-        ) {
-          for (const ruleType of typedKeys(rules)) {
-            const rule = rules[ruleType]
-            const resolver = validationResolver[ruleType]
-            if (rule && resolver) {
-              const resolvedRule = resolver({
-                field: translatedLabel!,
-                rule: rule as any,
-              })
-              if (resolvedRule) {
-                rules[ruleType] = resolvedRule as any
-              }
-            }
-          }
-        }
+        const resolvedRules = resolveRules(rules, validationResolver, translatedLabel)
 
         const resolvedProps = {
           id: path,
@@ -101,7 +84,7 @@ function BlueFormEngine<
           visible: isVisible,
           required: isRequired,
           readOnlyEmptyFallback,
-          rules,
+          rules: resolvedRules,
           defaultValue,
         } as FieldResolvedProps
 
