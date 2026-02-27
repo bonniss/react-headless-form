@@ -12,7 +12,7 @@
         "Builtin types"
       ],
       "locStart": 32,
-      "locEnd": 93,
+      "locEnd": 91,
       "filePath": "src/lib/__stories__/examples/basic/array-field.stories.tsx",
       "namedExport": "ArrayFields",
       "meta": {}
@@ -217,7 +217,7 @@
         "Plugins"
       ],
       "locStart": 25,
-      "locEnd": 137,
+      "locEnd": 135,
       "filePath": "src/lib/__stories__/examples/plugins/Devtool.stories.tsx",
       "namedExport": "DevTool",
       "meta": {}
@@ -228,7 +228,7 @@
         "With ui libraries"
       ],
       "locStart": 26,
-      "locEnd": 135,
+      "locEnd": 133,
       "filePath": "src/lib/__stories__/examples/with-ui-libraries/Antd.stories.tsx",
       "namedExport": "AntDesign",
       "meta": {}
@@ -239,7 +239,7 @@
         "With ui libraries"
       ],
       "locStart": 27,
-      "locEnd": 134,
+      "locEnd": 132,
       "filePath": "src/lib/__stories__/examples/with-ui-libraries/Mantine.stories.tsx",
       "namedExport": "Mantine",
       "meta": {}
@@ -250,7 +250,7 @@
         "With ui libraries"
       ],
       "locStart": 26,
-      "locEnd": 157,
+      "locEnd": 155,
       "filePath": "src/lib/__stories__/examples/with-ui-libraries/tailwind.stories.tsx",
       "namedExport": "Tailwind",
       "meta": {}
