@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/bonniss/react-headless-form/compare/v0.5.0...v0.6.0) (2026-02-27)
+
+
+### Features
+
+* enhance array field functionality with improved error handling and rendering ([230f3ac](https://github.com/bonniss/react-headless-form/commit/230f3ace4e3c53c4aeb86c92bff7a7c2bd7b4c86))
+
 ## [0.5.0](https://github.com/bonniss/react-headless-form/compare/v0.4.1...v0.5.0) (2026-02-26)
 
 
