@@ -11,8 +11,8 @@
         "Core",
         "Builtin types"
       ],
-      "locStart": 31,
-      "locEnd": 72,
+      "locStart": 32,
+      "locEnd": 93,
       "filePath": "src/lib/__stories__/examples/basic/array-field.stories.tsx",
       "namedExport": "ArrayFields",
       "meta": {}
