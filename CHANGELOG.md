@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.1](https://github.com/bonniss/react-headless-form/compare/v0.7.0...v0.7.1) (2026-02-27)
+
+
+### Bug Fixes
+
+* conditional field handling and optimize watch() usage ([51dbcf6](https://github.com/bonniss/react-headless-form/commit/51dbcf6e5565e65cddf631b8e7ea0444b797e850))
+* prevent mutation of rules ([835d002](https://github.com/bonniss/react-headless-form/commit/835d002a85a94f380221e1c265c89dc3ac0df77a))
+* resolve O(n²) rendering issue in ArrayRenderSlot and add tests ([e11a415](https://github.com/bonniss/react-headless-form/commit/e11a415543f91131bd54c68982f13fd92307ecba))
+
 ## [0.7.0](https://github.com/bonniss/react-headless-form/compare/v0.6.0...v0.7.0) (2026-02-27)
 
 
