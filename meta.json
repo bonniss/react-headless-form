@@ -211,15 +211,15 @@
       "namedExport": "WizardForm",
       "meta": {}
     },
-    "plugins--dev-tool": {
-      "name": "Dev tool",
+    "plugins--dev-tool-story": {
+      "name": "Dev tool story",
       "levels": [
         "Plugins"
       ],
-      "locStart": 25,
-      "locEnd": 135,
+      "locStart": 26,
+      "locEnd": 138,
       "filePath": "src/lib/__stories__/examples/plugins/Devtool.stories.tsx",
-      "namedExport": "DevTool",
+      "namedExport": "DevToolStory",
       "meta": {}
     },
     "with-ui-libraries--ant-design": {
