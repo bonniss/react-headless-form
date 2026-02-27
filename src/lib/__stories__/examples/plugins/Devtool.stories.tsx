@@ -1,8 +1,9 @@
 /** biome-ignore-all lint/correctness/useHookAtTopLevel: <explanation> */
 import { useArrayField } from "@/components"
 import { defineMapping, setupForm } from "@/components/form/setup"
-import devToolPlugin from "@/components/plugins/devtool"
+import { DevTool } from "@hookform/devtools"
 import { Story, StoryDefault } from "@ladle/react"
+import { useFormContext } from "react-hook-form"
 import CheckboxField from "../../components/with-native/CheckboxField"
 import InputField from "../../components/with-native/InputField"
 import SelectField from "../../components/with-native/SelectField"
@@ -22,19 +23,21 @@ const [Form, defineConfig] = setupForm({
   }),
 })
 
-export const DevTool: Story = () => {
+export const DevToolStory: Story = () => {
   return (
     <>
       <Form<UserProfile>
         onSubmit={(fd) => alert(JSON.stringify(fd, null, 2))}
-        plugins={[
-          devToolPlugin({
-            placement: "top-left",
-          }),
-        ]}
-        renderRoot={({ children, onSubmit }) => (
-          <form onSubmit={onSubmit}>{children}</form>
-        )}
+        renderRoot={({ children, onSubmit }) => {
+          const { control } = useFormContext()
+
+          return (
+            <>
+              <form onSubmit={onSubmit}>{children}</form>
+              <DevTool control={control} placement="top-left" />
+            </>
+          )
+        }}
         config={{
           name: {
             type: "text",

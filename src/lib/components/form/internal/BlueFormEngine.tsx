@@ -110,7 +110,7 @@ function BlueFormEngine<
             const ArrayField = fieldMapping?.["array"]
             if (!ArrayField && !render) {
               throw new Error(
-                `Array field "${resolvedProps.name}" requires either a fieldMapping["array"] component or a render() function in its config.`,
+                `[react-headless-form] Array field "${resolvedProps.name}" requires either a fieldMapping["array"] component or a render() function in its config.`,
               )
             }
 
@@ -200,7 +200,7 @@ function BlueFormEngine<
               )
             } else {
               throw new Error(
-                `No renderer found for field **${path}** with type **${type}**`,
+                `[react-headless-form] No renderer found for field **${path}** with type **${type}**`,
               )
             }
             break

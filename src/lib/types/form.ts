@@ -4,7 +4,6 @@ import type { BaseSyntheticEvent, PropsWithChildren, ReactNode } from "react"
 import type {
   FieldErrors,
   FieldValues,
-  Path,
   SubmitErrorHandler,
   SubmitHandler,
   UseFormProps,
@@ -17,14 +16,13 @@ import type {
   ValidationTranslationMap,
 } from "@/components/i18n"
 import type { ComponentMap, FormConfig } from "./config"
-import type { BlueFormPlugin } from "./plugin"
 
 export type SubmitHandlerWithFormMethods<
-  TModel extends FieldValues = FieldValues
+  TModel extends FieldValues = FieldValues,
 > = (
   data: TModel,
   formMethods: UseFormReturn<TModel>,
-  event?: React.BaseSyntheticEvent
+  event?: React.BaseSyntheticEvent,
 ) => ReturnType<SubmitHandler<TModel>>
 
 type RootRendererArgs<TModel = FieldValues> = {
@@ -39,7 +37,7 @@ type RootRendererArgs<TModel = FieldValues> = {
  * Custom root wrapper renderer. Useful for replacing the default <form> with any custom structure.
  */
 export type RootRenderer<TModel extends FieldValues = FieldValues> = (
-  args: RootRendererArgs<TModel>
+  args: RootRendererArgs<TModel>,
 ) => ReactNode
 
 export type BlueFormRef<TModel = FieldValues> = UseFormReturn<
@@ -83,7 +81,7 @@ export type I18nResolvedConfig = {
 }
 
 export interface BlueFormBaseConfig<
-  TComponentMap extends ComponentMap = ComponentMap
+  TComponentMap extends ComponentMap = ComponentMap,
 > {
   /**
    * Internationalization (i18n) and validation message configuration.
@@ -110,18 +108,13 @@ export interface BlueFormBaseConfig<
    * (e.g. `"No data available"`).
    */
   readOnlyEmptyFallback?: ReactNode
-
-  /**
-   * Plugins to extend or modify form behavior.
-   */
-  plugins?: BlueFormPlugin[]
 }
 
 export interface BlueFormProps<
   TModel extends FieldValues,
-  TComponentMap extends ComponentMap
-> extends BlueFormBaseConfig<TComponentMap>,
-    PropsWithChildren {
+  TComponentMap extends ComponentMap,
+>
+  extends BlueFormBaseConfig<TComponentMap>, PropsWithChildren {
   /**
    * Form field configuration including field type, name, label, props, etc.
    */
@@ -169,7 +162,7 @@ export interface BlueFormProps<
   onFieldChange?: (
     name: string,
     value: any,
-    form: UseFormReturn<TModel>
+    form: UseFormReturn<TModel>,
   ) => void
 
   /**
