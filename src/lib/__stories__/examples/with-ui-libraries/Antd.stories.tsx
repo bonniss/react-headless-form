@@ -100,9 +100,7 @@ export const AntDesign: Story = () => {
             type: "array",
             label: "Address book",
             render: ({ fieldProps, children }) => {
-              const {
-                controller: { append },
-              } = useArrayField()
+              const { append } = useArrayField()
               return (
                 <Card title={fieldProps.label} variant="outlined">
                   {children}

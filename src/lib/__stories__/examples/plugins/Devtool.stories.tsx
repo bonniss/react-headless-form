@@ -102,9 +102,7 @@ export const DevTool: Story = () => {
             type: "array",
             label: "Address book",
             render: ({ fieldProps, children }) => {
-              const {
-                controller: { append },
-              } = useArrayField()
+              const { append } = useArrayField()
               return (
                 <fieldset>
                   <legend>{fieldProps.label}</legend>

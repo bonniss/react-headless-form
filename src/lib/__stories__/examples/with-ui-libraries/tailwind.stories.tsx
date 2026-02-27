@@ -100,9 +100,7 @@ export const Tailwind: Story = () => {
             type: "array",
             label: "Address book",
             render: ({ fieldProps, children }) => {
-              const {
-                controller: { append },
-              } = useArrayField()
+              const { append } = useArrayField()
 
               return (
                 <fieldset className="rounded-md border border-dashed border-gray-300 p-4 space-y-4">

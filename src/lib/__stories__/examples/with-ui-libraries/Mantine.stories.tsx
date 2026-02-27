@@ -99,9 +99,7 @@ export const Mantine: Story = () => {
             type: "array",
             label: "Address book",
             render: ({ fieldProps, children }) => {
-              const {
-                controller: { append },
-              } = useArrayField()
+              const { append } = useArrayField()
               return (
                 <Fieldset legend={fieldProps.label}>
                   {children}

@@ -87,7 +87,7 @@ export const ArrayComponentSection: Story = () => {
           type: "array",
           label: "Tasks List",
           render: ({ children }) => {
-            const { controller } = useArrayField()
+            const { append } = useArrayField()
             return (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
@@ -95,7 +95,7 @@ export const ArrayComponentSection: Story = () => {
                   <button
                     type="button"
                     className="px-3 py-1 bg-black text-white text-xs rounded"
-                    onClick={() => controller.append({ isDone: false })}
+                    onClick={() => append({ isDone: false })}
                   >
                     + Add Task
                   </button>

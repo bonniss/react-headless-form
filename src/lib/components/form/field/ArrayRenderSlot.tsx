@@ -1,24 +1,22 @@
-import { FormFieldConfig } from '@/types';
-import { Fragment, FunctionComponent } from 'react';
-import { useArrayField } from '../provider';
+import { FormFieldConfig } from "@/types"
+import { Fragment, FunctionComponent } from "react"
+import { useArrayField } from "../provider"
 
 interface ArrayRenderSlotProps {
-  render?: FormFieldConfig<any, any>['render'];
+  render?: FormFieldConfig<any, any>["render"]
 }
 
 const ArrayRenderSlot: FunctionComponent<ArrayRenderSlotProps> = ({
   render,
 }) => {
-  const { fieldProps, fields, renderItem } = useArrayField();
+  const { fieldProps, fields, renderItems } = useArrayField()
 
   const children = fields.map((item, index) => {
-    return (
-      <Fragment key={item.id ?? index}>{renderItem(item, index)}</Fragment>
-    );
-  });
+    return <Fragment key={item.id ?? index}>{renderItems()}</Fragment>
+  })
 
-  const content = render?.({ fieldProps, children });
-  return content;
-};
+  const content = render?.({ fieldProps, children })
+  return content
+}
 
-export default ArrayRenderSlot;
+export default ArrayRenderSlot
