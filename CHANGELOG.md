@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/bonniss/react-headless-form/compare/v0.6.0...v0.7.0) (2026-02-27)
+
+
+### Features
+
+* enhance useArrayField API with additional methods and improved rendering capabilities ([f4c75f7](https://github.com/bonniss/react-headless-form/commit/f4c75f78256f623569d46e29d7854c3d40e7bd5f))
+
 ## [0.6.0](https://github.com/bonniss/react-headless-form/compare/v0.5.0...v0.6.0) (2026-02-27)
 
 
