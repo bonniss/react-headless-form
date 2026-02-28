@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://github.com/bonniss/react-headless-form/compare/v0.7.1...v0.7.2) (2026-02-28)
+
+
+### Bug Fixes
+
+* eliminate HiddenField setValue side-effect and use field.id as only stable key ([d373054](https://github.com/bonniss/react-headless-form/commit/d373054f529557a31456e0c5c3535d605e5a800c))
+
 ## [0.7.1](https://github.com/bonniss/react-headless-form/compare/v0.7.0...v0.7.1) (2026-02-27)
 
 
