@@ -1,16 +1,20 @@
+import type { ComponentMap } from "@/types"
 import debounce from "just-debounce-it"
 import { useEffect } from "react"
 import {
-  FieldValues,
+  type FieldValues,
+  type SubmitHandler,
+  type WatchObserver,
   get as getProperty,
-  SubmitHandler,
   useFormContext,
-  WatchObserver,
 } from "react-hook-form"
 import BlueFormEngine from "./BlueFormEngine"
 import { useBlueFormInternal } from "./BlueFormInternalProvider"
 
-export function BlueFormContent<TModel extends FieldValues>() {
+export function BlueFormContent<
+  TModel extends FieldValues,
+  TComponentMap extends ComponentMap,
+>() {
   const {
     fieldMapping,
     i18nConfig,

@@ -1,23 +1,23 @@
 import { forwardRef, useImperativeHandle } from "react"
 
 import {
-  FieldValues,
+  type FieldValues,
+  type UseFormProps,
   FormProvider,
-  UseFormProps,
   useForm,
 } from "react-hook-form"
 
-import { BlueFormRef } from "@/types/form"
+import type { BlueFormRef } from "@/types/form"
 import type { BlueFormProps, ComponentMap } from "../../types"
-import { BlueFormInternalProvider } from "./internal/BlueFormInternalProvider"
 import { BlueFormContent } from "./internal/BlueFormContent"
+import { BlueFormInternalProvider } from "./internal/BlueFormInternalProvider"
 
 export function BlueFormInner<
   TModel extends FieldValues,
-  TComponentMap extends ComponentMap
+  TComponentMap extends ComponentMap,
 >(
   blueFormProps: BlueFormProps<TModel, TComponentMap>,
-  ref: React.Ref<BlueFormRef<TModel>>
+  ref: React.Ref<BlueFormRef<TModel>>,
 ) {
   const { defaultValues, formProps } = blueFormProps
   const form = useForm<TModel>({
