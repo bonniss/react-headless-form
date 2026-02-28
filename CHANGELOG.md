@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.3](https://github.com/bonniss/react-headless-form/compare/v0.7.2...v0.7.3) (2026-02-28)
+
+
+### Bug Fixes
+
+* add type to BlueFormContent generics ([21fa9d9](https://github.com/bonniss/react-headless-form/commit/21fa9d9e5d272ca5eb431918e0e92e34dcfda687))
+
 ## [0.7.2](https://github.com/bonniss/react-headless-form/compare/v0.7.1...v0.7.2) (2026-02-28)
 
 
