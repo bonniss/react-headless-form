@@ -67,7 +67,7 @@ export const [useArrayField, FieldArrayProvider] = createProvider(
     const renderItem = (field: (typeof fields)[number], index: number) => {
       return (
         <BlueFormEngine
-          key={field.id ?? index}
+          key={field.id}
           config={itemConfig}
           namespace={`${path}.${index}`}
         />
