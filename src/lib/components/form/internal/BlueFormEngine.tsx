@@ -53,7 +53,6 @@ function BlueFormEngine<
     i18nConfig: { t, validationResolver },
     fieldMapping,
     readOnly: isFormReadOnly,
-    readOnlyEmptyFallback,
   } = useBlueFormInternal();
   const { watch } = useFormContext();
 
@@ -125,7 +124,6 @@ function BlueFormEngine<
           readOnly: isReadonly,
           visible: isVisible,
           required: isRequired,
-          readOnlyEmptyFallback,
           rules: resolvedRules,
           defaultValue,
         } as FieldResolvedProps;

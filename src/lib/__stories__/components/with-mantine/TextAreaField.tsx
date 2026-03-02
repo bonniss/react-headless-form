@@ -16,15 +16,11 @@ const TextAreaField: FunctionComponent<TextAreaFieldProps> = (props) => {
       required,
       disabled,
       readOnly,
-      readOnlyEmptyFallback,
       visible,
     },
   } = useField()
 
   if (!visible) return null
-  if (readOnly && readOnlyEmptyFallback) {
-    return <div id={id}>{readOnlyEmptyFallback}</div>
-  }
 
   return (
     <Textarea
