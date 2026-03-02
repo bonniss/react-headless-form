@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.0](https://github.com/bonniss/react-headless-form/compare/v0.7.3...v1.0.0) (2026-03-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* `readOnlyEmptyFallback` has been removed from `BlueFormBaseConfig`, `BlueFormProps`, `FormFieldConfig`, and `FieldResolvedProps`. Handle empty read-only state directly in your field components using `fieldProps.readOnly` and `fieldProps.value`.
+
+### Bug Fixes
+
+* remove readOnlyEmptyFallback from form types ([99a025e](https://github.com/bonniss/react-headless-form/commit/99a025ee2a7e977c20ef091dc0d487cb9154e198))
+
+
+### Code Refactoring
+
+* remove readOnlyEmptyFallback from engine ([efc560d](https://github.com/bonniss/react-headless-form/commit/efc560de75ff54dc26b654f82d756ad3315031d8))
+
 ## [0.7.3](https://github.com/bonniss/react-headless-form/compare/v0.7.2...v0.7.3) (2026-02-28)
 
 
