@@ -4,6 +4,7 @@ import { HiddenField } from "@/components/form/field"
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { renderWithBlueFormProvider } from "../_utils/render-form"
+import { BlueFormProvider } from "@/components/form/provider";
 
 const TestRoot = ({ children, onSubmit }: any) => (
   <form onSubmit={onSubmit}>{children}</form>
@@ -35,7 +36,7 @@ describe("BlueForm – change behavior", () => {
             ),
           },
         }}
-      />
+      />,
     )
 
     fireEvent.click(screen.getByTestId("change"))
@@ -131,7 +132,7 @@ describe("BlueForm – change behavior", () => {
             ),
           },
         }}
-      />
+      />,
     )
 
     fireEvent.click(screen.getByTestId("a"))
@@ -161,7 +162,7 @@ describe("BlueForm – change behavior", () => {
         fieldMapping={{
           hidden: HiddenField,
         }}
-      />
+      />,
     )
 
     // wait a tick to be safe
@@ -196,7 +197,7 @@ describe("BlueForm – change behavior", () => {
             },
           },
         }}
-      />
+      />,
     )
 
     fireEvent.click(screen.getByTestId("change"))
@@ -278,7 +279,7 @@ describe("BlueForm – change behavior", () => {
             ),
           },
         }}
-      />
+      />,
     )
 
     fireEvent.click(screen.getByText("Set A"))
@@ -300,8 +301,127 @@ describe("BlueForm – change behavior", () => {
     expect(onFormChange).toHaveBeenCalledTimes(1)
     expect(onFormChange).toHaveBeenLastCalledWith(
       { name: "A" },
-      expect.any(Object)
+      expect.any(Object),
     )
+
+    vi.useRealTimers()
+  })
+
+  it("does not reset debounce timer when onFormChange reference changes between renders", async () => {
+    vi.useFakeTimers()
+    const calls: { version: number; values: any }[] = []
+
+    const config = {
+      name: {
+        type: "inline" as const,
+        render: ({ fieldProps: { onChange } }: any) => (
+          <button type="button" onClick={() => onChange?.("A")}>
+            change
+          </button>
+        ),
+      },
+    }
+
+    const { rerender } = renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        changeDebounceDelay={300}
+        onFormChange={(v) => calls.push({ version: 1, values: v })}
+        config={config}
+      />,
+    )
+
+    fireEvent.click(screen.getByText("change"))
+
+    act(() => {
+      vi.advanceTimersByTime(150)
+    })
+
+    // rerender với inline callback mới — timer không được reset
+    rerender(
+      <BlueFormProvider
+        renderRoot={(props) => (
+          <form data-testid="provider-root" onSubmit={props.onSubmit}>
+            {props.children}
+          </form>
+        )}
+      >
+        <BlueForm
+          renderRoot={TestRoot}
+          changeDebounceDelay={300}
+          onFormChange={(v) => calls.push({ version: 2, values: v })}
+          config={config}
+        />
+      </BlueFormProvider>,
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(150)
+    })
+
+    // emit đúng 1 lần với callback version mới nhất
+    expect(calls).toHaveLength(1)
+    expect(calls[0].version).toBe(2)
+    expect(calls[0].values).toEqual({ name: "A" })
+
+    vi.useRealTimers()
+  })
+
+  it("does not reset debounce timer on unrelated re-renders", async () => {
+    vi.useFakeTimers()
+    const calls: any[] = []
+
+    const config = {
+      name: {
+        type: "inline" as const,
+        render: ({ fieldProps: { onChange } }: any) => (
+          <button type="button" onClick={() => onChange?.("A")}>
+            change
+          </button>
+        ),
+      },
+    }
+
+    const { rerender } = renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        changeDebounceDelay={300}
+        onFormChange={(v) => calls.push(v)}
+        config={config}
+      />,
+    )
+
+    fireEvent.click(screen.getByText("change"))
+
+    act(() => {
+      vi.advanceTimersByTime(150)
+    }) // nửa chừng debounce
+
+    // re-render không liên quan (ví dụ parent state thay đổi)
+    rerender(
+      <BlueFormProvider
+        renderRoot={(props) => (
+          <form data-testid="provider-root" onSubmit={props.onSubmit}>
+            {props.children}
+          </form>
+        )}
+      >
+        <BlueForm
+          renderRoot={TestRoot}
+          changeDebounceDelay={300}
+          onFormChange={(v) => calls.push(v)}
+          config={config}
+        />
+      </BlueFormProvider>,
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(150)
+    }) // hoàn thành debounce
+
+    // vẫn phải emit đúng 1 lần — timer không bị reset
+    expect(calls).toHaveLength(1)
+    expect(calls[0]).toEqual({ name: "A" })
 
     vi.useRealTimers()
   })
@@ -333,7 +453,7 @@ describe("BlueForm – change behavior", () => {
             ),
           },
         }}
-      />
+      />,
     )
 
     fireEvent.click(screen.getByText("Set A"))
@@ -367,7 +487,7 @@ describe("BlueForm – change behavior", () => {
             ),
           },
         }}
-      />
+      />,
     )
 
     fireEvent.click(screen.getByText("Set A"))
@@ -402,7 +522,7 @@ describe("BlueForm – change behavior", () => {
             type: "text",
           },
         }}
-      />
+      />,
     )
 
     const input = screen.getByTestId("input") as HTMLInputElement
@@ -438,7 +558,7 @@ describe("BlueForm – change behavior", () => {
             type: "text",
           },
         }}
-      />
+      />,
     )
 
     const input = screen.getByTestId("input") as HTMLInputElement
@@ -483,7 +603,7 @@ describe("BlueForm – change behavior", () => {
             },
           },
         }}
-      />
+      />,
     )
 
     const input = screen.getByTestId("input")
