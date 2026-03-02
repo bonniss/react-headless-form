@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.4](https://github.com/bonniss/react-headless-form/compare/v0.7.3...v0.7.4) (2026-03-02)
+
+
+### Bug Fixes
+
+* remove onInit in favor of ref API ([f809d4f](https://github.com/bonniss/react-headless-form/commit/f809d4fa20ae37bd477f0206b99b761c0a7195c3))
+
 ## [0.7.3](https://github.com/bonniss/react-headless-form/compare/v0.7.2...v0.7.3) (2026-02-28)
 
 
