@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.8.0](https://github.com/bonniss/react-headless-form/compare/v0.7.5...v0.8.0) (2026-03-02)
+
+
+### Features
+
+* support schema resolver with auto-disable of field-level rules ([b0d836b](https://github.com/bonniss/react-headless-form/commit/b0d836b45a4e7f96db7955954ad7358810084f82))
+
+
+### Bug Fixes
+
+* await onSubmit before calling onSubmitSuccess ([63a373f](https://github.com/bonniss/react-headless-form/commit/63a373f467663fd078ebd1389e4d803031cb10b8))
+
 ## [0.7.5](https://github.com/bonniss/react-headless-form/compare/v0.7.4...v0.7.5) (2026-03-02)
 
 
