@@ -1,11 +1,11 @@
-import { createProvider } from 'react-easy-provider';
-import { identity } from '@/components/helper/identity';
-import { typedKeys } from '@/components/helper/typed-keys';
-import type { ValidationResolver } from '@/components/i18n';
-import { normalizeTranslator } from '@/components/i18n/resolver';
-import type { BlueFormProps } from '@/types';
-import type { I18nResolvedConfig } from '@/types/form';
-import { useBlueFormProvider } from '../provider';
+import { createProvider } from 'react-easy-provider'
+import { identity } from '@/components/helper/identity'
+import { typedKeys } from '@/components/helper/typed-keys'
+import type { ValidationResolver } from '@/components/i18n'
+import { normalizeTranslator } from '@/components/i18n/resolver'
+import type { BlueFormProps } from '@/types'
+import type { I18nResolvedConfig } from '@/types/form'
+import { useBlueFormProvider } from '../provider'
 
 export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
   (
@@ -13,44 +13,25 @@ export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
       config: {},
     },
   ) => {
-    const {
-      fieldMapping: fieldMapping_,
-      i18nConfig: i18nConfig_,
-      renderRoot: renderRoot_,
-      ...props
-    } = blueFormProps;
+    const { fieldMapping: fieldMapping_, i18nConfig: i18nConfig_, renderRoot: renderRoot_, ...props } = blueFormProps
 
-    const {
-      renderRoot: _renderRoot,
-      fieldMapping: _fieldMapping,
-      i18nConfig: _i18nConfig,
-    } = useBlueFormProvider();
+    const { renderRoot: _renderRoot, fieldMapping: _fieldMapping, i18nConfig: _i18nConfig } = useBlueFormProvider()
 
-    const fieldMapping = fieldMapping_ ?? _fieldMapping;
-    const renderRoot = renderRoot_ ?? _renderRoot;
-    const i18nConfig = i18nConfig_ ?? _i18nConfig;
+    const fieldMapping = fieldMapping_ ?? _fieldMapping
+    const renderRoot = renderRoot_ ?? _renderRoot
+    const i18nConfig = i18nConfig_ ?? _i18nConfig
 
     if (!renderRoot) {
-      throw new Error(
-        'No `renderRoot` was provided. A `renderRoot` is required to control how the form is rendered.',
-      );
+      throw new Error('No `renderRoot` was provided. A `renderRoot` is required to control how the form is rendered.')
     }
 
-    const t =
-      i18nConfig?.enabled === false
-        ? identity
-        : normalizeTranslator(i18nConfig?.t ?? identity);
-    const resolver: ValidationResolver = {};
+    const t = i18nConfig?.enabled === false ? identity : normalizeTranslator(i18nConfig?.t ?? identity)
+    const resolver: ValidationResolver = {}
 
-    if (
-      i18nConfig?.validationTranslation &&
-      Object.keys(i18nConfig.validationTranslation).length
-    ) {
-      for (const validationType of typedKeys(
-        i18nConfig.validationTranslation,
-      )) {
-        const messageKey = i18nConfig.validationTranslation[validationType];
-        if (!messageKey) continue;
+    if (i18nConfig?.validationTranslation && Object.keys(i18nConfig.validationTranslation).length) {
+      for (const validationType of typedKeys(i18nConfig.validationTranslation)) {
+        const messageKey = i18nConfig.validationTranslation[validationType]
+        if (!messageKey) continue
 
         switch (validationType) {
           case 'required': {
@@ -58,8 +39,8 @@ export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
               t({
                 message: messageKey,
                 params: { field },
-              });
-            break;
+              })
+            break
           }
 
           case 'min':
@@ -67,7 +48,7 @@ export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
           case 'minLength':
           case 'maxLength': {
             resolver[validationType] = ({ field, rule }) => {
-              if (rule == null) return undefined;
+              if (rule == null) return undefined
 
               const value =
                 typeof rule === 'number'
@@ -76,9 +57,9 @@ export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
                     ? Number(rule)
                     : typeof rule === 'object'
                       ? Number(rule.value)
-                      : NaN;
+                      : NaN
 
-              if (!Number.isFinite(value)) return undefined;
+              if (!Number.isFinite(value)) return undefined
 
               return {
                 value,
@@ -89,17 +70,16 @@ export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
                     [validationType]: value,
                   },
                 }),
-              };
-            };
-            break;
+              }
+            }
+            break
           }
 
           case 'pattern': {
             resolver[validationType] = ({ field, rule }) => {
-              if (!rule) return undefined;
+              if (!rule) return undefined
 
-              const value =
-                typeof rule === 'object' && 'value' in rule ? rule.value : rule;
+              const value = typeof rule === 'object' && 'value' in rule ? rule.value : rule
 
               return {
                 value,
@@ -107,13 +87,13 @@ export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
                   message: messageKey,
                   params: { field },
                 }),
-              };
-            };
-            break;
+              }
+            }
+            break
           }
 
           default:
-            break;
+            break
         }
       }
     }
@@ -125,7 +105,8 @@ export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
         validationResolver: resolver,
       } as I18nResolvedConfig,
       fieldMapping,
+      hasResolver: Boolean(props.formProps?.resolver),
       ...props,
-    };
+    }
   },
-);
+)
