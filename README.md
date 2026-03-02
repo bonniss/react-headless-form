@@ -934,7 +934,6 @@ Field components should **not infer `required` from rules themselves**.
 ```ts
 fieldProps.disabled
 fieldProps.readOnly
-fieldProps.readOnlyEmptyFallback
 ```
 
 - `disabled`
@@ -942,17 +941,6 @@ fieldProps.readOnlyEmptyFallback
 
 - `readOnly`
   Indicates the field should display its value without allowing edits
-
-- `readOnlyEmptyFallback`
-  Optional content to render when the value is empty and the form is read-only
-
-A typical pattern:
-
-```tsx
-if (readOnly && readOnlyEmptyFallback) {
-  return <div>{readOnlyEmptyFallback}</div>
-}
-```
 
 ##### Visibility
 

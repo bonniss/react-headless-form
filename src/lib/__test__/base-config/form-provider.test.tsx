@@ -117,48 +117,4 @@ describe('BlueForm base config', () => {
 
     expect(screen.getByTestId('label').textContent).toBe('provider:Name');
   });
-
-  it('uses readOnlyEmptyFallback from form over provider', () => {
-    renderWithBlueFormProvider(
-      <BlueForm
-        readOnly
-        readOnlyEmptyFallback={<span data-testid="form-fallback">FORM</span>}
-        config={{
-          name: {
-            type: 'inline',
-            render: ({ fieldProps }) => fieldProps.readOnlyEmptyFallback,
-          },
-        }}
-      />,
-      {
-        readOnlyEmptyFallback: (
-          <span data-testid="provider-fallback">PROVIDER</span>
-        ),
-      }
-    );
-
-    expect(screen.getByTestId('form-fallback')).toBeDefined();
-    expect(screen.queryByTestId('provider-fallback')).toBeNull();
-  });
-
-  it('falls back to provider readOnlyEmptyFallback', () => {
-    renderWithBlueFormProvider(
-      <BlueForm
-        readOnly
-        config={{
-          name: {
-            type: 'inline',
-            render: ({ fieldProps }) => fieldProps.readOnlyEmptyFallback,
-          },
-        }}
-      />,
-      {
-        readOnlyEmptyFallback: (
-          <span data-testid="provider-fallback">PROVIDER</span>
-        ),
-      }
-    );
-
-    expect(screen.getByTestId('provider-fallback')).toBeDefined();
-  });
 });

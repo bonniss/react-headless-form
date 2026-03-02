@@ -15,15 +15,11 @@ const InputField: FunctionComponent<InputFieldProps> = (props) => {
       required,
       disabled,
       readOnly,
-      readOnlyEmptyFallback,
       visible,
     },
   } = useField()
 
   if (!visible) return null
-  if (readOnly && readOnlyEmptyFallback) {
-    return <div id={id}>{readOnlyEmptyFallback}</div>
-  }
 
   return (
     <div id={id}>

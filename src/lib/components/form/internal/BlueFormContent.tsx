@@ -1,15 +1,15 @@
-import type { ComponentMap } from "@/types"
-import debounce from "just-debounce-it"
-import { useEffect } from "react"
+import debounce from 'just-debounce-it';
+import { useEffect } from 'react';
+import type { ComponentMap } from '@/types';
 import {
   type FieldValues,
   type SubmitHandler,
   type WatchObserver,
   get as getProperty,
   useFormContext,
-} from "react-hook-form"
-import BlueFormEngine from "./BlueFormEngine"
-import { useBlueFormInternal } from "./BlueFormInternalProvider"
+} from 'react-hook-form';
+import BlueFormEngine from './BlueFormEngine';
+import { useBlueFormInternal } from './BlueFormInternalProvider';
 
 export function BlueFormContent<
   TModel extends FieldValues,
@@ -19,7 +19,6 @@ export function BlueFormContent<
     fieldMapping,
     i18nConfig,
     renderRoot,
-    readOnlyEmptyFallback,
 
     config,
     defaultValues = {},
@@ -35,14 +34,14 @@ export function BlueFormContent<
     onSubmitSuccess,
     onSubmitError,
     ...props
-  } = useBlueFormInternal()
-  const form = useFormContext<TModel>()
-  const { watch, handleSubmit } = form
+  } = useBlueFormInternal();
+  const form = useFormContext<TModel>();
+  const { watch, handleSubmit } = form;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: on component mount
   useEffect(() => {
-    onInit?.(form)
-  }, [])
+    onInit?.(form);
+  }, []);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentional
   useEffect(
@@ -52,37 +51,37 @@ export function BlueFormContent<
         { name },
       ) => {
         if (name && onFieldChange) {
-          const next = getProperty(value, name)
-          onFieldChange(name, next, form)
+          const next = getProperty(value, name);
+          onFieldChange(name, next, form);
         }
-        onFormChange?.(value as TModel, form)
-      }
+        onFormChange?.(value as TModel, form);
+      };
 
       const sub = watch(
         changeDebounceDelay
           ? debounce(observer, changeDebounceDelay)
           : observer,
-      )
+      );
 
-      return () => sub.unsubscribe()
+      return () => sub.unsubscribe();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [watch, changeDebounceDelay],
-  )
+  );
 
   const submit = ((raw: TModel, e) => {
-    onSubmit?.(raw, form, e)
-    onSubmitSuccess?.(raw, form, e)
-  }) as SubmitHandler<TModel>
+    onSubmit?.(raw, form, e);
+    onSubmitSuccess?.(raw, form, e);
+  }) as SubmitHandler<TModel>;
 
   const formBody = (
     <>
       <BlueFormEngine config={config} />
       {children}
     </>
-  )
+  );
 
-  const submitHandler = handleSubmit(submit, onSubmitError)
+  const submitHandler = handleSubmit(submit, onSubmitError);
 
   const formRendererArgs = {
     formMethods: form,
@@ -90,8 +89,8 @@ export function BlueFormContent<
     onSubmit: submitHandler,
     submit,
     ...props,
-  } as const
+  } as const;
 
   // @ts-expect-error expect error
-  return renderRoot?.(formRendererArgs)
+  return renderRoot?.(formRendererArgs);
 }
