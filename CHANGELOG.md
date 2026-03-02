@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.5](https://github.com/bonniss/react-headless-form/compare/v0.7.4...v0.7.5) (2026-03-02)
+
+
+### Bug Fixes
+
+* stabilize debounce observer across re-renders in BlueFormContent ([6a5f51f](https://github.com/bonniss/react-headless-form/commit/6a5f51f4b02aafecb8ef20b4067e7ed599e66d22))
+
 ## [0.7.4](https://github.com/bonniss/react-headless-form/compare/v0.7.3...v0.7.4) (2026-03-02)
 
 
