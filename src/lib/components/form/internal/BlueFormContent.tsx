@@ -74,9 +74,9 @@ export function BlueFormContent<
     [watch, debouncedObserver],
   )
 
-  const submit = ((raw: TModel, e) => {
-    onSubmit?.(raw, form, e)
-    onSubmitSuccess?.(raw, form, e)
+  const submit = (async (raw: TModel, e) => {
+    await onSubmit?.(raw, form, e)
+    await onSubmitSuccess?.(raw, form, e)
   }) as SubmitHandler<TModel>
 
   const formBody = (

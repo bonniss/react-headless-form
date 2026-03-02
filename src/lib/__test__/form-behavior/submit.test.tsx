@@ -81,6 +81,30 @@ describe("BlueForm – onSubmit", () => {
     })
   })
 
+  it("waits for async onSubmit before calling onSubmitSuccess", async () => {
+    const calls: string[] = []
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onSubmit={async () => {
+          await new Promise((r) => setTimeout(r, 100))
+          calls.push("submit")
+        }}
+        onSubmitSuccess={() => {
+          calls.push("success")
+        }}
+        config={{ name: { type: "inline", render: () => null } }}
+      />,
+    )
+
+    fireEvent.click(screen.getByText("Submit"))
+
+    await waitFor(() => {
+      expect(calls).toEqual(["submit", "success"])
+    })
+  })
+
   it("calls onSubmitError when validation fails", async () => {
     const onSubmit = vi.fn()
     const onSubmitError = vi.fn()
