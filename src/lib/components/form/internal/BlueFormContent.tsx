@@ -28,7 +28,6 @@ export function BlueFormContent<
     children,
 
     onSubmit,
-    onInit,
     onFieldChange,
     onFormChange,
     onSubmitSuccess,
@@ -37,11 +36,6 @@ export function BlueFormContent<
   } = useBlueFormInternal();
   const form = useFormContext<TModel>();
   const { watch, handleSubmit } = form;
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: on component mount
-  useEffect(() => {
-    onInit?.(form);
-  }, []);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentional
   useEffect(

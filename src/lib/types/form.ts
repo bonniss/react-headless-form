@@ -143,11 +143,6 @@ export interface BlueFormProps<
   readOnly?: boolean;
 
   /**
-   * Callback invoked once on mount, useful for side effects like setting dynamic default values.
-   */
-  onInit?: (form: UseFormReturn<TModel>) => void;
-
-  /**
    * Called when a single field value changes.
    */
   onFieldChange?: (
