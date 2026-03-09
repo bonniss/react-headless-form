@@ -2,7 +2,7 @@
 
 > Form as configuration. Bring your own UI, entirely. Great DX. Built on React Hook Form.
 
-![blueform-typesafety](docs/media/blueform-typesafety.gif)
+![react-headless-form](README.gif)
 
 > [!WARNING]
 > This project is still under active development. Expect breaking changes until `v1.0.0` is reached.
