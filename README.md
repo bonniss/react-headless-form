@@ -2,9 +2,11 @@
 
 > Form as configuration. Bring your own UI, entirely. Great DX. Built on React Hook Form.
 
-<p style="text-align:center;">
-  <img src="docs/src/public/light-logo.png" width="150">
-</p>
+<div align="center">
+    <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
+        <img src="docs/src/public/light-logo.png" width="150">
+    </a>
+</div>
     
 ![react-headless-form](README.gif)
 
@@ -77,7 +79,7 @@ You want to collect an username and password from user.
 type LoginData = {
   username: string;
   password: string;
-}
+};
 ```
 
 A native HTML `<input />` is enough to describe both fields — one with type `text`, the other with type `password`. Once you’re familiar with the flow, the same approach works with any UI library. Let's define a reusable `InputField`.
@@ -85,14 +87,14 @@ A native HTML `<input />` is enough to describe both fields — one with type `t
 #### 1. Describe the field
 
 ```tsx
-import { useField } from "react-headless-form"
+import { useField } from "react-headless-form";
 
-type InputFieldProps = React.InputHTMLAttributes<HTMLInputElement>
+type InputFieldProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 export default function InputField(props: InputFieldProps) {
   const {
     fieldProps: { value, onChange, label, errorMessage, required, disabled },
-  } = useField()
+  } = useField();
 
   return (
     <div>
@@ -109,11 +111,9 @@ export default function InputField(props: InputFieldProps) {
         disabled={disabled}
       />
 
-      {errorMessage && (
-        <div className="text-red-600 mt-2">{errorMessage}</div>
-      )}
+      {errorMessage && <div className="text-red-600 mt-2">{errorMessage}</div>}
     </div>
-  )
+  );
 }
 ```
 
@@ -123,8 +123,8 @@ This makes field components reusable. See [Field authoring](#field-authoring) fo
 #### 2. Describe the form
 
 ```tsx
-import { setupForm, defineMapping } from "react-headless-form"
-import InputField from "./InputField"
+import { setupForm, defineMapping } from "react-headless-form";
+import InputField from "./InputField";
 
 // Set up Form component
 const [Form] = setupForm({
@@ -136,7 +136,7 @@ const [Form] = setupForm({
   renderRoot: ({ children, onSubmit }) => (
     <form onSubmit={onSubmit}>{children}</form>
   ),
-})
+});
 
 export function LoginForm() {
   return (
@@ -167,12 +167,12 @@ export function LoginForm() {
       }}
       // Define form behavior, data is recognized as LoginData
       onSubmit={(data) => {
-        console.log("Login data:", data)
+        console.log("Login data:", data);
       }}
     >
       <button type="submit">Login</button>
     </Form>
-  )
+  );
 }
 ```
 
@@ -197,7 +197,7 @@ By default, BlueForm provides a set of built-in field types
 Calling `setupForm()` with no arguments uses only these built-in types.
 
 ```ts
-const [Form] = setupForm()
+const [Form] = setupForm();
 ```
 
 To extend the form with custom fields while keeping all built-in ones available, use `defineMapping`:
@@ -208,7 +208,7 @@ const [Form] = setupForm({
     text: InputField,
     select: SelectField,
   }),
-})
+});
 ```
 
 With this setup, valid field types include:
@@ -272,7 +272,9 @@ const [Form] = setupForm({
 ```tsx
 <Form
   renderRoot={({ children, onSubmit }) => (
-    <form className="product-form" onSubmit={onSubmit}>{children}</form>
+    <form className="product-form" onSubmit={onSubmit}>
+      {children}
+    </form>
   )}
 />
 ```
@@ -284,7 +286,7 @@ const [Form] = setupForm({
   i18nConfig: {
     t: defaultTranslate,
   },
-})
+});
 ```
 
 ```tsx
@@ -336,20 +338,20 @@ Another common use case for `defineConfig` is to define configurations once and 
 
 ```ts
 // form.setup.ts
-import { setupForm, defineMapping } from "react-headless-form"
-import InputField from "./InputField"
+import { setupForm, defineMapping } from "react-headless-form";
+import InputField from "./InputField";
 
 export const [Form, defineConfig] = setupForm({
   fieldMapping: defineMapping({
     text: InputField,
   }),
-})
+});
 ```
 
 ```ts
 // login.form.ts
-import type { LoginData } from "./types"
-import { defineConfig } from "./form.setup"
+import type { LoginData } from "./types";
+import { defineConfig } from "./form.setup";
 
 export const loginFormConfig = defineConfig<LoginData>({
   username: {
@@ -362,22 +364,22 @@ export const loginFormConfig = defineConfig<LoginData>({
       type: "password",
     },
   },
-})
+});
 ```
 
 ```tsx
 // LoginPage.tsx
-import { Form } from "./form.setup"
-import { loginFormConfig } from "./login.form"
+import { Form } from "./form.setup";
+import { loginFormConfig } from "./login.form";
 
 <Form<LoginData>
   config={loginFormConfig}
   onSubmit={(data) => {
-    console.log(data)
+    console.log(data);
   }}
 >
   <button type="submit">Login</button>
-</Form>
+</Form>;
 ```
 
 ### `Section` for reusable composition
@@ -391,7 +393,7 @@ const [Form, defineConfig, Section] = setupForm({
   fieldMapping: defineMapping({
     text: InputField,
   }),
-})
+});
 ```
 
 This is designed to be used together with `type: "section"` in your schema, where the section “owns” its UI via `section.props.component`, and the component “owns” the fields it contains via `<Section />`.
@@ -426,12 +428,12 @@ const [Form, defineConfig, Section] = setupForm({ ... })
 />
 ```
 
-Inside each step component (e.g. `AccountStep`), the component is rendered *as the section*, so it can read section-level props like `label` and `visible` via `useField()`:
+Inside each step component (e.g. `AccountStep`), the component is rendered _as the section_, so it can read section-level props like `label` and `visible` via `useField()`:
 
 ```tsx
 function AccountStep() {
-  const { fieldProps } = useField()
-  if (!fieldProps.visible) return null
+  const { fieldProps } = useField();
+  if (!fieldProps.visible) return null;
 
   return (
     <fieldset>
@@ -440,19 +442,23 @@ function AccountStep() {
       <Section<WizardForm["account"]>
         config={{
           email: { type: "text", label: "Email" },
-          password: { type: "text", label: "Password", props: { type: "password" } },
+          password: {
+            type: "text",
+            label: "Password",
+            props: { type: "password" },
+          },
         }}
       />
     </fieldset>
-  )
+  );
 }
 ```
 
 Key idea: **the parent schema declares the section boundary**, and the step component fills that boundary with a **typesafe config fragment**. This makes it easy to:
 
-* split a complex form into small, focused section components
-* reuse those section components across pages/forms
-* build “any complexity” flows (wizard, tabs, conditional layouts) without introducing special form concepts — it’s still just `section` + composition
+- split a complex form into small, focused section components
+- reuse those section components across pages/forms
+- build “any complexity” flows (wizard, tabs, conditional layouts) without introducing special form concepts — it’s still just `section` + composition
 
 ### More examples
 
@@ -466,14 +472,14 @@ Form configuration keys are type-checked against your form model.
 
 ```ts
 type User = {
-  name: string
+  name: string;
   profile: {
-    email: string
-  }
+    email: string;
+  };
   addresses: {
-    city: string
-  }[]
-}
+    city: string;
+  }[];
+};
 ```
 
 For simple, non-nested fields like `name`, keys map directly to model properties:
@@ -538,7 +544,7 @@ You can also reference nested object paths using dot notation:
 Invalid paths are caught at compile time:
 
 ```ts
-"profile.age" // ❌ Type error – not part of User
+"profile.age"; // ❌ Type error – not part of User
 ```
 
 Flat keys apply to **object paths only**; array paths are intentionally excluded, as their indices are resolved dynamically at runtime.
@@ -551,7 +557,7 @@ Each field’s `type` maps directly to a component registered in `fieldMapping`.
 const fieldMapping = defineMapping({
   text: InputField,
   select: SelectField,
-})
+});
 ```
 
 BlueForm ensures that:
@@ -568,7 +574,7 @@ defineConfig<User>({
       options: [], // ❌ invalid for text field
     },
   },
-})
+});
 ```
 
 ### Virtual configuration keys
@@ -601,16 +607,16 @@ Virtual keys are excluded from model key checking, so TypeScript will not raise 
 
 Virtual keys are ideal for:
 
-* layout containers
-* computed previews
-* dividers or separators
-* informational blocks
-* any composition node that should not exist in the data model
+- layout containers
+- computed previews
+- dividers or separators
+- informational blocks
+- any composition node that should not exist in the data model
 
 #### Caveats
 
-* If your actual form model contains fields starting with `__`, they will not receive key suggestions in the configuration, since the prefix is reserved for virtual nodes.
-* If a field should be type-safe and checked against the model, it must **not** use the `__` prefix — even if it renders only UI.
+- If your actual form model contains fields starting with `__`, they will not receive key suggestions in the configuration, since the prefix is reserved for virtual nodes.
+- If a field should be type-safe and checked against the model, it must **not** use the `__` prefix — even if it renders only UI.
 
 #### Type guidance, not runtime enforcement
 
@@ -627,8 +633,8 @@ Virtual keys are ideal for:
 
 BlueForm ships with a minimal set of composable primitives.
 
-| Type      | Purpose     | In form state | Submitted |
-|-----------|------------|---------------|-----------|
+| Type      | Purpose    | In form state | Submitted |
+| --------- | ---------- | ------------- | --------- |
 | `inline`  | Field      | ✓             | ✓         |
 | `section` | Container  | Optional¹     | Optional¹ |
 | `array`   | Field list | ✓             | ✓         |
@@ -667,11 +673,11 @@ Use `inline` when:
 
 `section` is the core container primitive of BlueForm that can:
 
-* wrap other fields for layout
-* introduce a namespace boundary
-* render custom UI
-* encapsulate reusable form modules
-* contain other sections recursively
+- wrap other fields for layout
+- introduce a namespace boundary
+- render custom UI
+- encapsulate reusable form modules
+- contain other sections recursively
 
 #### Container (no namespace)
 
@@ -695,16 +701,16 @@ Submission shape:
 
 ```ts
 {
-  firstName: string
-  lastName: string
+  firstName: string;
+  lastName: string;
 }
 ```
 
 Use case:
 
-* layout grouping
-* visual structure
-* card / tab / panel wrappers
+- layout grouping
+- visual structure
+- card / tab / panel wrappers
 
 #### Namespace Boundary (`nested: true`)
 
@@ -728,17 +734,17 @@ Submission shape:
 ```ts
 {
   profile: {
-    firstName: string
-    lastName: string
+    firstName: string;
+    lastName: string;
   }
 }
 ```
 
 Use case:
 
-* mirroring domain models
-* grouping related data
-* building structured payloads
+- mirroring domain models
+- grouping related data
+- building structured payloads
 
 #### Component Mode
 
@@ -756,10 +762,10 @@ address: {
 
 This enables:
 
-* splitting large forms into smaller modules
-* reusing form blocks across pages
-* encapsulating complex form logic
-* composing forms like Lego pieces
+- splitting large forms into smaller modules
+- reusing form blocks across pages
+- encapsulating complex form logic
+- composing forms like Lego pieces
 
 Because `section` is recursive, complex forms are built by composing smaller sections — allowing you to scale from simple inputs to arbitrarily complex form systems without introducing new schema concepts.
 
@@ -845,7 +851,7 @@ With just these built-in field types, you can cover quite of use cases. For exam
 Every field component interacts with the form through a shared contract, exposed via `useField`. It exposes a **stable, normalized interface** on top of RHF’s `useController`, so field authors do not need to interact with RHF directly.
 
 ```ts
-const { fieldProps, controller, config } = useField()
+const { fieldProps, controller, config } = useField();
 ```
 
 In most cases, **you only need `fieldProps`**. It contains **everything a field needs to render itself correctly**, without knowing anything about the rest of the form.
@@ -858,8 +864,8 @@ It contains **everything a field needs to render itself correctly**, without kno
 ##### Value and interaction
 
 ```ts
-fieldProps.value
-fieldProps.onChange
+fieldProps.value;
+fieldProps.onChange;
 ```
 
 - `value`
@@ -869,14 +875,14 @@ fieldProps.onChange
   A change handler that **expects the final value**, not a DOM event.
 
 ```tsx
-onChange?.(e.target.value) // ✅ correct
-onChange?.(e) // ❌ incorrect
+onChange?.(e.target.value); // ✅ correct
+onChange?.(e); // ❌ incorrect
 ```
 
 ##### Error handling
 
 ```ts
-fieldProps.errorMessage
+fieldProps.errorMessage;
 ```
 
 - A translated error message derived from RHF’s validation state
@@ -884,7 +890,7 @@ fieldProps.errorMessage
 
 ```tsx
 {
-  errorMessage && <div>{errorMessage}</div>
+  errorMessage && <div>{errorMessage}</div>;
 }
 ```
 
@@ -893,10 +899,10 @@ Field components **should not inspect validation rules or error objects** — on
 ##### Identity and structure
 
 ```ts
-fieldProps.id
-fieldProps.name
-fieldProps.path
-fieldProps.namespace
+fieldProps.id;
+fieldProps.name;
+fieldProps.path;
+fieldProps.namespace;
 ```
 
 - `name`
@@ -917,9 +923,9 @@ These values are useful for:
 ##### Labeling and metadata
 
 ```ts
-fieldProps.label
-fieldProps.description
-fieldProps.required
+fieldProps.label;
+fieldProps.description;
+fieldProps.required;
 ```
 
 - `label`
@@ -936,8 +942,8 @@ Field components should **not infer `required` from rules themselves**.
 ##### Read-only and disabled state
 
 ```ts
-fieldProps.disabled
-fieldProps.readOnly
+fieldProps.disabled;
+fieldProps.readOnly;
 ```
 
 - `disabled`
@@ -949,7 +955,7 @@ fieldProps.readOnly
 ##### Visibility
 
 ```ts
-fieldProps.visible
+fieldProps.visible;
 ```
 
 - Indicates whether the field should be rendered
@@ -957,13 +963,13 @@ fieldProps.visible
 - Field components should simply respect it
 
 ```tsx
-if (!visible) return null
+if (!visible) return null;
 ```
 
 #### `controller`
 
 ```ts
-const { controller } = useField()
+const { controller } = useField();
 ```
 
 This is the raw result of RHF’s `useController`.
@@ -979,7 +985,7 @@ Use `controller` only when:
 #### `config`
 
 ```ts
-const { config } = useField()
+const { config } = useField();
 ```
 
 - The original field configuration object
@@ -1014,7 +1020,7 @@ const {
   duplicate,
   idAt,
   errorAt,
-} = useArrayField()
+} = useArrayField();
 ```
 
 You typically use `useArrayField` in a dedicated component (recommended), or directly inside the `render` of the built-in `array` type.
@@ -1022,54 +1028,56 @@ You typically use `useArrayField` in a dedicated component (recommended), or dir
 #### `fieldProps`
 
 ```ts
-fieldProps.errorMessage
-fieldProps.label
-fieldProps.required
-fieldProps.disabled
+fieldProps.errorMessage;
+fieldProps.label;
+fieldProps.required;
+fieldProps.disabled;
 ```
 
 `fieldProps` behaves the same way as in `useField`, but at the **array level**.
 
-* `errorMessage`
+- `errorMessage`
   Represents array-level validation errors (e.g. `minLength`, `required`).
   These errors are associated with the array itself, not individual items.
 
 ```tsx
-{fieldProps.errorMessage && <div>{fieldProps.errorMessage}</div>}
+{
+  fieldProps.errorMessage && <div>{fieldProps.errorMessage}</div>;
+}
 ```
 
 #### Array methods
 
 RHF's [`useFieldArray`](https://react-hook-form.com/docs/usefieldarray) methods are forwarded as-is:
 
-* `append(value)`
-* `prepend(value)`
-* `insert(index, value)`
-* `remove(index?)`
-* `move(from, to)`
-* `swap(a, b)`
-* `update(index, value)`
-* `replace(values)`
+- `append(value)`
+- `prepend(value)`
+- `insert(index, value)`
+- `remove(index?)`
+- `move(from, to)`
+- `swap(a, b)`
+- `update(index, value)`
+- `replace(values)`
 
 The following helpers are provided for convenience:
 
-* `push(value)`
+- `push(value)`
   Alias of `append(value)`.
 
-* `pop()`
+- `pop()`
   Removes the last item, if any.
 
-* `clear()`
+- `clear()`
   Removes all items (equivalent to `remove()` with no index).
 
-* `duplicate(index)`
+- `duplicate(index)`
   Duplicates the **current form value** at `index` and appends it as a new item.
   (Implemented via `getValues`, so it reflects user edits.)
 
-* `idAt(index)`
+- `idAt(index)`
   Returns the stable key for the item (RHF `id`, fallback to `index`).
 
-* `errorAt(index)`
+- `errorAt(index)`
   Returns the validation error subtree for the item at `index`, if present.
 
 #### Array items
@@ -1079,8 +1087,8 @@ The following helpers are provided for convenience:
 BlueForm handles array-specific wiring internally, so you only need to use the following helpers to render array items based on the array field’s `props.config`:
 
 ```ts
-renderItem(field, index)
-renderItems()
+renderItem(field, index);
+renderItems();
 ```
 
 `renderItem` renders a **single array item** using the configuration defined in the array field’s `props.config`.
@@ -1090,7 +1098,7 @@ Each item is automatically scoped under the correct namespace (e.g. `addresses.0
 `renderItems` is a convenience helper equivalent to:
 
 ```tsx
-items.map(renderItem)
+items.map(renderItem);
 ```
 
 #### A complete array field example
@@ -1189,9 +1197,9 @@ BlueForm handles i18n at the **form orchestration level**, not inside field comp
 Field components always receive ready-to-render strings.
 
 ```ts
-fieldProps.label
-fieldProps.description
-fieldProps.errorMessage
+fieldProps.label;
+fieldProps.description;
+fieldProps.errorMessage;
 ```
 
 Fields should never need to know about locales or translation libraries.
@@ -1205,7 +1213,7 @@ const [Form] = setupForm({
   i18nConfig: {
     t: (message, params) => translate(message, params),
   },
-})
+});
 ```
 
 ### Translating validation messages
@@ -1218,7 +1226,7 @@ const [Form] = setupForm({
     },
     t: (message, params) => `${params?.field} is required`,
   },
-})
+});
 ```
 
 Validation rules remain standard RHF rules.
@@ -1226,7 +1234,7 @@ Validation rules remain standard RHF rules.
 ### Example: using i18next
 
 ```ts
-import i18next from "i18next"
+import i18next from "i18next";
 
 const [Form] = setupForm({
   i18nConfig: {
@@ -1235,7 +1243,7 @@ const [Form] = setupForm({
       required: "validation.required",
     },
   },
-})
+});
 ```
 
 ```ts
@@ -1270,15 +1278,15 @@ pnpm add yup @hookform/resolvers
 Pass the resolver via `formProps`:
 
 ```tsx
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email"),
-})
+});
 
-type FormData = z.infer<typeof schema>
+type FormData = z.infer<typeof schema>;
 
 <Form<FormData>
   formProps={{ resolver: zodResolver(schema) }}
@@ -1287,7 +1295,7 @@ type FormData = z.infer<typeof schema>
     email: { type: "text", label: "Email" },
   }}
   onSubmit={(data) => console.log(data)}
-/>
+/>;
 ```
 
 ### Resolver vs field-level `rules`
@@ -1303,12 +1311,12 @@ when `formProps.resolver` is provided. Define all validation in your schema inst
 
 **Bottom line: pick one approach and stick with it.**
 
-| | `rules` | Schema resolver |
-|---|---|---|
-| Simple forms | ✅ | ✅ |
-| Complex cross-field validation | ❌ | ✅ |
-| Type inference from schema | ❌ | ✅ (`z.infer`, `yup.InferType`) |
-| i18n for error messages | ✅ via `validationTranslation` | depends on schema setup |
+|                                | `rules`                        | Schema resolver                 |
+| ------------------------------ | ------------------------------ | ------------------------------- |
+| Simple forms                   | ✅                             | ✅                              |
+| Complex cross-field validation | ❌                             | ✅                              |
+| Type inference from schema     | ❌                             | ✅ (`z.infer`, `yup.InferType`) |
+| i18n for error messages        | ✅ via `validationTranslation` | depends on schema setup         |
 
 ### Handling undefined field values
 
@@ -1347,12 +1355,12 @@ Alternatively, set `defaultValues` at the form level:
 // without defaultValue in config
 const schema = z.object({
   name: z.preprocess((v) => v ?? "", z.string().min(1, "Name is required")),
-})
+});
 
 // with defaultValue: "" in config — no preprocess needed
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
-})
+});
 ```
 
 #### Yup-specific note
@@ -1368,15 +1376,15 @@ formProps={{ resolver: yupResolver(schema, { abortEarly: false }) }}
 ### Example: Zod
 
 ```tsx
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const schema = z.object({
   username: z.string().min(1, "Username is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-})
+});
 
-type LoginData = z.infer<typeof schema>
+type LoginData = z.infer<typeof schema>;
 
 <Form<LoginData>
   defaultValues={{ username: "", password: "" }}
@@ -1388,21 +1396,24 @@ type LoginData = z.infer<typeof schema>
   onSubmit={(data) => console.log(data)}
 >
   <button type="submit">Login</button>
-</Form>
+</Form>;
 ```
 
 ### Example: Yup
 
 ```tsx
-import * as yup from "yup"
-import { yupResolver } from "@hookform/resolvers/yup"
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const schema = yup.object({
   username: yup.string().required("Username is required"),
-  password: yup.string().min(6, "Password must be at least 6 characters").required(),
-})
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required(),
+});
 
-type LoginData = yup.InferType<typeof schema>
+type LoginData = yup.InferType<typeof schema>;
 
 <Form<LoginData>
   defaultValues={{ username: "", password: "" }}
@@ -1414,7 +1425,7 @@ type LoginData = yup.InferType<typeof schema>
   onSubmit={(data) => console.log(data)}
 >
   <button type="submit">Login</button>
-</Form>
+</Form>;
 ```
 
 ## DevTools
@@ -1442,9 +1453,7 @@ export const webFormRoot =
           {children}
         </form>
 
-        {enableDevTool && (
-          <DevTool control={control} />
-        )}
+        {enableDevTool && <DevTool control={control} />}
       </>
     );
   };
