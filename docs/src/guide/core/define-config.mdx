@@ -1,0 +1,111 @@
+---
+title: defineConfig helper
+---
+
+`defineConfig` is the second item in the array returned by `setupForm`.
+
+```ts
+const [ // [!code focus]
+  Form,
+  defineConfig, // [!code focus]
+  Section,
+] = setupForm(); // [!code focus]
+```
+
+:::tip
+`defineConfig` is used throughout this documentation, but since `setupForm()` returns an array, you can name it anything.
+:::
+
+## `defineConfig` for nested structures
+
+For flat form structures, `<Form<TModel>>` is enough as types flow naturally from `Form<TModel>` into the configuration. With nested structures, however:
+
+```ts
+type LoginData = {
+  account: {
+    username: string;
+    password: string;
+  };
+};
+````
+
+You have two options: use dot notation keys — `account.username` — or use `defineConfig` if you prefer your config to mirror the shape of your data model, which is typically the case when using the built-in `section` type.
+
+```tsx
+const [Form, defineConfig] = setupForm({
+  fieldMapping: defineMapping({
+    text: InputField,
+  }),
+  renderRoot: ({ children, onSubmit }) => (
+    <form onSubmit={onSubmit}>{children}</form>
+  ),
+});
+
+const ComplexObjectForm = () => (
+  <Form<LoginData>
+    config={{
+      account: {
+        type: "section", // built in type
+        config: defineConfig<LoginData["account"]>({
+          username: {
+            type: "text",
+          },
+          password: {
+            type: "text",
+          },
+        }),
+      },
+    }}
+  />
+);
+```
+
+## `defineConfig` for reusable configuration
+
+Another common use case for `defineConfig` is to define configurations once and import them wherever needed, while still preserving the same field mapping and typing rules.
+
+```tsx title="form.setup.ts"
+import { setupForm, defineMapping } from "react-headless-form";
+import InputField from "./InputField";
+
+export const [Form, defineConfig] = setupForm({
+  fieldMapping: defineMapping({
+    text: InputField,
+  }),
+  renderRoot: ({ children, onSubmit }) => (
+    <form onSubmit={onSubmit}>{children}</form>
+  ),
+});
+```
+
+```tsx title="login.form.ts"
+import type { LoginData } from "./types";
+import { defineConfig } from "./form.setup";
+
+export const loginFormConfig = defineConfig<LoginData>({
+  username: {
+    type: "text",
+    label: "Username",
+  },
+  password: {
+    type: "text",
+    props: {
+      type: "password",
+    },
+  },
+});
+```
+
+```tsx title="LoginPage.tsx"
+import { Form } from "./form.setup";
+import { loginFormConfig } from "./login.form";
+
+<Form<LoginData>
+  config={loginFormConfig}
+  onSubmit={(data) => {
+    console.log(data);
+  }}
+>
+  <button type="submit">Login</button>
+</Form>;
+```
