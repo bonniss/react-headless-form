@@ -24,7 +24,11 @@ export default defineConfig({
   },
   markdown: {
     shiki: {
-      theme: "catppuccin-macchiato",
+      // theme: "min-light",
+      themes: {
+        light: "min-light",
+        dark: "nord",
+      },
       transformers: [
         transformerNotationHighlight(),
         transformerNotationFocus(),
