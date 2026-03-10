@@ -1,20 +1,20 @@
-import * as path from 'node:path';
-import { defineConfig } from '@rspress/core';
+import * as path from "node:path";
+import { defineConfig } from "@rspress/core";
 
 export default defineConfig({
-  root: path.join(__dirname, 'src'),
-  title: 'React headless form',
-  icon: '/rspress-icon.png',
+  root: path.join(__dirname, "src"),
+  title: "React headless form",
+  icon: "/icon.png",
   logo: {
-    light: '/rspress-light-logo.png',
-    dark: '/rspress-dark-logo.png',
+    light: "/light-logo.png",
+    dark: "/dark-logo.png",
   },
   themeConfig: {
     socialLinks: [
       {
-        icon: 'github',
-        mode: 'link',
-        content: 'https://github.com/web-infra-dev/rspress',
+        icon: "github",
+        mode: "link",
+        content: "https://github.com/web-infra-dev/rspress",
       },
     ],
   },

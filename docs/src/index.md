@@ -13,7 +13,7 @@ hero:
       text: GitHub
       link: https://github.com/bonniss/react-headless-form
   image:
-    src: /logo.png
+    src: /icon.png
     alt: Logo
 features:
   - title: Bring Your Own UI
