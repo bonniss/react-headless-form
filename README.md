@@ -1,13 +1,11 @@
-# React headless form
+<div align="center">
+    <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
+        <img src="docs/src/public/light-logo.png" width="360">
+    </a>
+</div>
 
 > Form as configuration. Bring your own UI, entirely. Great DX. Built on React Hook Form.
 
-<div align="center">
-    <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
-        <img src="docs/src/public/light-logo.png" width="150">
-    </a>
-</div>
-    
 ![react-headless-form](README.gif)
 
 > [!WARNING]
@@ -22,6 +20,16 @@
 - 🛠️ **Extensible Form Root** — Empower your form shell by easily injecting DevTools, status bars, error summaries, or any custom logic via `renderRoot`.
 - 🧱 **Still just [React Hook Form](https://react-hook-form.com/)** — pass `useForm` options, access RHF hooks, and keep full control since fields live inside the form context.
 - 📱 **Platform-agnostic** — no web-specific assumptions. While not tested with React Native yet, compatibility should follow React Hook Form.
+
+## Installation
+
+```sh
+npm install react-headless-form
+# or
+pnpm add react-headless-form
+# or
+yarn add react-headless-form
+```
 
 ## Introduction
 
@@ -58,16 +66,6 @@ And that's it - you now have a working form. The reason step **0** comes first i
 With BlueForm, you focus on form structure — how fields are organized, how they relate to each other, and how the form behaves as a whole. UI becomes an implementation detail, not the driving concern.
 
 ## Getting started
-
-### Installation
-
-```sh
-npm install react-headless-form
-# or
-pnpm add react-headless-form
-# or
-yarn add react-headless-form
-```
 
 ### Your first form - A login form
 
