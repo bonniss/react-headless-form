@@ -5,7 +5,9 @@
 </div>
 
 <p align="center">
-Form as configuration. Bring your own UI, entirely. Great DX. Built on React Hook Form.
+    <b>
+        Form as configuration. Bring your own UI, entirely. Great DX. Built on React Hook Form.
+    </b>
 </p>
 
 ![react-headless-form](README.gif)
