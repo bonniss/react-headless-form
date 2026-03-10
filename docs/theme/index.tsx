@@ -1,6 +1,8 @@
 import { HomeLayout as BasicHomeLayout } from "@rspress/core/theme-original";
 import PackageInstall from "../components/PackageInstall";
 
+import "./index.css";
+
 const HomeLayout = () => (
   <BasicHomeLayout
     afterHeroActions={
