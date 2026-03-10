@@ -1,5 +1,9 @@
 # React headless form
 
+<center>
+  <img src="docs/src/public/icon.png" width="64">
+</center>
+    
 > Form as configuration. Bring your own UI, entirely. Great DX. Built on React Hook Form.
 
 ![react-headless-form](README.gif)
