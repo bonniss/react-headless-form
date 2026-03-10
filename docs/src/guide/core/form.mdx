@@ -1,0 +1,147 @@
+---
+title: Form component
+---
+
+`Form` is the first component in the array returned by `setupForm`.
+
+```ts
+const [
+  // [!code focus]
+  Form, // [!code focus]
+  defineConfig,
+  Section,
+] = setupForm(); // [!code focus]
+```
+
+:::tip
+`Form` is the sensible name used in this documentation. Since it is destructured from the array returned by `setupForm()`, you can rename it as needed.
+:::
+
+## `Form` bound to field mapping
+
+When a `Form` is created, it is bound to a specific field mapping.
+
+This mapping defines which field types are available and how they are rendered.
+
+By default, BlueForm provides a set of built-in structural field types (`inline`, `section`, `array`, `hidden`).
+
+Calling `setupForm()` with no arguments creates a form system that only includes these built-in types.
+
+```ts
+const [Form] = setupForm();
+```
+
+To extend the form with custom fields while keeping all built-in ones available, use `defineMapping`:
+
+```ts
+const [Form] = setupForm({
+  fieldMapping: defineMapping({
+    text: InputField,
+    select: SelectField,
+  }),
+});
+```
+
+With this setup, valid field types include:
+
+- all built-in field types
+- `"text"` and `"select"` defined above
+
+Any unknown field type will be caught at compile time.
+
+```ts
+config={{
+  username: {
+    type: "text", // ✅ custom
+  },
+  profile: {
+    type: "section", // ✅ built-in
+  },
+  age: {
+    type: "number", // ❌ compile-time error
+  },
+}}
+```
+
+## `Form` bound to a data model
+
+`Form` is generic. Field keys must match the data model, and `onSubmit` always receives fully typed data.
+
+```ts
+<Form<LoginData>
+  config={{
+    username: {
+      type: "text",
+    },
+    password: {
+      type: "text",
+    },
+  }}
+  onSubmit={(data) => {
+    // data is inferred as LoginData
+    data.username
+    data.password
+  }}
+/>
+```
+
+## `Form` can override base configuration
+
+Base configuration defined in `setupForm` applies to all forms created from it. In some cases, you may want to override this behavior for a specific form instance.
+
+Via `<Form />` props at usage time, `renderRoot` can be customized per form.
+
+:::danger
+`renderRoot` must be defined either during setup or when rendering `<Form />`.  
+If neither is provided, the form will throw an error.
+:::
+
+```tsx
+const [Form] = setupForm({
+  renderRoot: ({ children, onSubmit }) => (
+    <form className="default-form" onSubmit={onSubmit}>
+      {children}
+    </form>
+  ),
+});
+
+const RootOverridden = () => (
+  <Form
+    renderRoot={({ children, onSubmit }) => (
+      <form className="product-form" onSubmit={onSubmit}>
+        {children}
+      </form>
+    )}
+  />
+);
+```
+
+I18n behavior can also be overridden when needed:
+
+```tsx
+const [Form] = setupForm({
+  i18nConfig: {
+    t: defaultTranslate,
+  },
+});
+
+const I18nOverridden = () => (
+  <Form
+    i18nConfig={{
+      t: adminTranslate,
+    }}
+  />
+);
+```
+
+The only option that **cannot** be overridden is `fieldMapping`, even at runtime. It is fixed at setup time to preserve compile-time type safety.
+
+## `Form` accepts `children`
+
+Any children passed to the Form component are rendered inside the root container. This is typically used for submit buttons or additional UI.
+
+```tsx
+<Form config={config} onSubmit={handleSubmit}>
+  <button type="submit">Submit</button>
+</Form>
+```

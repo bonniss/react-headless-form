@@ -1,3 +1,81 @@
 ---
-title: setupForm
+title: Base setup
 ---
+
+This package does not expose a single global `<Form />` component. Instead, a `Form` engine bounded to a base configuration *is created through a setup step*.
+
+This setup determines how the form behaves by default: which field types are available, how the root form is rendered, and how validation or i18n is handled. Once created, the resulting `Form` component comes with several key advantages:
+
+- it is bound to a specific **field mapping**, restricting valid field types at compile time
+- it is bound to a **form data model**, ensuring strong typing for configuration and submission
+
+`setupForm()` acts as the entry point of a form system.
+
+```tsx
+import { setupForm, defineMapping } from "react-headless-form";
+import InputField from "./InputField";
+
+export const [Form, defineConfig, Section] = setupForm({
+  renderRoot: ({ children, onSubmit }) => (
+    <form onSubmit={onSubmit}>{children}</form>
+  ),
+  fieldMapping: defineMapping({
+    text: InputField,
+  }),
+  i18nConfig: {
+    t: (message) => message,
+  },
+});
+```
+
+`setupForm` accepts a single **options object** that defines the base behavior of the form system.
+
+| Option         | Description                                                                  |
+| -------------- | ---------------------------------------------------------------------------- |
+| `renderRoot`   | Defines how the root form element is rendered and how submission is handled. |
+| `fieldMapping` | Maps schema field types to React components responsible for rendering them.  |
+| `i18nConfig`   | Provides translation behavior for validation messages and labels.            |
+
+## `renderRoot`
+
+Controls how the root form element is rendered.
+
+This allows BlueForm to remain layout-agnostic and avoids tightly coupling the library to the web platform.
+
+```tsx
+renderRoot: ({ children, onSubmit }) => (
+  <form onSubmit={onSubmit}>
+    {children}
+  </form>
+)
+```
+
+## `fieldMapping`
+
+Defines which field types are available in form configuration.
+
+Each entry maps a schema type name to a React component that renders the field UI.
+
+```ts
+fieldMapping: defineMapping({
+  text: InputField,
+})
+```
+
+When a field in the form configuration declares:
+
+```ts
+type: "text"
+```
+
+the corresponding `InputField` component will be used to render it.
+
+## `i18nConfig`
+
+Provides translation support for validation messages and labels.
+
+```ts
+i18nConfig: {
+  t: (message) => message
+}
+```

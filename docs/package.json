@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@rspress/core": "^2.0.3",
+    "@shikijs/transformers": "^4.0.2",
     "react-headless-form": "^0.8.0"
   },
   "devDependencies": {

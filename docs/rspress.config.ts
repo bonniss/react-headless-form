@@ -1,5 +1,9 @@
 import * as path from "node:path";
 import { defineConfig } from "@rspress/core";
+import {
+  transformerNotationHighlight,
+  transformerNotationFocus,
+} from "@shikijs/transformers";
 
 export default defineConfig({
   root: path.join(__dirname, "src"),
@@ -21,6 +25,10 @@ export default defineConfig({
   markdown: {
     shiki: {
       theme: "catppuccin-macchiato",
+      transformers: [
+        transformerNotationHighlight(),
+        transformerNotationFocus(),
+      ],
     },
   },
 });
