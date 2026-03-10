@@ -7,8 +7,8 @@ hero:
   tagline: Bring your own UI, entirely. Built on React Hook Form.
   actions:
     - theme: brand
-      text: Quick Start
-      link: /guide/
+      text: Get started
+      link: /guide/start/quick-start
     - theme: alt
       text: GitHub
       link: https://github.com/bonniss/react-headless-form

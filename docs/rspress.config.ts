@@ -18,4 +18,9 @@ export default defineConfig({
       },
     ],
   },
+  markdown: {
+    shiki: {
+      theme: "catppuccin-macchiato",
+    },
+  },
 });

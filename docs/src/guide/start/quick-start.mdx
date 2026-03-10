@@ -1,0 +1,134 @@
+---
+title: Quick start
+---
+
+# Get started
+
+## Installation
+
+import { PackageManagerTabs } from '@rspress/core/theme';
+
+<PackageManagerTabs command="install react-headless-form" />
+
+## Basic usage
+
+Let's start with a simple login form. The form data is represented by the following TypeScript type:
+
+```tsx
+type LoginData = {
+  username: string;
+  password: string;
+};
+```
+
+### 0. Define a field
+
+```tsx
+import { useField } from "react-headless-form";
+import { FunctionComponent } from "react";
+
+interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+
+const InputField: FunctionComponent<InputFieldProps> = (props) => {
+  const {
+    fieldProps: {
+      id,
+      name,
+      value,
+      onChange,
+      errorMessage,
+      label,
+      description,
+      required,
+      disabled,
+      readOnly,
+      visible,
+    },
+  } = useField();
+
+  if (!visible) return null;
+
+  return (
+    <div id={id}>
+      <span style={{ marginRight: 10 }}>
+        {label} {required && "*"}
+      </span>
+      <input
+        {...props}
+        name={name}
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+        readOnly={readOnly}
+        placeholder={props.placeholder ?? label}
+        aria-required={required}
+        aria-invalid={Boolean(errorMessage)}
+      />
+      {description && <div className="fieldDescription">{description}</div>}
+      {errorMessage && <div className="fieldError">{errorMessage}</div>}
+    </div>
+  );
+};
+
+export default InputField;
+```
+
+Notice that the field receives everything it needs from `useField` hook to be functional without needing to know where those values come from.
+
+### 1. Setup the engine
+
+```tsx
+import { setupForm, defineMapping } from "react-headless-form"
+import InputField from "./InputField"
+
+export const [Form] = setupForm({
+  fieldMapping: defineMapping({
+    text: InputField,
+  }),
+})
+```
+
+### 2. Build the form
+
+```tsx
+const BasicForm = () => {
+  return (
+    <Form<LoginData>
+      renderRoot={({ children, onSubmit }) => (
+        <form onSubmit={onSubmit}>{children}</form>
+      )}
+      onSubmit={(data) => alert(JSON.stringify(data, null, 2))}
+      config={{
+        username: {
+          type: "text",
+          label: "Your name",
+          rules: {
+            required: "Name is required",
+          },
+        },
+        password: {
+          type: "text",
+          label: "Password",
+          rules: {
+            required: "Password is required",
+          },
+          props: {
+            // html input type
+            type: "password",
+          },
+        },
+      }}
+    >
+      <button type="submit">Submit</button>
+    </Form>
+  );
+};
+```
+
+### Result
+
+import { BasicForm } from '../../../components/sample-forms/basic'
+
+:::info{title="Result"}
+<BasicForm />
+:::
