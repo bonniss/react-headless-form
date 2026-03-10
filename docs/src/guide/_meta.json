@@ -3,5 +3,10 @@
     "type": "dir-section-header",
     "name": "start",
     "label": "Getting started"
+  },
+  {
+    "type": "dir-section-header",
+    "name": "core",
+    "label": "Core"
   }
 ]
