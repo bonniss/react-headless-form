@@ -1,0 +1,59 @@
+---
+title: Conditional Fields
+---
+
+# Conditional Fields
+
+Demonstrates `visible` and `disabled` as functions — fields that appear or become interactive based on other field values, with no manual `useWatch` or conditional rendering in component code.
+
+## Preview & Code
+
+import { Tab, Tabs } from '@rspress/core/theme';
+import ConditionalForm from './_shared/EgConditionalForm';
+
+<Tabs>
+  <Tab label="Preview">
+    <ConditionalForm />
+  </Tab>
+  <Tab label="Code">
+    ```tsx lineNumbers file="./_shared/EgConditionalForm.tsx"
+    ```
+  </Tab>
+</Tabs>
+
+## How it works
+
+**`visible` as a function** — receives the current form values and returns a boolean. BlueForm evaluates it reactively on every value change:
+
+```ts
+email: {
+  visible: (values) => values.contact_method === "email",
+}
+```
+
+**`defaultValue` on select fields** — without a `defaultValue`, the select value starts as `undefined`, so `visible` conditions that depend on it won't evaluate correctly on first render. Always set a `defaultValue` that matches one of the options:
+
+```ts
+contact_method: {
+  defaultValue: "email",
+}
+```
+
+**Conditional validation with `validate`** — `required` runs regardless of visibility, so hidden fields can still block submission. Use `validate` instead, and short-circuit when the field is not relevant:
+
+```ts
+email: {
+  rules: {
+    validate: (value, values) =>
+      values.contact_method !== "email" || Boolean(value) || "Email is required",
+  },
+}
+```
+
+The pattern is: *if this field is not active, pass — otherwise check the value.*
+
+**No `useWatch`** — conditional logic lives entirely in config. Field components never need to know about other fields or subscribe to form state changes themselves.
+
+:::tip
+`disabled` works the same way as `visible` — pass a function instead of a boolean and BlueForm handles the reactivity. Unlike hidden fields, disabled fields are excluded from the submitted values by RHF automatically.
+:::

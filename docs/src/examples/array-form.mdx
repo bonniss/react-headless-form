@@ -1,0 +1,50 @@
+---
+title: Array Fields
+---
+
+# Array Fields
+
+Demonstrates a repeatable group of fields using the `array` type — add, remove, and duplicate items, with array-level validation.
+
+## Preview & Code
+
+import { Tab, Tabs } from '@rspress/core/theme';
+import ArrayForm from './_shared/EgArrayForm';
+
+<Tabs>
+  <Tab label="Preview">
+    <ArrayForm />
+  </Tab>
+  <Tab label="Code">
+    ```tsx lineNumbers file="./_shared/EgArrayForm.tsx"
+    ```
+  </Tab>
+</Tabs>
+
+## How it works
+
+**`render` as the array shell** — the `render` function is responsible for the container, item wrappers, and action buttons. It does not render individual fields directly. `renderItem(field, index)` handles each item using `props.config` as the field definition:
+
+```tsx
+{items.map((field, index) => (
+  <div key={field.id}>
+    {renderItem(field, index)}
+    <button onClick={() => remove(index)}>Remove</button>
+  </div>
+))}
+```
+
+**`defineConfig<T>`** — scopes the item config to `ExperienceItem`, so field keys and types are fully checked against the item model.
+
+**`duplicate(index)`** — appends a copy of the item at the given index using the current form values, not the initial defaults. User edits are preserved in the duplicate.
+
+**Array-level validation** — `rules` on the array field apply to the array itself. Here `validate` checks that at least one item exists before allowing submission:
+
+```ts
+rules: {
+  validate: (value) =>
+    (value && value.length > 0) || "Add at least one experience",
+}
+```
+
+**`field.id` as key** — always use `field.id` from `useArrayField` as the React key for item wrappers, not `index`. RHF generates stable IDs that survive reordering and removal.

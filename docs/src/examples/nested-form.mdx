@@ -1,0 +1,48 @@
+---
+title: Nested Form
+---
+
+Demonstrates how to mirror a nested data model in form config using `section` with `nested: true` and `defineConfig` for typed config fragments.
+
+## Demo
+
+import { Tab, Tabs } from '@rspress/core/theme';
+import NestedForm from './_shared/EgNestedForm';
+
+<Tabs>
+<Tab label="Preview">
+
+<NestedForm />
+
+</Tab>
+<Tab label="Code">
+
+```tsx lineNumbers file="./_shared/EgNestedForm.tsx"
+```
+
+</Tab>
+</Tabs>
+
+## How it works
+
+**`section` with `nested: true`** — the `address` key becomes a namespace in the form state. Submitted data reflects the model shape:
+
+```ts
+{
+  fullName: "Jane Doe",
+  email: "jane@example.com",
+  address: {
+    street: "123 Main St",
+    city: "Hanoi",
+    country: "Vietnam",
+  }
+}
+```
+
+**`defineConfig<AddressData>`** — explicitly scopes the config fragment to `AddressData`, giving TypeScript full visibility into field keys and types within the section. Without it, TypeScript cannot infer the nested model shape from `Form<ProfileData>` alone.
+
+**Separation of concerns** — `addressConfig` is defined outside the form and can be imported and reused in any other form that has an `address` field of the same shape.
+
+:::tip
+If you prefer not to use `section`, dot notation keys are an alternative — `"address.street"` maps directly to the nested path with no extra setup. Use `section` when you want the config structure to mirror the data model.
+:::
