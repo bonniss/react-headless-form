@@ -1,5 +1,6 @@
 import { HomeLayout as BasicHomeLayout } from "@rspress/core/theme-original";
 import PackageInstall from "../components/PackageInstall";
+import showGif from "../show.gif";
 
 import "./index.css";
 import "./example.css";
@@ -24,7 +25,7 @@ const HomeLayout = () => (
           overflow: "hidden",
         }}
       >
-        <img src="/show.gif" />
+        <img src={showGif} />
       </div>
     }
   />

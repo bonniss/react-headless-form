@@ -1,6 +1,6 @@
 <div align="center">
     <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
-        <img src="docs/src/public/light-logo.png" width="360">
+        <img src="docs/logo.png" width="360">
     </a>
 </div>
 
@@ -10,7 +10,7 @@
     </b>
 </p>
 
-![react-headless-form](docs/src/public/show.gif)
+![react-headless-form](docs/show.gif)
 
 > [!WARNING]
 > This project is still under active development. Expect breaking changes until `v1.0.0` is reached.

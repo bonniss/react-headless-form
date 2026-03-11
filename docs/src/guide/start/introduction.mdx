@@ -2,7 +2,9 @@
 title: Introduction
 ---
 
-<img src="/light-logo.png" width="360" style={{ margin: 'auto' }} />
+import logo from '../../../logo.png'
+
+<img src={logo} width="360" style={{ margin: 'auto' }} />
 
 :::info{title="A naming note"}
 This package was originally named `blueform`, but npm rejected the publication because the name was deemed too similar to an existing package. We then switched to **`react-headless-form`** — a clear and descriptive name, though somewhat verbose. Unfortunately, abbreviating it as “RHF” isn’t practical, as that acronym is almost universally associated with **React Hook Form** (for the skeptics — just try googling “RHF”).
