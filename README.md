@@ -10,7 +10,7 @@
     </b>
 </p>
 
-![react-headless-form](README.gif)
+![react-headless-form](docs/src/public/show.gif)
 
 > [!WARNING]
 > This project is still under active development. Expect breaking changes until `v1.0.0` is reached.

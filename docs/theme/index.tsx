@@ -13,6 +13,19 @@ const HomeLayout = () => (
         <PackageInstall />
       </div>
     }
+    afterHero={
+      <div
+        style={{
+          maxWidth: "72rem",
+          margin: "-3rem auto",
+          marginBottom: "4rem",
+          borderRadius: "var(--rp-radius)",
+          overflow: "hidden",
+        }}
+      >
+        <img src="/show.gif" />
+      </div>
+    }
   />
 );
 
