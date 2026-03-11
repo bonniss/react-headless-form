@@ -6,5 +6,12 @@
   {
     "type": "dir",
     "name": "builtin-types"
-  }
+  },
+  {
+    "type": "dir",
+    "name": "field-authoring"
+  },
+  "i18n",
+  "schema-validation",
+  "devtools"
 ]

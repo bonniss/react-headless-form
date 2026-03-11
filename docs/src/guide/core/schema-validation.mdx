@@ -1,0 +1,171 @@
+---
+title: Schema validation
+---
+
+
+BlueForm supports schema-based validation via `formProps.resolver`, which accepts any resolver compatible with React Hook Form — including [Zod](https://zod.dev), [Yup](https://github.com/jquense/yup), and [others](https://react-hook-form.com/docs/useform#resolver).
+
+### Setup
+
+Install your schema library and the RHF resolvers package:
+
+```sh
+# Zod
+pnpm add zod @hookform/resolvers
+
+# Yup
+pnpm add yup @hookform/resolvers
+```
+
+Pass the resolver via `formProps`:
+
+```tsx
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email"),
+});
+
+type FormData = z.infer<typeof schema>;
+
+<Form<FormData>
+  formProps={{ resolver: zodResolver(schema) }}
+  config={{
+    name: { type: "text", label: "Name" },
+    email: { type: "text", label: "Email" },
+  }}
+  onSubmit={(data) => console.log(data)}
+/>;
+```
+
+### Resolver vs field-level `rules`
+
+When `formProps.resolver` is provided, **field-level `rules` are automatically disabled**. BlueForm detects the conflict and strips `rules` from `useController` to prevent both running simultaneously and producing unpredictable error messages.
+
+A dev-mode warning will appear if both are present:
+
+```
+[react-headless-form] `rules` defined in field config are automatically disabled
+when `formProps.resolver` is provided. Define all validation in your schema instead.
+```
+
+**Bottom line: pick one approach and stick with it.**
+
+|                                | `rules`                        | Schema resolver                 |
+| ------------------------------ | ------------------------------ | ------------------------------- |
+| Simple forms                   | ✅                             | ✅                              |
+| Complex cross-field validation | ❌                             | ✅                              |
+| Type inference from schema     | ❌                             | ✅ (`z.infer`, `yup.InferType`) |
+| i18n for error messages        | ✅ via `validationTranslation` | depends on schema setup         |
+
+### Handling undefined field values
+
+BlueForm fields start as `undefined` when untouched. Most schema libraries expect a specific type and will throw a type error instead of a custom message when they receive `undefined`.
+
+The recommended fix is to provide `defaultValue` for each field:
+
+```tsx
+config={{
+  name: {
+    type: "text",
+    defaultValue: "",  // field starts as "" instead of undefined
+  },
+  age: {
+    type: "text",
+    defaultValue: 0,
+  },
+}}
+```
+
+Alternatively, set `defaultValues` at the form level:
+
+```tsx
+<Form
+  defaultValues={{ name: "", email: "", age: 0 }}
+  formProps={{ resolver: zodResolver(schema) }}
+  ...
+/>
+```
+
+#### Zod-specific note
+
+`z.string()` does not accept `undefined` and will throw a type error before reaching your custom message. Use `z.preprocess` to coerce `undefined` to `""`:
+
+```ts
+// without defaultValue in config
+const schema = z.object({
+  name: z.preprocess((v) => v ?? "", z.string().min(1, "Name is required")),
+});
+
+// with defaultValue: "" in config — no preprocess needed
+const schema = z.object({
+  name: z.string().min(1, "Name is required"),
+});
+```
+
+#### Yup-specific note
+
+Yup's `.required()` correctly handles empty strings out of the box. Setting `defaultValue: ""` in field config is sufficient — no additional schema workaround needed.
+
+Yup defaults to `abortEarly: true`, which stops at the first error. To show all errors simultaneously (recommended for form UX), pass `{ abortEarly: false }`:
+
+```tsx
+formProps={{ resolver: yupResolver(schema, { abortEarly: false }) }}
+```
+
+### Example: Zod
+
+```tsx
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+type LoginData = z.infer<typeof schema>;
+
+<Form<LoginData>
+  defaultValues={{ username: "", password: "" }}
+  formProps={{ resolver: zodResolver(schema) }}
+  config={{
+    username: { type: "text", label: "Username" },
+    password: { type: "text", label: "Password", props: { type: "password" } },
+  }}
+  onSubmit={(data) => console.log(data)}
+>
+  <button type="submit">Login</button>
+</Form>;
+```
+
+### Example: Yup
+
+```tsx
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+const schema = yup.object({
+  username: yup.string().required("Username is required"),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required(),
+});
+
+type LoginData = yup.InferType<typeof schema>;
+
+<Form<LoginData>
+  defaultValues={{ username: "", password: "" }}
+  formProps={{ resolver: yupResolver(schema, { abortEarly: false }) }}
+  config={{
+    username: { type: "text", label: "Username" },
+    password: { type: "text", label: "Password", props: { type: "password" } },
+  }}
+  onSubmit={(data) => console.log(data)}
+>
+  <button type="submit">Login</button>
+</Form>;
+```
