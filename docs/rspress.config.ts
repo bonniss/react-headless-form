@@ -7,6 +7,7 @@ import {
 } from "@shikijs/transformers";
 
 export default defineConfig({
+  base: "/react-headless-form/",
   root: path.join(__dirname, "src"),
   title: "React headless form",
   icon: "/icon.png",
