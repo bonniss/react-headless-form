@@ -30,7 +30,7 @@ For simple, non-nested fields like `name`, keys map directly to model properties
 
 For nested fields, there are two supported approaches.
 
-## Option A: Using structural primitives
+**Option A: Using structural primitives**
 
 Use `section` (with `nested: true`) for nested objects:
 
@@ -65,7 +65,7 @@ Use `array` for arrays of objects:
 
 When using `section` (nested) or `array`, you must call `defineConfig` for the nested model (`User["profile"]`, `User["addresses"][number]`), because TypeScript cannot automatically infer nested object shapes across abstraction boundaries.
 
-## Option B: Using flat nested keys
+**Option B: Using flat nested keys**
 
 You can also reference nested object paths using dot notation:
 
@@ -85,33 +85,6 @@ Invalid paths are caught at compile time:
 
 Flat keys apply to **object paths only**; array paths are intentionally excluded, as their indices are resolved dynamically at runtime.
 
-## Field props
-
-Each field’s `type` maps directly to a component registered in `fieldMapping`.
-
-```ts
-const fieldMapping = defineMapping({
-  text: InputField,
-  select: SelectField,
-});
-```
-
-BlueForm ensures that:
-
-- `type` must exist in `fieldMapping`
-- `props` must match the mapped component’s props
-
-```ts
-defineConfig<User>({
-  name: {
-    type: "text",
-    props: {
-      placeholder: "Your name", // ✅ valid
-      options: [], // ❌ invalid for text field
-    },
-  },
-});
-```
 
 ## Virtual configuration keys
 
@@ -122,7 +95,7 @@ These nodes simply **should not be validated against the form model keys**.
 
 BlueForm uses a simple convention:
 
-> Any configuration key starting with `__` is treated as a **virtual key**.
+> Any configuration key starting with `__` (two underscores) is treated as a **virtual key**.
 
 Virtual keys are excluded from model key checking, so TypeScript will not raise errors for them.
 
@@ -156,11 +129,38 @@ Virtual keys are ideal for:
 
 ### Type guidance, not runtime enforcement
 
-> [!IMPORTANT]
->
-> Virtual keys are a **type-level convention** designed to improve authoring experience and maintain separation between data and UI.
->
-> They do not enforce runtime isolation.
-> All fields still have access to React Hook Form’s `useFormContext`, meaning runtime reads or mutations of form state remain possible.
->
-> It is the developer’s responsibility to follow the convention intentionally and ensure that virtual nodes do not introduce unintended side effects.
+Virtual keys are a **type-level convention** designed to improve authoring experience and maintain separation between data and UI.
+
+They do not enforce runtime isolation.
+
+All fields still have access to React Hook Form’s `useFormContext`, meaning runtime reads or mutations of form state remain possible.
+
+It is the developer’s responsibility to follow the convention intentionally and ensure that virtual nodes do not introduce unintended side effects.
+
+## Field props
+
+Each field’s `type` maps directly to a component registered in `fieldMapping`.
+
+```ts
+const fieldMapping = defineMapping({
+  text: InputField,
+  select: SelectField,
+});
+```
+
+BlueForm ensures that:
+
+- `type` must exist in `fieldMapping`
+- `props` must match the mapped component’s props
+
+```ts
+defineConfig<User>({
+  name: {
+    type: "text",
+    props: {
+      placeholder: "Your name", // ✅ valid
+      options: [], // ❌ invalid for text field
+    },
+  },
+});
+```

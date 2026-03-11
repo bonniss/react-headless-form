@@ -11,6 +11,7 @@
     "type": "dir",
     "name": "field-authoring"
   },
+  "type-safety",
   "i18n",
   "schema-validation",
   "devtools"
