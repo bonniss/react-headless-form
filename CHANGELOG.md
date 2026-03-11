@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.2](https://github.com/bonniss/react-headless-form/compare/v0.8.1...v0.8.2) (2026-03-11)
+
+
+### Bug Fixes
+
+* **docs:** import static assets to fix base path issue ([ef68e83](https://github.com/bonniss/react-headless-form/commit/ef68e837cdaf902b0ce8b5dcf5cd125b4e2926fb))
+* **docs:** set base path for GitHub Pages deployment ([305bfdd](https://github.com/bonniss/react-headless-form/commit/305bfddd004859872363b40700266914089afe16))
+
 ## [0.8.1](https://github.com/bonniss/react-headless-form/compare/v0.8.0...v0.8.1) (2026-03-11)
 
 
