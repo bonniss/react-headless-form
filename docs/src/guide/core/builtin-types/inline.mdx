@@ -1,0 +1,58 @@
+---
+title: Inline
+---
+
+Type `inline` allow you to define a field directly in the form configuration without creating a reusable component or registering it through `fieldMapping`.
+
+### `inline` for instant fields
+
+`inline` is useful when you need a field quickly for prototyping, experimentation, or a one-off use.
+
+```tsx
+password: {
+  type: "inline",
+  label: "Password",
+  render: ({ fieldProps: {
+    label,
+    value,
+    onChange,
+  }}) => (
+    <input
+      type="password"
+      placeholder={label}
+      value={value}
+      onChange={onChange}
+    />
+  ),
+}
+```
+
+### `inline` for special-case rendering
+
+Some fields are highly specific and only appear in a single form. Using `inline` in these situations keeps the configuration self-contained and avoids adding rarely-used components to `fieldMapping`.
+
+```tsx
+price: {
+  type: "inline",
+  label: "Price",
+  render: ({ fieldProps: { value, onChange } }) => {
+    const formatted =
+      value == null
+        ? ""
+        : value.toLocaleString("en-US", {
+            style: "currency",
+            currency: "USD",
+          });
+
+    return (
+      <input
+        value={formatted}
+        onChange={(e) => {
+          const raw = e.target.value.replace(/[^\d.]/g, "");
+          onChange?.(raw ? Number(raw) : undefined);
+        }}
+      />
+    );
+  },
+}
+```

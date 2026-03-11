@@ -5,6 +5,9 @@
     "label": "Getting started"
   },
   {
+    "type": "divider"
+  },
+  {
     "type": "dir-section-header",
     "name": "core",
     "label": "Core"

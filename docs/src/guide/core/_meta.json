@@ -1,1 +1,10 @@
-["setup", "form", "define-config", "section"]
+[
+  "setup",
+  "form",
+  "define-config",
+  "section",
+  {
+    "type": "dir",
+    "name": "builtin-types"
+  }
+]
