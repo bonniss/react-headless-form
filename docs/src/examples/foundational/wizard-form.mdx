@@ -2,21 +2,19 @@
 title: Multi-step Wizard
 ---
 
-# Multi-step Wizard
-
 A three-step registration wizard built entirely with `section` composition. All steps share one RHF form instance — no state reset between steps, and full cross-step validation on submit.
 
 ## Preview & Code
 
 import { Tab, Tabs } from '@rspress/core/theme';
-import WizardForm from './_shared/EgWizardForm';
+import WizardForm from '../_shared/EgWizardForm';
 
 <Tabs>
   <Tab label="Preview">
     <WizardForm />
   </Tab>
   <Tab label="Code">
-    ```tsx lineNumbers file="./_shared/EgWizardForm.tsx"
+    ```tsx lineNumbers file="../_shared/EgWizardForm.tsx"
     ```
   </Tab>
 </Tabs>
