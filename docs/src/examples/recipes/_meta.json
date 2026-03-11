@@ -1,0 +1,9 @@
+[
+  "devtools",
+  "i18n",
+  {
+    "type": "dir",
+    "name": "integrations",
+    "label": "Integrations"
+  }
+]
