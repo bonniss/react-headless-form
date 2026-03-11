@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.1](https://github.com/bonniss/react-headless-form/compare/v0.8.0...v0.8.1) (2026-03-11)
+
+
+### Bug Fixes
+
+* **docs:** fix DevTools import casing for case-sensitive filesystem ([79a9dcc](https://github.com/bonniss/react-headless-form/commit/79a9dcc3dfc61c8782c9f9c1576c10e81604d987))
+* **docs:** use ESM syntax in postcss config ([3928998](https://github.com/bonniss/react-headless-form/commit/3928998631d53fcba919b6b93d428faa7322d600))
+
 ## [0.8.0](https://github.com/bonniss/react-headless-form/compare/v0.7.5...v0.8.0) (2026-03-02)
 
 
