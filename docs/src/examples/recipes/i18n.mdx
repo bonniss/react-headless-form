@@ -1,0 +1,75 @@
+---
+title: Internationalization (i18n)
+---
+
+BlueForm handles i18n at the **orchestration level**, not inside field components. Labels, descriptions, and validation messages are translated before they reach fields — field components always receive ready-to-render strings and never need to know about locales or translation libraries.
+
+```ts
+fieldProps.label        // already translated
+fieldProps.description  // already translated
+fieldProps.errorMessage // already translated
+```
+
+i18n is configured once in `setupForm` via `i18nConfig` and is entirely optional — if omitted, all text values are treated as plain strings.
+
+## Translating labels and descriptions
+
+The `t` function receives whatever string is in field config and returns the translated value. BlueForm does not dictate key format — use any convention your app already has.
+
+import { Tab, Tabs } from '@rspress/core/theme';
+import EgI18nMessages from '../_shared/EgI18nMessages';
+
+<Tabs>
+  <Tab label="Preview">
+    <EgI18nMessages />
+  </Tab>
+  <Tab label="Code">
+    ```tsx file="../_shared/EgI18nMessages.tsx"
+    ```
+  </Tab>
+</Tabs>
+
+## Translating validation messages
+
+`validationTranslation` maps RHF rule names to translation keys. When a field fails a rule, BlueForm looks up the key and passes it through `t` along with contextual params — `field` (the translated label), and rule-specific values like `minLength`.
+
+This means validation rules stay as plain RHF rules — no translation keys inside `rules`:
+
+```ts
+rules: {
+  required: true,      // not "validation.required"
+  minLength: 3,        // not a message string
+}
+```
+
+import EgI18nValidation from '../_shared/EgI18nValidation';
+
+<Tabs>
+  <Tab label="Preview">
+    <EgI18nValidation />
+  </Tab>
+  <Tab label="Code">
+    ```tsx file="../_shared/EgI18nValidation.tsx"
+    ```
+  </Tab>
+</Tabs>
+
+## With i18next
+
+Wire `i18next.t` directly into `i18nConfig.t`. The example below includes a language toggle to demonstrate that the form re-renders correctly when the locale changes.
+
+import EgI18nI18next from '../_shared/EgI18nI18next';
+
+<Tabs>
+  <Tab label="Preview">
+    <EgI18nI18next />
+  </Tab>
+  <Tab label="Code">
+    ```tsx file="../_shared/EgI18nI18next.tsx"
+    ```
+  </Tab>
+</Tabs>
+
+:::tip
+The `key={i18n.language}` on `Form` forces a remount when the language changes, ensuring labels and error messages re-resolve through the updated `t` function. Without it, already-rendered fields would keep their previous translated strings until they re-validate.
+:::

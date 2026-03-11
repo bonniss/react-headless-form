@@ -1,0 +1,70 @@
+---
+title: Internationalization (i18n)
+---
+
+
+BlueForm handles i18n at the **form orchestration level**, not inside field components. Labels, descriptions, and validation messages are translated **before** they reach fields.
+Field components always receive ready-to-render strings.
+
+```ts
+fieldProps.label;
+fieldProps.description;
+fieldProps.errorMessage;
+```
+
+Fields should never need to know about locales or translation libraries.
+
+### Basic setup
+
+i18n is configured once during `setupForm`. i18n is completely optional. If no `i18nConfig` is provided, all text values are treated as plain strings.
+
+```ts
+const [Form] = setupForm({
+  i18nConfig: {
+    t: (message, params) => translate(message, params),
+  },
+});
+```
+
+### Translating validation messages
+
+```ts
+const [Form] = setupForm({
+  i18nConfig: {
+    validationTranslation: {
+      required: "validation.required",
+    },
+    t: (message, params) => `${params?.field} is required`,
+  },
+});
+```
+
+Validation rules remain standard RHF rules.
+
+### Example: using i18next
+
+```ts
+import i18next from "i18next";
+
+const [Form] = setupForm({
+  i18nConfig: {
+    t: (key, params) => i18next.t(key, params),
+    validationTranslation: {
+      required: "validation.required",
+    },
+  },
+});
+```
+
+```ts
+{
+  username: {
+    type: "text",
+    label: "form.username.label",
+    description: "form.username.description",
+    rules: {
+      required: true,
+    },
+  },
+}
+```

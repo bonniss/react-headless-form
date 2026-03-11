@@ -1,0 +1,15 @@
+---
+title: Built-in types
+---
+
+BlueForm ships with a built-in set of composable primitives that are always available, independent of `fieldMapping`.
+
+| Type      | Purpose    | In form state | Submitted |
+| --------- | ---------- | ------------- | --------- |
+| `inline`  | Field      | ✓             | ✓         |
+| `section` | Container  | Optional¹     | Optional¹ |
+| `array`   | Field list | ✓             | ✓         |
+| `hidden`  | Hidden     | ✓             | ✓         |
+
+¹ `section` participates in form state only when `nested: true` and a `config` is provided.
+Otherwise, it acts as a structural container.

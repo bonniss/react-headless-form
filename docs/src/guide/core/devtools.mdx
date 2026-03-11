@@ -1,0 +1,85 @@
+---
+title: DevTools
+---
+
+[React Hook Form DevTools](https://react-hook-form.com/dev-tools/) lets you inspect form state, field values, and errors in real time. Since BlueForm exposes `formMethods` via `renderRoot`, wiring DevTools requires no special integration — just place it next to the form.
+
+:::tip
+`DevTool` renders a floating panel outside the form DOM — it does not affect form layout or submission behavior.
+:::
+
+:::warning
+`@hookform/devtools` should be a dev dependency only. Make sure it is not included in production bundles by using dynamic imports or build-time tree shaking.
+:::
+
+## Installation
+
+import { PackageManagerTabs } from "@rspress/core/theme-original";
+
+<PackageManagerTabs command="install -D @hookform/devtools" />
+
+## Basic usage
+
+The simplest approach — add DevTools directly in `renderRoot` via `useFormContext`:
+
+```tsx
+import { DevTool } from '@hookform/devtools'
+
+const [Form] = setupForm({
+  renderRoot: ({ children, onSubmit, formMethods: { control } }) => (
+    <>
+      <form onSubmit={onSubmit}>{children}</form>
+      <DevTool control={control} placement="top-left" />
+    </>
+  ),
+  fieldMapping: defineMapping({ ... }),
+})
+```
+
+## Per-form control with a factory
+
+For more control — enable DevTools on some forms and not others — use a `renderRoot` factory:
+
+```tsx
+import { DevTool } from "@hookform/devtools";
+
+type FormRootOptions = React.FormHTMLAttributes<HTMLFormElement> & {
+  devTool?: boolean;
+};
+
+const formRoot =
+  ({ devTool = false, ...formProps }: FormRootOptions = {}) =>
+  ({ children, onSubmit, formMethods: { control } }) => (
+    <>
+      <form onSubmit={onSubmit} {...formProps}>
+        {children}
+      </form>
+      {devTool && <DevTool control={control} />}
+    </>
+  );
+```
+
+Set it as the default in `setupForm`:
+
+```tsx
+export const [Form] = setupForm({
+  renderRoot: formRoot({ devTool: true }),
+  fieldMapping: defineMapping({ ... }),
+})
+```
+
+Or override per form instance:
+
+```tsx
+// DevTools on
+<Form renderRoot={formRoot({ devTool: true })} ... />
+
+// DevTools off (e.g. in production build)
+<Form renderRoot={formRoot({ devTool: false })} ... />
+```
+
+## Conditionally enable in development only
+
+```tsx
+renderRoot: formRoot({ devTool: process.env.NODE_ENV === "development" });
+```

@@ -1,0 +1,32 @@
+---
+title: Login Form
+---
+
+A minimal form with two fields, basic validation, and a submit handler. This is the starting point — every other example builds on this pattern.
+
+## Preview & Code
+
+import { Tab, Tabs } from '@rspress/core/theme';
+import LoginForm from '../_shared/EgLoginForm';
+
+<Tabs>
+<Tab label="Preview">
+<LoginForm />
+</Tab>
+<Tab label="Code">
+```tsx lineNumbers file="../_shared/EgLoginForm.tsx"
+```
+</Tab>
+</Tabs>
+
+## How it works
+
+**`Form<LoginData>`** — the generic parameter binds the config to the data model. TypeScript will error if a field key doesn't exist on `LoginData`, or if `type` doesn't match the registered `fieldMapping`.
+
+**`rules`** — standard RHF validation rules. Errors are resolved to `fieldProps.errorMessage` inside the field component automatically.
+
+**`props: { type: 'password' }`** — extra props passed directly to `InputField`. BlueForm enforces at compile time that these match the component's declared prop types.
+
+**`onSubmit`** — called only when validation passes. `data` is typed as `LoginData`.
+
+No `useForm`, no `Controller`, no `register` — the engine handles all RHF wiring. The form is described entirely as configuration.

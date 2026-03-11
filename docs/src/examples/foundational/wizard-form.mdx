@@ -1,0 +1,52 @@
+---
+title: Multi-step Wizard
+---
+
+A three-step registration wizard built entirely with `section` composition. All steps share one RHF form instance — no state reset between steps, and full cross-step validation on submit.
+
+## Preview & Code
+
+import { Tab, Tabs } from '@rspress/core/theme';
+import WizardForm from '../_shared/EgWizardForm';
+
+<Tabs>
+  <Tab label="Preview">
+    <WizardForm />
+  </Tab>
+  <Tab label="Code">
+    ```tsx lineNumbers file="../_shared/EgWizardForm.tsx"
+    ```
+  </Tab>
+</Tabs>
+
+## How it works
+
+**Step state lives outside the form** — `step` is plain `useState`. The form engine has no concept of steps — it only sees three `section` fields with `visible` conditions:
+
+```ts
+account: {
+  type: "section",
+  visible: () => step === 0,
+  props: { nested: true, component: AccountStep },
+},
+```
+
+**One RHF instance for all steps** — data entered in step 1 is still in form state when the user reaches step 3. Navigating back and forth never resets values.
+
+**Validation runs across all steps on submit** — RHF validates the entire model regardless of which step is currently visible. If step 1 has an error, it will surface on final submission.
+
+**`Section` fills the boundary** — each step component receives section-level context via `useField`, checks `fieldProps.visible`, then uses `Section<T>` to render its own typed config fragment:
+
+```tsx
+function AccountStep() {
+  const { fieldProps } = useField()
+  if (!fieldProps.visible) return null
+  return <Section<WizardData["account"]> config={accountConfig} />
+}
+```
+
+**Navigation is just `setState`** — Next/Back buttons update `step`, which changes which `visible` condition returns `true`. No router, no form-level wizard API needed.
+
+:::tip
+The submit button only appears on the last step, but `type="submit"` could be placed on any step — RHF will validate and submit regardless of the current step.
+:::

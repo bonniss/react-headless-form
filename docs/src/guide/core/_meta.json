@@ -1,0 +1,18 @@
+[
+  {
+    "type": "dir",
+    "name": "setup-form"
+  },
+  {
+    "type": "dir",
+    "name": "builtin-types"
+  },
+  {
+    "type": "dir",
+    "name": "field-authoring"
+  },
+  "type-safety",
+  "i18n",
+  "schema-validation",
+  "devtools"
+]

@@ -1,0 +1,83 @@
+---
+title: section
+---
+
+`section` is the core container primitive of BlueForm. It can wrap fields for layout, introduce a namespace boundary, render custom UI, and encapsulate reusable form modules — including other sections, recursively.
+
+## `section` as layout wrapper
+
+When `nested` is omitted or `false`, `section` acts as a structural container. Fields inside remain at the current level in the form state — the section key itself does not appear in the submission payload.
+
+```tsx
+layout: {
+  type: "section",
+  render: ({ children }) => <Card>{children}</Card>,
+  props: {
+    config: defineConfig({
+      firstName: { type: "inline" },
+      lastName: { type: "inline" },
+    }),
+  },
+}
+```
+
+Submission shape:
+
+```ts
+{
+  firstName: string;
+  lastName: string;
+}
+```
+
+Use this mode for layout grouping — cards, tabs, panels, or any visual structure that should not affect the data model.
+
+## `section` with nested data
+
+When `nested: true` is provided, the section key becomes a namespace in the form state and submission payload.
+
+```tsx
+profile: {
+  type: "section",
+  props: {
+    nested: true,
+    config: defineConfig({
+      firstName: { type: "inline" },
+      lastName: { type: "inline" },
+    }),
+  },
+}
+```
+
+Submission shape:
+
+```ts
+{
+  profile: {
+    firstName: string;
+    lastName: string;
+  }
+}
+```
+
+Use this mode when your config should mirror the shape of your data model — domain objects, grouped payloads, or any structure where nesting is meaningful in the submitted data.
+
+## `section` with a dedicated component
+
+Instead of defining `config` inline, a `section` can delegate rendering to a dedicated component via `props.component`. The section boundary is declared in the schema, and the component fills it with its own config fragment using [Section component](../setup-form/section.mdx).
+
+```tsx
+address: {
+  type: "section",
+  props: {
+    nested: true,
+    component: AddressSection,
+  },
+}
+```
+
+This is the recommended pattern for large or reusable form modules — it keeps the parent schema clean and makes each module independently portable across pages and forms.
+
+## Recursive composition
+
+Because `section` is recursive, complex forms are built by composing smaller sections. There are no special concepts for wizards, tabs, or multi-step flows — they are all just `section` + composition. You can scale from a simple two-field form to an arbitrarily complex workflow without introducing new schema primitives.

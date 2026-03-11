@@ -1,0 +1,49 @@
+---
+title: Overview
+---
+
+Each example is self-contained and builds on the previous one. They all share the same base setup — a `Form` instance with four field types and a simple `renderRoot`.
+
+## Shared setup
+
+The code below is the foundation for every example on this page. Field components follow the same contract: receive everything via `useField`, render UI, pass values back via `onChange`.
+
+import { Tab, Tabs } from '@rspress/core/theme';
+
+<Tabs>
+  <Tab label="form.setup.tsx">
+    ```tsx lineNumbers file="./_shared/form.setup.tsx"
+    ```
+  </Tab>
+  <Tab label="InputField">
+    ```tsx lineNumbers file="./_shared/fields/InputField.tsx"
+    ```
+  </Tab>
+  <Tab label="TextAreaField">
+    ```tsx lineNumbers file="./_shared/fields/TextAreaField.tsx"
+    ```
+  </Tab>
+  <Tab label="SelectField">
+    ```tsx lineNumbers file="./_shared/fields/SelectField.tsx"
+    ```
+  </Tab>
+  <Tab label="CheckboxField">
+    ```tsx lineNumbers file="./_shared/fields/CheckboxField.tsx"
+    ```
+  </Tab>
+</Tabs>
+
+## Examples
+
+| # | Example | What it covers |
+|---|---|---|
+| 1 | [Login Form](./foundational/login-form.mdx) | Flat model, basic validation, `props` passthrough |
+| 2 | [Registration Form](./foundational/registration-form.mdx) | Multiple field types, cross-field validation, `disabled` as function |
+| 3 | [Nested Form](./foundational/nested-form.mdx) | `section` + `nested: true`, `defineConfig`, reusable config fragments |
+| 4 | [Array Fields](./foundational/array-form.mdx) | `array` type, `useArrayField`, add / remove / duplicate |
+| 5 | [Conditional Fields](./foundational/conditional-form.mdx) | `visible` as function, conditional validation with `validate` |
+| 6 | [Multi-step Wizard](./foundational/wizard-form.mdx) | `section` composition, shared RHF state across steps, `Section` component |
+
+:::note
+The forms in these examples are styled via shared CSS applied to the field components and wrapper. BlueForm itself is fully headless — it ships no styles, no UI primitives, and has no opinion on how your fields look.
+:::

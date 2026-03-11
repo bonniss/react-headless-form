@@ -1,0 +1,71 @@
+---
+title: Introduction
+---
+
+<img src="/light-logo.png" width="360" style={{ margin: 'auto' }} />
+
+:::info{title="A naming note"}
+This package was originally named `blueform`, but npm rejected the publication because the name was deemed too similar to an existing package. We then switched to **`react-headless-form`** — a clear and descriptive name, though somewhat verbose. Unfortunately, abbreviating it as “RHF” isn’t practical, as that acronym is almost universally associated with **React Hook Form** (for the skeptics — just try googling “RHF”).
+
+For brevity, this documentation refers to the package simply as **BlueForm**, while **RHF** always refers to **React Hook Form**.
+:::
+
+## Why not just use React Hook Form?
+
+React Hook Form (RHF) is brilliant. It removes a large amount of boilerplate and makes building forms faster and easier.
+
+However, as applications grow, the patterns used to wire RHF itself often become the next layer of boilerplate.
+
+You copy setup patterns from previous projects, yet still hesitate over questions like:
+
+- Should this field use `register`, `useController`, or `<Controller />`?
+- Should we introduce helpers to separate logic from layout?
+- Should inputs be wrapped in context-aware components?
+
+Each project tweaks the pattern slightly, and those tweaks accumulate. Individually, these decisions are trivial. Collectively, they create architectural noise.
+
+Input wiring should not be the dominant concern in a form system. It should fade into the background, so teams can focus on structure, composition, and behavior — the parts that actually define how a form works as a whole.
+
+## The Headless Approach
+
+With **BlueForm**, building a form becomes a clear process:
+
+import { Steps } from '@rspress/core/theme';
+
+<Steps>
+
+### 1. Define your fields (optional, incremental)
+
+Register reusable building blocks through `fieldMapping`, which maps a type name to a React component. The mapping is entirely yours. This step is optional, as **BlueForm** includes built-in primitives that are sufficient for many use cases, allowing you to start immediately and extend incrementally as your design system grows.
+
+### 2. Define how your root form element is rendered
+
+Decide how the form itself is structured: form, grid layout, wizard container, or anything else.
+
+### 3. Describe your form as configuration
+
+Compose your form using your own fields, validation rules, layout-related properties, and built-in structural types.
+
+### 4. Define form behavior
+
+Handle submission, side effects, conditional visibility, and integrations—without coupling them to layout.
+
+</Steps>
+
+And that's it — you now have a working form.
+
+The reason step **1** comes first is intentional. In most applications, fields are defined far less frequently than forms themselves. You typically know the input shapes your domain requires, and once those field types are established, they are reused across many forms.
+
+Similarly, step **2** is often optional. Many applications share the same root form structure, meaning you define it once and rarely touch it again.
+
+With **BlueForm**, you focus on form structure — how fields are organized, how they relate to each other, and how the form behaves as a whole. UI becomes an implementation detail, not the driving concern.
+
+## ✨ Features
+
+- 🧩 **Bring your own UI** — `value`, `onChange`, `label`, and form field essentials at your fingertips, without fighting RHF or TypeScript. You define your own field types: `text`, `select`, or even a `superman` field.
+- ⚡ **Great DX** — set up the form once, get full type and prop hints from your TypeScript model, plus extra UI-only fields with zero TypeScript complaints.
+- 🧠 **Powerful Composition Model** — build forms from reusable schema blocks and assemble them like Lego into workflows of any complexity.
+- 🌍 **i18n-ready** — plug in any i18n solution (`i18next`, `react-intl` or your own), configure once, and labels, descriptions, and validation messages ready to fields without caring about the app language.
+- 🛠️ **Extensible Form Root** — Empower your form shell by easily injecting DevTools, status bars, error summaries, or any custom logic via `renderRoot`.
+- 🧱 **Still just [React Hook Form](https://react-hook-form.com/)** — pass `useForm` options, access RHF hooks, and keep full control since fields live inside the form context.
+- 📱 **Platform-agnostic** — no web-specific assumptions. While not tested with React Native yet, compatibility should follow React Hook Form.

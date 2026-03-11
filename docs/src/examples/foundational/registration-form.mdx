@@ -1,0 +1,39 @@
+---
+title: Registration Form
+---
+
+Builds on the login form with more field types, cross-field validation, and a checkbox for terms acceptance.
+
+## Preview & Code
+
+import { Tab, Tabs } from '@rspress/core/theme';
+import RegistrationForm from '../_shared/EgRegistrationForm';
+
+<Tabs>
+<Tab label="Preview">
+<RegistrationForm />
+</Tab>
+<Tab label="Code">
+```tsx lineNumbers file="../_shared/EgRegistrationForm.tsx"
+```
+</Tab>
+</Tabs>
+
+## How it works
+
+**Multiple field types** — `text`, `longText`, and `checkbox` all registered in the same `fieldMapping`. The config declares which type each field uses.
+
+**`select` field** — `options` is passed via `props`, typed against `SelectField`'s prop interface.
+
+**Cross-field validation** — `password_confirm` uses `validate` in `rules` to compare against the current form value via `getValues`:
+
+```tsx
+rules: {
+  validate: (value, formValues) => 
+    value === formValues.password || "Passwords do not match"
+}
+```
+
+**`checkbox` as a required field** — `rules.required` works on checkboxes the same as text inputs. An unchecked box is treated as `false`, which fails the required check.
+
+**`disabled` as a function** — `password_confirm` is disabled until `password` has a value, using `disabled: (values) => !values.password`.

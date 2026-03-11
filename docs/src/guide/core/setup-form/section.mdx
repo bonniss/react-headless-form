@@ -1,0 +1,79 @@
+---
+title: \<Section /\>
+---
+
+`Section` is the third item in the array returned by `setupForm`.
+
+```ts
+const [ // [!code focus]
+  Form,
+  defineConfig,
+  Section, // [!code focus]
+] = setupForm(); // [!code focus]
+```
+
+:::tip
+`Section` is used throughout this documentation, but since `setupForm()` returns an array, you can name it anything.
+:::
+
+## `Section` as a typed config fragment
+
+`Section` is a component for authoring a typed config fragment **scoped to a specific model slice, intended to be used inside a section's component**. See built-in [section field type](../builtin-types/section.mdx).
+
+Use `Section` when a `section` field delegates rendering to a dedicated component via `props.component`. The parent schema declares the section boundary — the component fills that boundary with a typesafe config fragment, scoped to the correct model slice.
+
+This makes it easy to:
+
+- split a complex form into small, focused section components
+- reuse those section components across pages/forms
+- build any complexity flows (wizard, tabs, conditional layouts) without introducing special form concepts — it’s still just `section` + composition
+
+## Example: Wizard and multi-step forms
+
+Multi-step forms are a natural fit for `section` composition. Each step maps to one `section` field — visibility is controlled by external state, while all steps share a single RHF form instance underneath.
+
+```tsx title="wizard/index.tsx"
+// step: 0 | 1 | 2  — lives outside the form engine
+<Form<WizardForm>
+  config={{
+    account: {
+      type: "section",
+      visible: () => step === 0,
+      props: { nested: true, component: AccountStep },
+    },
+    profile: {
+      type: "section",
+      visible: () => step === 1,
+      props: { nested: true, component: ProfileStep },
+    },
+    preferences: {
+      type: "section",
+      visible: () => step === 2,
+      props: { nested: true, component: PreferencesStep },
+    },
+  }}
+/>
+```
+
+Each step component is rendered *as the section* — meaning it receives section-level props like `label` and `visible` via `useField()`. Inside, it uses `Section` to render its own typed config fragment:
+
+```tsx title="wizard/AccountStep.tsx"
+function AccountStep() {
+  const { fieldProps } = useField()
+  if (!fieldProps.visible) return null
+
+  return (
+    <fieldset>
+      <legend>{fieldProps.label}</legend>
+      <Section<WizardForm["account"]>
+        config={{
+          email: { type: "text", label: "Email" },
+          password: { type: "text", label: "Password", props: { type: "password" } },
+        }}
+      />
+    </fieldset>
+  )
+}
+```
+
+The form engine has no concept of "steps" — it only knows sections and visibility. Step logic lives entirely in your component tree, not in the schema. This keeps the form model clean and makes each step independently reusable across pages or forms.

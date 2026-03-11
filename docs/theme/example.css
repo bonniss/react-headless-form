@@ -1,0 +1,304 @@
+/* ============================================================
+   BlueForm Examples — shared styles
+   Theme: React blue (#61DAFB) + dark mode (html.rp-dark)
+   ============================================================ */
+
+:root {
+    --bf-bg-input: #ffffff;
+    --bf-bg-disabled: #f3f4f6;
+    --bf-border: #d1d5db;
+    --bf-border-focus: #61dafb;
+    --bf-shadow-focus: rgba(97, 218, 251, 0.25);
+    --bf-text: #111827;
+    --bf-text-label: #374151;
+    --bf-text-muted: #6b7280;
+    --bf-text-disabled: #9ca3af;
+    --bf-text-placeholder: #9ca3af;
+    --bf-error: #ef4444;
+    --bf-required: #ef4444;
+    --bf-submit-bg: #2563eb;
+    --bf-submit-bg-hover: #1d4ed8;
+    --bf-submit-text: #ffffff;
+    --bf-radius: 6px;
+    --bf-example-bg: #ffffff;
+    --bf-example-border: #e5e7eb;
+    --bf-example-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+}
+
+html.rp-dark {
+    --bf-bg-input: #161b27;
+    --bf-bg-disabled: #1a1f2e;
+    --bf-border: #2e3650;
+    --bf-border-focus: #61dafb;
+    --bf-shadow-focus: rgba(97, 218, 251, 0.15);
+    --bf-text: #e8eaf0;
+    --bf-text-label: #c9cdd8;
+    --bf-text-muted: #7a8199;
+    --bf-text-disabled: #4a5068;
+    --bf-text-placeholder: #4a5068;
+    --bf-error: #f87171;
+    --bf-required: #f87171;
+    --bf-submit-bg: #61dafb;
+    --bf-submit-bg-hover: #3ecef5;
+    --bf-submit-text: #0d1117;
+    --bf-example-bg: #161b27;
+    --bf-example-border: #2e3650;
+    --bf-example-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Example wrapper ── */
+.blueform-example {
+    max-width: 480px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--bf-example-bg);
+    border: 1px solid var(--bf-example-border);
+    border-radius: 12px;
+    box-shadow: var(--bf-example-shadow);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--bf-text);
+}
+
+/* ── Field wrapper (the div wrapping each field) ── */
+.blueform-example > form > div {
+    margin-bottom: 1.25rem;
+}
+
+/* ── Label / span used as label ── */
+.blueform-example label,
+.blueform-example > form > div > span:first-child {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--bf-text-label);
+    margin-bottom: 4px;
+}
+
+/* ── Text inputs ── */
+.blueform-example input:not([type="checkbox"]) {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    color: var(--bf-text);
+    background: var(--bf-bg-input);
+    border: 1px solid var(--bf-border);
+    border-radius: var(--bf-radius);
+    outline: none;
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+}
+
+.blueform-example input:not([type="checkbox"])::placeholder {
+    color: var(--bf-text-placeholder);
+}
+
+.blueform-example input:not([type="checkbox"]):focus {
+    border-color: var(--bf-border-focus);
+    box-shadow: 0 0 0 3px var(--bf-shadow-focus);
+}
+
+.blueform-example input:not([type="checkbox"]):disabled,
+.blueform-example input[readonly] {
+    background: var(--bf-bg-disabled);
+    color: var(--bf-text-disabled);
+    cursor: not-allowed;
+}
+
+/* ── Textarea ── */
+.blueform-example textarea {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    color: var(--bf-text);
+    background: var(--bf-bg-input);
+    border: 1px solid var(--bf-border);
+    border-radius: var(--bf-radius);
+    outline: none;
+    resize: vertical;
+    min-height: 96px;
+    font-family: inherit;
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+}
+
+.blueform-example textarea::placeholder {
+    color: var(--bf-text-placeholder);
+}
+
+.blueform-example textarea:focus {
+    border-color: var(--bf-border-focus);
+    box-shadow: 0 0 0 3px var(--bf-shadow-focus);
+}
+
+.blueform-example textarea:disabled {
+    background: var(--bf-bg-disabled);
+    color: var(--bf-text-disabled);
+    cursor: not-allowed;
+}
+
+/* ── Select ── */
+.blueform-example select {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    color: var(--bf-text);
+    background: var(--bf-bg-input);
+    border: 1px solid var(--bf-border);
+    border-radius: var(--bf-radius);
+    outline: none;
+    cursor: pointer;
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+}
+
+.blueform-example select:focus {
+    border-color: var(--bf-border-focus);
+    box-shadow: 0 0 0 3px var(--bf-shadow-focus);
+}
+
+.blueform-example select:disabled {
+    background: var(--bf-bg-disabled);
+    color: var(--bf-text-disabled);
+    cursor: not-allowed;
+}
+
+/* ── Checkbox ── */
+.blueform-example input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--bf-border-focus);
+    cursor: pointer;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+/* ── Description ── */
+.fieldDescription {
+    margin-top: 4px;
+    font-size: 0.8rem;
+    color: var(--bf-text-muted);
+}
+
+/* ── Error ── */
+.fieldError {
+    margin-top: 4px;
+    font-size: 0.8rem;
+    color: var(--bf-error);
+}
+
+/* ── Submit button ── */
+.blueform-example button[type="submit"] {
+    margin-top: 0.75rem;
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--bf-submit-text);
+    background: var(--bf-submit-bg);
+    border: none;
+    border-radius: var(--bf-radius);
+    cursor: pointer;
+    transition:
+        background 0.15s,
+        opacity 0.15s;
+}
+
+.blueform-example button[type="submit"]:hover {
+    background: var(--bf-submit-bg-hover);
+}
+
+.blueform-example button[type="submit"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ── Regular buttons (add, remove, duplicate...) ── */
+.blueform-example button[type="button"] {
+    padding: 6px 14px;
+    font-size: 0.825rem;
+    font-weight: 500;
+    color: var(--bf-text-label);
+    background: transparent;
+    border: 1px solid var(--bf-border);
+    border-radius: var(--bf-radius);
+    cursor: pointer;
+    transition:
+        border-color 0.15s,
+        color 0.15s;
+}
+
+.blueform-example button[type="button"]:hover {
+    border-color: var(--bf-border-focus);
+    color: var(--bf-border-focus);
+}
+
+.blueform-example button[type="button"]:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── Textarea (if not already covered) ── */
+.blueform-example textarea {
+    line-height: 1.6;
+}
+
+/* ── Library signature ── */
+.blueform-example::after {
+    content: "⬡ react-headless-form";
+    display: block;
+    margin-top: 1.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--bf-border);
+    text-align: right;
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, transparent, #ec5990);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0.75;
+}
+
+/* ── Wizard step indicators ── */
+.bf-steps {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.bf-step {
+    flex: 1;
+    padding: 6px 0;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 400;
+    border-radius: 6px;
+    border: 1px solid var(--bf-border);
+    color: var(--bf-text-muted);
+    background: transparent;
+    transition: all 0.2s;
+}
+
+.bf-step--active {
+    font-weight: 600;
+    background: #ec5990;
+    color: #ffffff;
+    border-color: #ec5990;
+}
+
+.bf-step--done {
+    background: var(--bf-bg-disabled);
+    color: var(--bf-text-muted);
+    border-color: transparent;
+}

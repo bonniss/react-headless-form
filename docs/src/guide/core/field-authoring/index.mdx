@@ -1,0 +1,130 @@
+---
+title: Field authoring
+---
+
+In BlueForm, a **field component** is a plain React component responsible for one thing: rendering a piece of UI that reflects and mutates a single form value. It does not manage state, does not know about other fields, and does not care about validation logic — all of that is handled by the engine.
+
+This separation is what makes field components reusable. Write an `InputField` once, wire it to your design system, and use it across every form in your app without modification.
+
+## The field contract
+
+Every field component accesses its context through `useField` or `useArrayField`, depending on the field type:
+
+- [`useField`](use-field.mdx) — for standard fields (`inline`, `section`, `hidden`, and any custom mapped type)
+- [`useArrayField`](use-array-field.mdx) — for `array` fields
+
+Both hooks expose a normalized interface on top of RHF's `useController`, so field authors never need to interact with RHF directly.
+
+## A minimal field
+
+```tsx
+import { useField } from 'react-headless-form'
+
+export function InputField() {
+  const {
+    fieldProps: { value, onChange, label, errorMessage, required, disabled },
+  } = useField()
+
+  return (
+    <div>
+      {label && (
+        <label>
+          {label} {required && '*'}
+        </label>
+      )}
+      <input
+        value={value ?? ''}
+        onChange={(e) => onChange?.(e.target.value)}
+        disabled={disabled}
+      />
+      {errorMessage && <div>{errorMessage}</div>}
+    </div>
+  )
+}
+```
+
+Notice what this component does not do:
+
+- It does not import anything from RHF
+- It does not know what form it lives in
+- It does not inspect validation rules
+- It does not handle i18n — `label` and `errorMessage` are already translated
+
+The engine handles all of that before the component renders.
+
+## Registering field components
+
+Field components are registered once via `fieldMapping` in `setupForm`, then referenced by type name in any form config:
+
+```tsx
+const [Form] = setupForm({
+  fieldMapping: defineMapping({
+    text: InputField,
+    select: SelectField,
+    datepicker: DatePickerField,
+  }),
+})
+```
+
+```tsx
+config={{
+  username: { type: 'text', label: 'Username' },
+  role: { type: 'select', label: 'Role' },
+  birthdate: { type: 'datepicker', label: 'Date of Birth' },
+}}
+```
+
+## Passing extra props to field components
+
+Each field in config can pass additional props to its component via the `props` key. These map directly to the component's own prop types:
+
+```tsx
+// field component accepts HTML input attributes
+export function InputField(props: React.InputHTMLAttributes<HTMLInputElement>) {
+  const { fieldProps: { value, onChange } } = useField()
+  return (
+    <input
+      {...props}
+      value={value ?? ''}
+      onChange={(e) => onChange?.(e.target.value)}
+    />
+  )
+}
+```
+
+```tsx
+config={{
+  password: {
+    type: 'text',
+    props: { type: 'password', autoComplete: 'current-password' },
+  },
+}}
+```
+
+BlueForm enforces at compile time that `props` matches the component's declared prop types — invalid props are caught before runtime.
+
+## Read-only state
+
+Field components can receive a `readOnly` prop via `fieldProps`. A common pattern is to render a plain display value instead of an input:
+
+```tsx
+export function InputField() {
+  const {
+    fieldProps: { value, onChange, readOnly, disabled },
+  } = useField()
+
+  if (readOnly) {
+    return <span>{value ?? '—'}</span>
+  }
+
+  return (
+    <input
+      value={value ?? ''}
+      onChange={(e) => onChange?.(e.target.value)}
+      disabled={disabled}
+    />
+  )
+}
+```
+
+How to handle an empty read-only value (e.g. show a dash or placeholder) is intentionally left to the field component — BlueForm does not impose a default.
