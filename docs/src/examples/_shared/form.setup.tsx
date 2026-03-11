@@ -3,7 +3,6 @@ import InputField from "./fields/InputField";
 import CheckboxField from "./fields/CheckboxField";
 import TextAreaField from "./fields/TextAreaField";
 import SelectField from "./fields/SelectField";
-import "./example.css";
 
 export const [Form, defineConfig, Section] = setupForm({
   renderRoot: ({ children, onSubmit }) => (

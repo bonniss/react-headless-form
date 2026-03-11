@@ -4,5 +4,10 @@
     "type": "dir",
     "name": "foundational",
     "label": "Foundational"
+  },
+  {
+    "type": "dir",
+    "name": "recipes",
+    "label": "Recipes"
   }
 ]
