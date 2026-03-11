@@ -7,7 +7,7 @@ const TextAreaField: FunctionComponent<TextAreaFieldProps> = (props) => {
   const {
     fieldProps: {
       id,
-      value,
+      value = "",
       onChange,
       errorMessage,
       label,
@@ -34,8 +34,8 @@ const TextAreaField: FunctionComponent<TextAreaFieldProps> = (props) => {
         aria-required={required}
         aria-invalid={Boolean(errorMessage)}
       />
-      {description && <div className="field-description">{description}</div>}
-      {errorMessage && <div className="field-error">{errorMessage}</div>}
+      {description && <div className="fieldDescription">{description}</div>}
+      {errorMessage && <div className="fieldError">{errorMessage}</div>}
     </div>
   );
 };

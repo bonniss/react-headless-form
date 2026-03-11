@@ -220,3 +220,85 @@ html.rp-dark {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+/* ── Regular buttons (add, remove, duplicate...) ── */
+.blueform-example button[type="button"] {
+    padding: 6px 14px;
+    font-size: 0.825rem;
+    font-weight: 500;
+    color: var(--bf-text-label);
+    background: transparent;
+    border: 1px solid var(--bf-border);
+    border-radius: var(--bf-radius);
+    cursor: pointer;
+    transition:
+        border-color 0.15s,
+        color 0.15s;
+}
+
+.blueform-example button[type="button"]:hover {
+    border-color: var(--bf-border-focus);
+    color: var(--bf-border-focus);
+}
+
+.blueform-example button[type="button"]:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── Textarea (if not already covered) ── */
+.blueform-example textarea {
+    line-height: 1.6;
+}
+
+/* ── Library signature ── */
+.blueform-example::after {
+    content: "⬡ react-headless-form";
+    display: block;
+    margin-top: 1.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--bf-border);
+    text-align: right;
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, transparent, #ec5990);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0.75;
+}
+
+/* ── Wizard step indicators ── */
+.bf-steps {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.bf-step {
+    flex: 1;
+    padding: 6px 0;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 400;
+    border-radius: 6px;
+    border: 1px solid var(--bf-border);
+    color: var(--bf-text-muted);
+    background: transparent;
+    transition: all 0.2s;
+}
+
+.bf-step--active {
+    font-weight: 600;
+    background: #ec5990;
+    color: #ffffff;
+    border-color: #ec5990;
+}
+
+.bf-step--done {
+    background: var(--bf-bg-disabled);
+    color: var(--bf-text-muted);
+    border-color: transparent;
+}

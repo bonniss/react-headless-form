@@ -1,11 +1,11 @@
-import { Form } from "./form.setup";
+import Form from "./form.setup";
 
 type LoginData = {
   username: string;
   password: string;
 };
 
-export function LoginForm() {
+function LoginForm() {
   return (
     <Form<LoginData>
       config={{
@@ -30,10 +30,12 @@ export function LoginForm() {
         },
       }}
       onSubmit={(data) => {
-        console.log(data);
+        alert(JSON.stringify(data, null, 2));
       }}
     >
       <button type="submit">Log in</button>
     </Form>
   );
 }
+
+export default LoginForm;

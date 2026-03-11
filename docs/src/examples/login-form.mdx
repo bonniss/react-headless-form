@@ -2,68 +2,19 @@
 title: Login Form
 ---
 
-# Login Form
+import { Tab, Tabs } from '@rspress/core/theme';
+import LoginForm from './_shared/EgLoginForm';
 
-A minimal form with two fields, basic validation, and a submit handler. This is the starting point — every other example builds on this pattern.
-
-## Code
-
-```tsx title="LoginForm.tsx"
-import { Form } from '../_shared/form'
-
-type LoginData = {
-  username: string
-  password: string
-}
-
-export function LoginForm() {
-  return (
-    <Form<LoginData>
-      config={{
-        username: {
-          type: 'text',
-          label: 'Username',
-          rules: {
-            required: 'Username is required',
-          },
-        },
-        password: {
-          type: 'text',
-          label: 'Password',
-          props: { type: 'password' },
-          rules: {
-            required: 'Password is required',
-            minLength: {
-              value: 6,
-              message: 'Password must be at least 6 characters',
-            },
-          },
-        },
-      }}
-      onSubmit={(data) => {
-        console.log(data)
-      }}
-    >
-      <button type="submit">Log in</button>
-    </Form>
-  )
-}
-```
-
-import { LoginForm } from './_shared/EgLoginForm'
+<Tabs>
+<Tab label="Preview">
 
 <LoginForm />
 
-## What's happening
+</Tab>
+<Tab label="Code">
 
-**`Form<LoginData>`** — the generic parameter binds the config to the data model. TypeScript will error if a field key doesn't exist on `LoginData`, or if `type` doesn't match the registered `fieldMapping`.
+```tsx lineNumbers file="./_shared/EgLoginForm.tsx"
+```
 
-**`rules`** — standard RHF validation rules. Errors are resolved to `fieldProps.errorMessage` inside the field component automatically.
-
-**`props: { type: 'password' }`** — extra props passed directly to `InputField`. BlueForm enforces at compile time that these match the component's declared prop types.
-
-**`onSubmit`** — called only when validation passes. `data` is typed as `LoginData`.
-
-## What's not here
-
-No `useForm`, no `Controller`, no `register` — the engine handles all RHF wiring. The form is described entirely as configuration.
+</Tab>
+</Tabs>
