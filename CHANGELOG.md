@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/bonniss/react-headless-form/compare/v0.8.2...v0.9.0) (2026-03-11)
+
+
+### Features
+
+* **docs:** add integration recipes for Ant Design, Arco Design, Mantine, PrimeReact, shadcn/ui, and TDesign ([55f98f1](https://github.com/bonniss/react-headless-form/commit/55f98f19733e69aa2798ec3f2911315e015f80c8))
+
 ## [0.8.2](https://github.com/bonniss/react-headless-form/compare/v0.8.1...v0.8.2) (2026-03-11)
 
 
