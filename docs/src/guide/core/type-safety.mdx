@@ -1,0 +1,166 @@
+---
+title: Type safety
+---
+
+## Configuration keys
+
+Form configuration keys are type-checked against your form model.
+
+```ts
+type User = {
+  name: string;
+  profile: {
+    email: string;
+  };
+  addresses: {
+    city: string;
+  }[];
+};
+```
+
+For simple, non-nested fields like `name`, keys map directly to model properties:
+
+```ts
+{
+  name: {
+    type: "text",
+  },
+}
+```
+
+For nested fields, there are two supported approaches.
+
+## Option A: Using structural primitives
+
+Use `section` (with `nested: true`) for nested objects:
+
+```ts
+{
+  profile: {
+    type: "section",
+    props: {
+      nested: true,
+      config: defineConfig<User["profile"]>({
+        email: { type: "text" },
+      }),
+    },
+  },
+}
+```
+
+Use `array` for arrays of objects:
+
+```ts
+{
+  addresses: {
+    type: "array",
+    props: {
+      config: defineConfig<User["addresses"][number]>({
+        city: { type: "text" },
+      }),
+    },
+  },
+}
+```
+
+When using `section` (nested) or `array`, you must call `defineConfig` for the nested model (`User["profile"]`, `User["addresses"][number]`), because TypeScript cannot automatically infer nested object shapes across abstraction boundaries.
+
+## Option B: Using flat nested keys
+
+You can also reference nested object paths using dot notation:
+
+```ts
+{
+  "profile.email": {
+    type: "text",
+  },
+}
+```
+
+Invalid paths are caught at compile time:
+
+```ts
+"profile.age"; // ❌ Type error – not part of User
+```
+
+Flat keys apply to **object paths only**; array paths are intentionally excluded, as their indices are resolved dynamically at runtime.
+
+## Field props
+
+Each field’s `type` maps directly to a component registered in `fieldMapping`.
+
+```ts
+const fieldMapping = defineMapping({
+  text: InputField,
+  select: SelectField,
+});
+```
+
+BlueForm ensures that:
+
+- `type` must exist in `fieldMapping`
+- `props` must match the mapped component’s props
+
+```ts
+defineConfig<User>({
+  name: {
+    type: "text",
+    props: {
+      placeholder: "Your name", // ✅ valid
+      options: [], // ❌ invalid for text field
+    },
+  },
+});
+```
+
+## Virtual configuration keys
+
+In many forms, some nodes exist purely for layout or presentation — such as previews, separators, banners, or structural containers.
+
+You should not have to modify your form model just to accommodate UI concerns.
+These nodes simply **should not be validated against the form model keys**.
+
+BlueForm uses a simple convention:
+
+> Any configuration key starting with `__` is treated as a **virtual key**.
+
+Virtual keys are excluded from model key checking, so TypeScript will not raise errors for them.
+
+```tsx
+<Form<UserForm>
+  config={{
+    firstName: { type: "text" },
+    lastName: { type: "text" },
+
+    // Virtual key (not checked against UserForm)
+    __fullNamePreview: {
+      type: "section",
+      render: () => <FullNamePreview />,
+    },
+  }}
+/>
+```
+
+Virtual keys are ideal for:
+
+- layout containers
+- computed previews
+- dividers or separators
+- informational blocks
+- any composition node that should not exist in the data model
+
+### Caveats
+
+- If your actual form model contains fields starting with `__`, they will not receive key suggestions in the configuration, since the prefix is reserved for virtual nodes.
+- If a field should be type-safe and checked against the model, it must **not** use the `__` prefix — even if it renders only UI.
+
+### Type guidance, not runtime enforcement
+
+> [!IMPORTANT]
+>
+> Virtual keys are a **type-level convention** designed to improve authoring experience and maintain separation between data and UI.
+>
+> They do not enforce runtime isolation.
+> All fields still have access to React Hook Form’s `useFormContext`, meaning runtime reads or mutations of form state remain possible.
+>
+> It is the developer’s responsibility to follow the convention intentionally and ensure that virtual nodes do not introduce unintended side effects.

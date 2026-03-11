@@ -1,8 +1,8 @@
 [
-  "setup",
-  "form",
-  "define-config",
-  "section",
+  {
+    "type": "dir",
+    "name": "setup-form"
+  },
   {
     "type": "dir",
     "name": "builtin-types"

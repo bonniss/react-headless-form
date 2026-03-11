@@ -1,5 +1,5 @@
 ---
-title: Section component
+title: \<Section /\>
 ---
 
 `Section` is the third item in the array returned by `setupForm`.
@@ -18,7 +18,7 @@ const [ // [!code focus]
 
 ## `Section` as a typed config fragment
 
-`Section` is a component for authoring a typed config fragment **scoped to a specific model slice, intended to be used inside a section's component**.
+`Section` is a component for authoring a typed config fragment **scoped to a specific model slice, intended to be used inside a section's component**. See built-in [section field type](../builtin-types/section.mdx).
 
 Use `Section` when a `section` field delegates rendering to a dedicated component via `props.component`. The parent schema declares the section boundary — the component fills that boundary with a typesafe config fragment, scoped to the correct model slice.
 
