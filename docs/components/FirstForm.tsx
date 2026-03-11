@@ -1,5 +1,5 @@
 import { setupForm, defineMapping } from "react-headless-form";
-import InputField from "../fields/InputField";
+import InputField from "./InputField";
 
 type LoginData = {
   username: string;
@@ -12,7 +12,7 @@ const [Form] = setupForm({
   }),
 });
 
-export const BasicForm = () => {
+const FirstForm = () => {
   return (
     <Form<LoginData>
       renderRoot={({ children, onSubmit }) => (
@@ -43,3 +43,5 @@ export const BasicForm = () => {
     </Form>
   );
 };
+
+export default FirstForm;

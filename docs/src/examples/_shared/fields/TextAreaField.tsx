@@ -26,8 +26,8 @@ const TextAreaField: FunctionComponent<TextAreaFieldProps> = (props) => {
       <span style={{ marginRight: 10 }}>{label}</span>
       <textarea
         {...props}
-        value={value ?? ""}
-        onChange={(e) => onChange?.(e.target.value)}
+        value={value}
+        onChange={onChange}
         disabled={disabled}
         readOnly={readOnly}
         placeholder={props.placeholder ?? label}
