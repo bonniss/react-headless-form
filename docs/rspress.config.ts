@@ -6,8 +6,12 @@ import {
   transformerNotationFocus,
 } from "@shikijs/transformers";
 
+const base = "/react-headless-form/";
+const description =
+  "Form as configuration. Great DX. Bring your own UI, entirely. Built on React Hook Form.";
+
 export default defineConfig({
-  base: "/react-headless-form/",
+  base,
   root: path.join(__dirname, "src"),
   title: "React headless form",
   icon: "/icon.png",
@@ -15,6 +19,30 @@ export default defineConfig({
     light: "/light-logo.png",
     dark: "/dark-logo.png",
   },
+  head: [
+    ["meta", { name: "author", content: "bonniss" }],
+    [
+      "meta",
+      {
+        property: "og:image",
+        content: `https://bonniss.github.io${base}light-logo.png`,
+      },
+    ],
+    [
+      "meta",
+      {
+        property: "og:description",
+        content: description,
+      },
+    ],
+    [
+      "meta",
+      {
+        name: "description",
+        content: description,
+      },
+    ],
+  ],
   themeConfig: {
     socialLinks: [
       {
