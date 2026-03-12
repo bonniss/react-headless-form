@@ -1,0 +1,96 @@
+---
+title: Integrations
+---
+
+# Integrations
+
+BlueForm is fully headless — it ships no styles and has no opinion on how your fields look. This makes it compatible with **any React UI library** without adapters, plugins, or special configuration.
+
+## Sample form
+
+Every recipe in this section builds the same form: four field types (`text`, `longText`, `select`, `checkbox`), a nested `settings` section, and an `addresses` array field.
+
+```tsx
+// This config is identical across every integration in this section
+config={{
+  name:     { type: 'text',     label: 'Name',     rules: { required: 'Required' } },
+  password: { type: 'text',     label: 'Password', props: { type: 'password' } },
+  bio:      { type: 'longText', label: 'Bio' },
+  role:     { type: 'select',   label: 'Role',     props: { options: [...] } },
+  settings: {
+    type: 'section',
+    label: 'Settings',
+    render: ({ children, fieldProps: { label } }) => <SomeCard title={label}>{children}</SomeCard>,
+    props: {
+      nested: true,
+      config: defineConfig<UserProfile['settings']>({
+        newsletter: { type: 'checkbox', label: 'Newsletter' },
+        theme:      { type: 'select',   label: 'Theme', props: { options: [...] } },
+      }),
+    },
+  },
+  addresses: {
+    type: 'array',
+    label: 'Address book',
+    render: () => <AddressArrayField />,
+    props: {
+      config: defineConfig<UserProfile['addresses'][number]>({
+        street: { type: 'text', label: 'Street' },
+        city:   { type: 'text', label: 'City' },
+      }),
+    },
+  },
+}}
+```
+
+This config describes _what_ the form collects. It has zero knowledge of the UI library — swapping libraries almost never touches it.
+
+## What changes, what doesn't
+
+Migrating from one UI library to another basically means rewriting field components and nothing else.
+
+|                           | Changes                                          | Stays the same                              |
+| ------------------------- | ------------------------------------------------ | ------------------------------------------- |
+| **Field components**      | UI library imports, prop names, event signatures | `useField` call, `fieldProps` destructuring |
+| **Section / array shell** | Layout component (`Card`, `Fieldset`, `View`...) | `render` prop pattern, `useArrayField`      |
+| **App**                   | Button styles, visual grouping                   | Form config, `defineConfig`, submit logic   |
+| **`form.setup.ts`**       | Nothing                                          | Everything                                  |
+
+## Adapting event signatures
+
+Different libraries expose different `onChange` signatures — some return the value directly, others wrap it in an event object, others use a custom object. BlueForm doesn't impose any convention. Under the hood, BlueForm's `onChange` is the `onChange` from React Hook Form's `useController` — which means it accepts both a native event and a plain value:
+
+```tsx
+// Both work — RHF handles either
+onChange(e); // RHF unwraps e.target.value internally
+onChange(e.target.value); // explicit clean value passed directly
+```
+
+However, for better maintainability, always pass a clean value explicitly:
+
+```tsx
+// ✅ Recommended — explicit, readable, no reliance on RHF internals
+// Value returned directly — Arco, TDesign, Semi, Mantine Select...
+<Input onChange={(val) => onChange?.(val)} />
+
+// Value wrapped in a native event — shadcn, Chakra Input, React Native Web...
+<Input onChange={(e) => onChange?.(e.target.value)} />
+
+// Value in a custom object — Chakra Checkbox...
+<Checkbox onCheckedChange={({ checked }) => onChange?.(checked)} />
+
+// ⚠️ Also works, but implicit — depends on RHF unwrapping the event
+<Input onChange={onChange} />
+```
+
+The unwrapping itself — whether you need `e.target.value`, `e.checked`, `({ checked })`, or nothing at all — depends entirely on the library's API. BlueForm imposes no convention here. BlueForm stays out of the way of the library's native API — you adapt at the boundary, not throughout your codebase.
+
+## Bring your own library
+
+Don't see your library here? The pattern is always the same:
+
+1. Call `useField` inside your field component and destructure `fieldProps`
+2. Map `fieldProps.value` → the library's value prop, call `onChange?.(value)` inside the library's change handler
+3. Use `fieldProps.errorMessage`, `label`, `disabled`, `visible` to wire up the rest
+
+If you can render an input, you can integrate with BlueForm.
