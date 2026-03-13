@@ -4,6 +4,8 @@
   {
     "type": "dir",
     "name": "integrations",
-    "label": "Integrations"
+    "label": "Integrations",
+    "collapsible": false,
+    "collapsed": false
   }
 ]

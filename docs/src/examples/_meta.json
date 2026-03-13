@@ -1,12 +1,12 @@
 [
   "index",
   {
-    "type": "dir",
+    "type": "dir-section-header",
     "name": "foundational",
     "label": "Foundational"
   },
   {
-    "type": "dir",
+    "type": "dir-section-header",
     "name": "recipes",
     "label": "Recipes"
   }
