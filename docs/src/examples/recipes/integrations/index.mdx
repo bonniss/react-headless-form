@@ -94,3 +94,25 @@ Don't see your library here? The pattern is always the same:
 3. Use `fieldProps.errorMessage`, `label`, `disabled`, `visible` to wire up the rest
 
 If you can render an input, you can integrate with BlueForm.
+
+## Validation libraries
+
+BlueForm delegates validation entirely to React Hook Form's resolver system, which means any library supported by [`@hookform/resolvers`](https://github.com/react-hook-form/resolvers) works without any changes to your field components or form config. Define your schema using your preferred library, then pass its resolver to `formProps.resolver`.
+
+```tsx
+// 1. define schema (and infer type)
+const schema = z.object({
+  name: z.string().min(1, 'Required'),
+  age:  z.number().min(18),
+})
+type FormData = z.infer<typeof schema>
+
+// 2. use correct resolver
+<Form<FormData>
+  formProps={{ resolver: zodResolver(schema) }}
+/>
+```
+
+When a resolver is provided, validation is fully handled by the schema — no `rules` needed on any field. Your config becomes purely structural: field type, label, and props only.
+
+Schema-level defaults (e.g. `.default()` in Zod) are not picked up by React Hook Form at initialization — the resolver only runs at validation time, not at mount. Always set initial values via `defaultValues` in `formProps` or the `defaultValue` prop on individual fields.

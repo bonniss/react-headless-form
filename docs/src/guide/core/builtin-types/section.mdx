@@ -9,7 +9,7 @@ title: section
 When `nested` is omitted or `false`, `section` acts as a structural container. Fields inside remain at the current level in the form state — the section key itself does not appear in the submission payload.
 
 ```tsx
-layout: {
+__layout: {
   type: "section",
   render: ({ children }) => <Card>{children}</Card>,
   props: {
@@ -30,7 +30,7 @@ Submission shape:
 }
 ```
 
-Use this mode for layout grouping — cards, tabs, panels, or any visual structure that should not affect the data model.
+Use this mode for layout grouping — cards, tabs, panels, or any visual structure that should not affect the data model. These keys are UI-only — they never appear in the submitted payload by design. However, TypeScript still requires every key in the config to exist in the model type. Since these layout keys have no corresponding field in the data model, use a [virtual configuration key](/guide/core/type-safety.html#virtual-configuration-keys) like `__layout` to satisfy the type checker without polluting the model.
 
 ## `section` with nested data
 
