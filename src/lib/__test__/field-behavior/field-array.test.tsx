@@ -1,10 +1,12 @@
-import BlueForm from '@/components/form/BlueForm';
-import { HiddenField } from '@/components/form/field';
-import { useArrayField } from '@/components/form/provider';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
-import { renderWithBlueFormProvider } from '../_utils/render-form';
-import { useFormContext, useWatch } from 'react-hook-form';
+import BlueForm from "@/components/form/BlueForm";
+import { HiddenField } from "@/components/form/field";
+import { useArrayField } from "@/components/form/provider";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { renderWithBlueFormProvider } from "../_utils/render-form";
+import { useFormContext, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
 
 const TestRoot = ({ children, onSubmit }: any) => (
   <form onSubmit={onSubmit}>
@@ -13,8 +15,8 @@ const TestRoot = ({ children, onSubmit }: any) => (
   </form>
 );
 
-describe('BlueForm - field array', () => {
-  it('ignores defaultValue defined on array field config', async () => {
+describe("BlueForm - field array", () => {
+  it("ignores defaultValue defined on array field config", async () => {
     let submitted: any = null;
     const ArrayUI = () => {
       const { append, update } = useArrayField();
@@ -23,10 +25,7 @@ describe('BlueForm - field array', () => {
           <button type="button" onClick={() => append({})}>
             Add
           </button>
-          <button
-            type="button"
-            onClick={() => update(0, { name: 'Alice' })}
-          >
+          <button type="button" onClick={() => update(0, { name: "Alice" })}>
             Set Name
           </button>
         </>
@@ -39,12 +38,12 @@ describe('BlueForm - field array', () => {
         onSubmit={(v) => (submitted = v)}
         config={{
           users: {
-            type: 'array',
-            defaultValue: [{ name: 'Default' }],
+            type: "array",
+            defaultValue: [{ name: "Default" }],
             props: {
               config: {
                 name: {
-                  type: 'hidden',
+                  type: "hidden",
                 },
               },
             },
@@ -57,7 +56,7 @@ describe('BlueForm - field array', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(submitted).toEqual({
@@ -66,14 +65,14 @@ describe('BlueForm - field array', () => {
     });
   });
 
-  it('throws error when array field has no mapping and no render', () => {
+  it("throws error when array field has no mapping and no render", () => {
     expect(() =>
       renderWithBlueFormProvider(
         <BlueForm
           renderRoot={TestRoot}
           config={{
             users: {
-              type: 'array',
+              type: "array",
               props: {
                 config: {},
               },
@@ -84,13 +83,13 @@ describe('BlueForm - field array', () => {
     ).toThrow(/array/i);
   });
 
-  it('renders array using render() when no mapping is provided', () => {
+  it("renders array using render() when no mapping is provided", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
         config={{
           users: {
-            type: 'array',
+            type: "array",
             render: () => <div data-testid="custom-array" />,
             props: {
               config: {},
@@ -100,10 +99,10 @@ describe('BlueForm - field array', () => {
       />,
     );
 
-    expect(screen.getByTestId('custom-array')).toBeDefined();
+    expect(screen.getByTestId("custom-array")).toBeDefined();
   });
 
-  it('appends item to array and updates form values', async () => {
+  it("appends item to array and updates form values", async () => {
     let snapshot: any = null;
 
     const ArrayUI = () => {
@@ -121,7 +120,7 @@ describe('BlueForm - field array', () => {
         onFormChange={(v) => (snapshot = v)}
         config={{
           users: {
-            type: 'array',
+            type: "array",
             props: {
               config: {},
             },
@@ -133,14 +132,14 @@ describe('BlueForm - field array', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Add'));
+    fireEvent.click(screen.getByText("Add"));
 
     await waitFor(() => {
       expect(snapshot).toEqual({ users: [{}] });
     });
   });
 
-  it('updates array item value correctly', async () => {
+  it("updates array item value correctly", async () => {
     let snapshot: any = null;
 
     const ArrayUI = () => {
@@ -150,7 +149,7 @@ describe('BlueForm - field array', () => {
           <button type="button" onClick={() => append({})}>
             Add
           </button>
-          <button type="button" onClick={() => update(0, { name: 'Alice' })}>
+          <button type="button" onClick={() => update(0, { name: "Alice" })}>
             Set Name
           </button>
         </>
@@ -163,7 +162,7 @@ describe('BlueForm - field array', () => {
         onFormChange={(v) => (snapshot = v)}
         config={{
           users: {
-            type: 'array',
+            type: "array",
             props: {
               config: {},
             },
@@ -175,17 +174,17 @@ describe('BlueForm - field array', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Add'));
-    fireEvent.click(screen.getByText('Set Name'));
+    fireEvent.click(screen.getByText("Add"));
+    fireEvent.click(screen.getByText("Set Name"));
 
     await waitFor(() => {
       expect(snapshot).toEqual({
-        users: [{ name: 'Alice' }],
+        users: [{ name: "Alice" }],
       });
     });
   });
 
-  it('removes array item and updates form values', async () => {
+  it("removes array item and updates form values", async () => {
     let snapshot: any = null;
 
     const ArrayUI = () => {
@@ -208,7 +207,7 @@ describe('BlueForm - field array', () => {
         onFormChange={(v) => (snapshot = v)}
         config={{
           users: {
-            type: 'array',
+            type: "array",
             props: {
               config: {},
             },
@@ -220,21 +219,21 @@ describe('BlueForm - field array', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Add'));
-    fireEvent.click(screen.getByText('Remove'));
+    fireEvent.click(screen.getByText("Add"));
+    fireEvent.click(screen.getByText("Remove"));
 
     await waitFor(() => {
       expect(snapshot).toEqual({ users: [] });
     });
   });
 
-  it('submits array payload correctly', async () => {
+  it("submits array payload correctly", async () => {
     let submitted: any = null;
 
     const ArrayUI = () => {
       const { append } = useArrayField();
       return (
-        <button type="button" onClick={() => append({ name: 'Bob' })}>
+        <button type="button" onClick={() => append({ name: "Bob" })}>
           Add
         </button>
       );
@@ -246,7 +245,7 @@ describe('BlueForm - field array', () => {
         onSubmit={(data) => (submitted = data)}
         config={{
           users: {
-            type: 'array',
+            type: "array",
             props: {
               config: {},
             },
@@ -258,23 +257,23 @@ describe('BlueForm - field array', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Add'));
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Add"));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(submitted).toEqual({
-        users: [{ name: 'Bob' }],
+        users: [{ name: "Bob" }],
       });
     });
   });
 
-  it('supports useArrayField with renderItem inside array render()', async () => {
+  it("supports useArrayField with renderItem inside array render()", async () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
         config={{
           users: {
-            type: 'array',
+            type: "array",
             render: () => {
               const { items, append, renderItems } = useArrayField();
               return (
@@ -288,12 +287,12 @@ describe('BlueForm - field array', () => {
 
                   {renderItems()}
                 </>
-              )
+              );
             },
             props: {
               config: {
                 name: {
-                  type: 'inline',
+                  type: "inline",
                   render: () => <div data-testid="user-item" />,
                 },
               },
@@ -303,21 +302,21 @@ describe('BlueForm - field array', () => {
       />,
     );
 
-    expect(screen.queryByTestId('user-item')).toBeNull();
-    fireEvent.click(screen.getByText('Add user'));
+    expect(screen.queryByTestId("user-item")).toBeNull();
+    fireEvent.click(screen.getByText("Add user"));
     await waitFor(() => {
-      expect(screen.getByTestId('user-item')).toBeDefined();
+      expect(screen.getByTestId("user-item")).toBeDefined();
     });
   });
 
-  it('shows error when array is required and empty', async () => {
+  it("shows error when array is required and empty", async () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
         config={{
           users: {
-            type: 'array',
-            rules: { required: 'Users is required' },
+            type: "array",
+            rules: { required: "Users is required" },
             render: ({ fieldProps }) => {
               const { append } = useArrayField();
               return (
@@ -328,7 +327,7 @@ describe('BlueForm - field array', () => {
                   <button data-testid="submit" type="submit">
                     Submit
                   </button>
-                  <button type="button" onClick={() => append({ name: '' })}>
+                  <button type="button" onClick={() => append({ name: "" })}>
                     Add
                   </button>
                 </>
@@ -337,7 +336,7 @@ describe('BlueForm - field array', () => {
             props: {
               config: {
                 name: {
-                  type: 'inline',
+                  type: "inline",
                   render: () => <div />,
                 },
               },
@@ -347,21 +346,21 @@ describe('BlueForm - field array', () => {
       />,
     );
 
-    fireEvent.click(screen.getByTestId('submit'));
+    fireEvent.click(screen.getByTestId("submit"));
 
     await waitFor(() => {
-      expect(screen.getByTestId('error')).toBeDefined();
+      expect(screen.getByTestId("error")).toBeDefined();
     });
   });
 
-  it('shows error when array length is less than minLength', async () => {
+  it("shows error when array length is less than minLength", async () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
         config={{
           users: {
-            type: 'array',
-            rules: { minLength: { value: 2, message: 'At least 2 users' } },
+            type: "array",
+            rules: { minLength: { value: 2, message: "At least 2 users" } },
             render: ({ fieldProps }) => {
               const { append } = useArrayField();
               return (
@@ -369,7 +368,7 @@ describe('BlueForm - field array', () => {
                   {fieldProps.errorMessage && (
                     <div data-testid="error">{fieldProps.errorMessage}</div>
                   )}
-                  <button type="button" onClick={() => append({ name: '' })}>
+                  <button type="button" onClick={() => append({ name: "" })}>
                     Add
                   </button>
                   <button type="submit" />
@@ -379,7 +378,7 @@ describe('BlueForm - field array', () => {
             props: {
               config: {
                 name: {
-                  type: 'inline',
+                  type: "inline",
                   render: () => <div />,
                 },
               },
@@ -389,22 +388,22 @@ describe('BlueForm - field array', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Add'));
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Add"));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(screen.getByTestId('error')).toBeDefined();
+      expect(screen.getByTestId("error")).toBeDefined();
     });
   });
 
-  it('shows error when array length exceeds maxLength', async () => {
+  it("shows error when array length exceeds maxLength", async () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
         config={{
           users: {
-            type: 'array',
-            rules: { maxLength: { value: 1, message: 'Only 1 user allowed' } },
+            type: "array",
+            rules: { maxLength: { value: 1, message: "Only 1 user allowed" } },
             render: ({ fieldProps }) => {
               const { append } = useArrayField();
               return (
@@ -412,7 +411,7 @@ describe('BlueForm - field array', () => {
                   {fieldProps.errorMessage && (
                     <div data-testid="error">{fieldProps.errorMessage}</div>
                   )}
-                  <button type="button" onClick={() => append({ name: '' })}>
+                  <button type="button" onClick={() => append({ name: "" })}>
                     Add
                   </button>
                   <button type="submit" />
@@ -422,7 +421,7 @@ describe('BlueForm - field array', () => {
             props: {
               config: {
                 name: {
-                  type: 'inline',
+                  type: "inline",
                   render: () => <div />,
                 },
               },
@@ -432,12 +431,12 @@ describe('BlueForm - field array', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Add'));
-    fireEvent.click(screen.getByText('Add'));
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Add"));
+    fireEvent.click(screen.getByText("Add"));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(screen.getByTestId('error')).toBeDefined();
+      expect(screen.getByTestId("error")).toBeDefined();
     });
   });
 
@@ -450,7 +449,7 @@ describe('BlueForm - field array', () => {
             users: {
               type: "array",
               render: () => {
-                const { items, append, clear } = useArrayField()
+                const { items, append, clear } = useArrayField();
                 return (
                   <>
                     <div data-testid="count">{items.length}</div>
@@ -463,7 +462,7 @@ describe('BlueForm - field array', () => {
                       Clear
                     </button>
                   </>
-                )
+                );
               },
               props: {
                 config: {
@@ -473,24 +472,24 @@ describe('BlueForm - field array', () => {
             },
           }}
         />,
-      )
+      );
 
       // Add 2 items
-      fireEvent.click(screen.getByText("Add"))
-      fireEvent.click(screen.getByText("Add"))
+      fireEvent.click(screen.getByText("Add"));
+      fireEvent.click(screen.getByText("Add"));
 
       await waitFor(() => {
-        expect(screen.getByTestId("count").textContent).toBe("2")
-      })
+        expect(screen.getByTestId("count").textContent).toBe("2");
+      });
 
       // Clear all
-      fireEvent.click(screen.getByText("Clear"))
+      fireEvent.click(screen.getByText("Clear"));
 
       await waitFor(() => {
-        expect(screen.getByTestId("count").textContent).toBe("0")
-      })
-    })
-  })
+        expect(screen.getByTestId("count").textContent).toBe("0");
+      });
+    });
+  });
 
   describe("useArrayField - pop()", () => {
     it("removes last item when calling pop()", async () => {
@@ -501,7 +500,7 @@ describe('BlueForm - field array', () => {
             users: {
               type: "array",
               render: () => {
-                const { items, append, pop } = useArrayField()
+                const { items, append, pop } = useArrayField();
                 return (
                   <>
                     <div data-testid="count">{items.length}</div>
@@ -514,7 +513,7 @@ describe('BlueForm - field array', () => {
                       Pop
                     </button>
                   </>
-                )
+                );
               },
               props: {
                 config: {
@@ -524,23 +523,23 @@ describe('BlueForm - field array', () => {
             },
           }}
         />,
-      )
+      );
 
-      fireEvent.click(screen.getByText("Add"))
-      fireEvent.click(screen.getByText("Add"))
-      fireEvent.click(screen.getByText("Add"))
-
-      await waitFor(() => {
-        expect(screen.getByTestId("count").textContent).toBe("3")
-      })
-
-      fireEvent.click(screen.getByText("Pop"))
+      fireEvent.click(screen.getByText("Add"));
+      fireEvent.click(screen.getByText("Add"));
+      fireEvent.click(screen.getByText("Add"));
 
       await waitFor(() => {
-        expect(screen.getByTestId("count").textContent).toBe("2")
-      })
-    })
-  })
+        expect(screen.getByTestId("count").textContent).toBe("3");
+      });
+
+      fireEvent.click(screen.getByText("Pop"));
+
+      await waitFor(() => {
+        expect(screen.getByTestId("count").textContent).toBe("2");
+      });
+    });
+  });
 
   describe("useArrayField - renderItems()", () => {
     it("renders one item node per array element", async () => {
@@ -551,7 +550,7 @@ describe('BlueForm - field array', () => {
             users: {
               type: "array",
               render: () => {
-                const { append, renderItems, items } = useArrayField()
+                const { append, renderItems, items } = useArrayField();
                 return (
                   <>
                     <div data-testid="count">{items.length}</div>
@@ -561,7 +560,7 @@ describe('BlueForm - field array', () => {
 
                     <div data-testid="list">{renderItems()}</div>
                   </>
-                )
+                );
               },
               props: {
                 config: {
@@ -574,21 +573,21 @@ describe('BlueForm - field array', () => {
             },
           }}
         />,
-      )
+      );
 
-      fireEvent.click(screen.getByText("Add"))
-      fireEvent.click(screen.getByText("Add"))
-      fireEvent.click(screen.getByText("Add"))
-
-      await waitFor(() => {
-        expect(screen.getByTestId("count").textContent).toBe("3")
-      })
+      fireEvent.click(screen.getByText("Add"));
+      fireEvent.click(screen.getByText("Add"));
+      fireEvent.click(screen.getByText("Add"));
 
       await waitFor(() => {
-        expect(screen.getAllByTestId("row").length).toBe(3)
-      })
-    })
-  })
+        expect(screen.getByTestId("count").textContent).toBe("3");
+      });
+
+      await waitFor(() => {
+        expect(screen.getAllByTestId("row").length).toBe(3);
+      });
+    });
+  });
 
   describe("useArrayField - duplicate()", () => {
     it("duplicates current item values (after edits) into a new item", async () => {
@@ -599,10 +598,10 @@ describe('BlueForm - field array', () => {
             users: {
               type: "array",
               render: () => {
-                const { append, duplicate } = useArrayField()
-                const { setValue } = useFormContext()
+                const { append, duplicate } = useArrayField();
+                const { setValue } = useFormContext();
 
-                const users = useWatch({ name: "users" }) as any[] | undefined
+                const users = useWatch({ name: "users" }) as any[] | undefined;
 
                 return (
                   <>
@@ -625,7 +624,7 @@ describe('BlueForm - field array', () => {
                       {JSON.stringify(users ?? null)}
                     </pre>
                   </>
-                )
+                );
               },
               props: {
                 config: {
@@ -635,38 +634,38 @@ describe('BlueForm - field array', () => {
             },
           }}
         />,
-      )
+      );
 
-      fireEvent.click(screen.getByText("AddA"))
-
-      await waitFor(() => {
-        const users = JSON.parse(
-          screen.getByTestId("users").textContent || "null",
-        )
-        expect(users.length).toBe(1)
-        expect(users[0].name).toBe("A")
-      })
-
-      fireEvent.click(screen.getByText("Edit0"))
+      fireEvent.click(screen.getByText("AddA"));
 
       await waitFor(() => {
         const users = JSON.parse(
           screen.getByTestId("users").textContent || "null",
-        )
-        expect(users[0].name).toBe("Edited")
-      })
+        );
+        expect(users.length).toBe(1);
+        expect(users[0].name).toBe("A");
+      });
 
-      fireEvent.click(screen.getByText("Duplicate0"))
+      fireEvent.click(screen.getByText("Edit0"));
 
       await waitFor(() => {
         const users = JSON.parse(
           screen.getByTestId("users").textContent || "null",
-        )
-        expect(users.length).toBe(2)
-        expect(users[1].name).toBe("Edited") // ✅ expectation for "duplicate current values"
-      })
-    })
-  })
+        );
+        expect(users[0].name).toBe("Edited");
+      });
+
+      fireEvent.click(screen.getByText("Duplicate0"));
+
+      await waitFor(() => {
+        const users = JSON.parse(
+          screen.getByTestId("users").textContent || "null",
+        );
+        expect(users.length).toBe(2);
+        expect(users[1].name).toBe("Edited"); // ✅ expectation for "duplicate current values"
+      });
+    });
+  });
 
   describe("useArrayField - errorAt()", () => {
     it("returns item error subtree at the given index", async () => {
@@ -677,10 +676,10 @@ describe('BlueForm - field array', () => {
             users: {
               type: "array",
               render: () => {
-                const { append, errorAt } = useArrayField()
-                const { setError } = useFormContext()
+                const { append, errorAt } = useArrayField();
+                const { setError } = useFormContext();
 
-                const msg = (errorAt(0) as any)?.name?.message
+                const msg = (errorAt(0) as any)?.name?.message;
 
                 return (
                   <>
@@ -702,7 +701,7 @@ describe('BlueForm - field array', () => {
 
                     <div data-testid="msg">{msg ?? ""}</div>
                   </>
-                )
+                );
               },
               props: {
                 config: {
@@ -712,16 +711,16 @@ describe('BlueForm - field array', () => {
             },
           }}
         />,
-      )
+      );
 
-      fireEvent.click(screen.getByText("Add"))
-      fireEvent.click(screen.getByText("SetError"))
+      fireEvent.click(screen.getByText("Add"));
+      fireEvent.click(screen.getByText("SetError"));
 
       await waitFor(() => {
-        expect(screen.getByTestId("msg").textContent).toBe("Name is required")
-      })
-    })
-  })
+        expect(screen.getByTestId("msg").textContent).toBe("Name is required");
+      });
+    });
+  });
 
   describe("useArrayField - idAt()", () => {
     it("returns stable ids for items (matches items[i].id)", async () => {
@@ -732,7 +731,7 @@ describe('BlueForm - field array', () => {
             users: {
               type: "array",
               render: () => {
-                const { append, items, idAt } = useArrayField()
+                const { append, items, idAt } = useArrayField();
                 return (
                   <>
                     <button type="button" onClick={() => append({ name: "" })}>
@@ -749,7 +748,7 @@ describe('BlueForm - field array', () => {
                     <div data-testid="raw0">{items[0]?.id ?? "none"}</div>
                     <div data-testid="raw1">{items[1]?.id ?? "none"}</div>
                   </>
-                )
+                );
               },
               props: {
                 config: {
@@ -759,20 +758,124 @@ describe('BlueForm - field array', () => {
             },
           }}
         />,
-      )
+      );
 
-      fireEvent.click(screen.getByText("Add"))
-      fireEvent.click(screen.getByText("Add"))
+      fireEvent.click(screen.getByText("Add"));
+      fireEvent.click(screen.getByText("Add"));
 
       await waitFor(() => {
-        const id0 = screen.getByTestId("id0").textContent
-        const raw0 = screen.getByTestId("raw0").textContent
-        const id1 = screen.getByTestId("id1").textContent
-        const raw1 = screen.getByTestId("raw1").textContent
+        const id0 = screen.getByTestId("id0").textContent;
+        const raw0 = screen.getByTestId("raw0").textContent;
+        const id1 = screen.getByTestId("id1").textContent;
+        const raw1 = screen.getByTestId("raw1").textContent;
 
-        expect(id0).toBe(raw0)
-        expect(id1).toBe(raw1)
-      })
-    })
-  })
+        expect(id0).toBe(raw0);
+        expect(id1).toBe(raw1);
+      });
+    });
+  });
+
+  it("shows error when array is empty on first submit (resolver-based)", async () => {
+    const schema = z.object({
+      users: z
+        .array(z.object({ name: z.string() }))
+        .min(1, "At least one user required"),
+    });
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        formProps={{ resolver: zodResolver(schema) }}
+        config={{
+          users: {
+            type: "array",
+            render: ({ fieldProps }) => {
+              const { append } = useArrayField();
+              return (
+                <>
+                  {fieldProps.errorMessage && (
+                    <div data-testid="error">{fieldProps.errorMessage}</div>
+                  )}
+                  <button type="button" onClick={() => append({ name: "" })}>
+                    Add
+                  </button>
+                </>
+              );
+            },
+            props: {
+              config: {
+                name: { type: "inline", render: () => <div /> },
+              },
+            },
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("error").textContent).toBe(
+        "At least one user required",
+      );
+    });
+  });
+
+  it("shows error when array is emptied after append then remove (resolver-based)", async () => {
+    const schema = z.object({
+      users: z
+        .array(z.object({ name: z.string() }))
+        .min(1, "At least one user required"),
+    });
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        formProps={{ resolver: zodResolver(schema) }}
+        config={{
+          users: {
+            type: "array",
+            render: ({ fieldProps }) => {
+              const { append, remove, items } = useArrayField();
+              return (
+                <>
+                  {fieldProps.errorMessage && (
+                    <div data-testid="error">{fieldProps.errorMessage}</div>
+                  )}
+                  {items.map((_, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => remove(index)}
+                    >
+                      Remove
+                    </button>
+                  ))}
+                  <button type="button" onClick={() => append({ name: "" })}>
+                    Add
+                  </button>
+                </>
+              );
+            },
+            props: {
+              config: {
+                name: { type: "inline", render: () => <div /> },
+              },
+            },
+          },
+        }}
+      />,
+    );
+
+    // append then remove → array empty again
+    fireEvent.click(screen.getByText("Add"));
+    fireEvent.click(screen.getByText("Remove"));
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("error").textContent).toBe(
+        "At least one user required",
+      );
+    });
+  });
 });
