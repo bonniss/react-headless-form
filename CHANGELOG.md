@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/bonniss/react-headless-form/compare/v0.9.0...v0.9.1) (2026-03-13)
+
+
+### Bug Fixes
+
+* **array:** normalize array root error shape for resolver-based ([9b87ebc](https://github.com/bonniss/react-headless-form/commit/9b87ebce4abb40b5410b16ccf6bf39c6dfd66e01))
+
 ## [0.9.0](https://github.com/bonniss/react-headless-form/compare/v0.8.2...v0.9.0) (2026-03-11)
 
 
