@@ -185,4 +185,41 @@ describe("formOptions — defaultValues always wins", () => {
       "Jane",
     );
   });
+
+  it("partial override — per-form formOptions only overrides specified keys, setup-level keys are preserved", async () => {
+    // setup-level: mode=onSubmit, shouldFocusError=false
+    // per-form: chỉ override shouldFocusError=true
+    // expected: mode vẫn là onSubmit (từ setup), shouldFocusError=true (từ per-form)
+    const [Form] = setupForm({
+      fieldMapping,
+      formOptions: {
+        mode: "onSubmit",
+        shouldFocusError: false,
+      },
+    });
+
+    render(
+      <Form
+        renderRoot={TestRoot}
+        formOptions={{ shouldFocusError: true }} // chỉ override 1 key
+        config={minLengthConfig}
+      />,
+    );
+
+    // mode=onSubmit còn nguyên từ setup → không có error khi change
+    fireEvent.change(screen.getByTestId("input"), {
+      target: { value: "abcd" },
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("error")).toBeNull();
+    });
+
+    // submit → error xuất hiện (mode=onSubmit còn hoạt động)
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("error").textContent).toBe("Too short");
+    });
+  });
 });
