@@ -273,7 +273,7 @@ describe("BlueForm – change behavior", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        changeDebounceDelay={300}
+        debounceMs={300}
         onFormChange={onFormChange}
         config={{
           name: {
@@ -331,7 +331,7 @@ describe("BlueForm – change behavior", () => {
     const { rerender } = renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        changeDebounceDelay={300}
+        debounceMs={300}
         onFormChange={(v) => calls.push({ version: 1, values: v })}
         config={config}
       />,
@@ -354,7 +354,7 @@ describe("BlueForm – change behavior", () => {
       >
         <BlueForm
           renderRoot={TestRoot}
-          changeDebounceDelay={300}
+          debounceMs={300}
           onFormChange={(v) => calls.push({ version: 2, values: v })}
           config={config}
         />
@@ -391,7 +391,7 @@ describe("BlueForm – change behavior", () => {
     const { rerender } = renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        changeDebounceDelay={300}
+        debounceMs={300}
         onFormChange={(v) => calls.push(v)}
         config={config}
       />,
@@ -414,7 +414,7 @@ describe("BlueForm – change behavior", () => {
       >
         <BlueForm
           renderRoot={TestRoot}
-          changeDebounceDelay={300}
+          debounceMs={300}
           onFormChange={(v) => calls.push(v)}
           config={config}
         />
@@ -440,7 +440,7 @@ describe("BlueForm – change behavior", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        changeDebounceDelay={200}
+        debounceMs={200}
         onFormChange={(values) => {
           snapshots.push(values);
         }}
@@ -481,7 +481,7 @@ describe("BlueForm – change behavior", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        changeDebounceDelay={0}
+        debounceMs={0}
         onFormChange={onFormChange}
         config={{
           name: {
@@ -592,7 +592,7 @@ describe("BlueForm – change behavior", () => {
         fieldMapping={{
           text: TextField,
         }}
-        formProps={{
+        formOptions={{
           mode: "onChange",
         }}
         config={{

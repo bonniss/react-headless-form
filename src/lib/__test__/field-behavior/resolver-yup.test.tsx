@@ -89,7 +89,7 @@ describe("BlueForm – Yup resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(nameSchema) as any }}
+        formOptions={{ resolver: yupResolver(nameSchema) as any }}
         config={{
           name: {
             type: "inline",
@@ -111,7 +111,7 @@ describe("BlueForm – Yup resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{
+        formOptions={{
           mode: "onChange",
           resolver: yupResolver(nameSchema) as any,
         }}
@@ -146,7 +146,7 @@ describe("BlueForm – Yup resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{
+        formOptions={{
           mode: "onChange",
           resolver: yupResolver(nameSchema) as any,
         }}
@@ -183,7 +183,7 @@ describe("BlueForm – Yup resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(nameSchema) as any }}
+        formOptions={{ resolver: yupResolver(nameSchema) as any }}
         onSubmit={onSubmit}
         config={{
           name: {
@@ -210,7 +210,7 @@ describe("BlueForm – Yup resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(nameSchema) as any }}
+        formOptions={{ resolver: yupResolver(nameSchema) as any }}
         onSubmit={(data) => {
           submitted = data;
         }}
@@ -247,7 +247,7 @@ describe("BlueForm – Yup resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(schema) as any }}
+        formOptions={{ resolver: yupResolver(schema) as any }}
         onSubmit={(data) => {
           submitted = data;
         }}
@@ -277,7 +277,7 @@ describe("BlueForm – Yup resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{
+        formOptions={{
           resolver: yupResolver(profileSchema) as any,
         }}
         defaultValues={{ name: "", email: "", age: undefined }}
@@ -326,7 +326,7 @@ describe("BlueForm – Yup resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(profileSchema) as any }}
+        formOptions={{ resolver: yupResolver(profileSchema) as any }}
         defaultValues={{ name: "", email: "", age: undefined }}
         onSubmit={(data) => {
           submitted = data;
@@ -375,7 +375,7 @@ describe("BlueForm – Yup resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(nestedSchema) as any }}
+        formOptions={{ resolver: yupResolver(nestedSchema) as any }}
         defaultValues={{ profile: { username: "", bio: "" } }}
         config={{
           profile: {
@@ -422,7 +422,7 @@ describe("BlueForm – Yup resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(permissiveSchema) as any }}
+        formOptions={{ resolver: yupResolver(permissiveSchema) as any }}
         config={{
           name: {
             type: "inline",
@@ -449,7 +449,7 @@ describe("BlueForm – Yup resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(nameSchema) as any }}
+        formOptions={{ resolver: yupResolver(nameSchema) as any }}
         config={{
           name: {
             type: "inline",

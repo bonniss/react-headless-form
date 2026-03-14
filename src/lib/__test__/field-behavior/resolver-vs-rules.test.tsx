@@ -46,7 +46,7 @@ describe("BlueForm – resolver vs rules", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{
+        formOptions={{
           resolver: makeResolver({ name: "Name is required" }),
         }}
         config={{
@@ -71,7 +71,7 @@ describe("BlueForm – resolver vs rules", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: makeResolver() }}
+        formOptions={{ resolver: makeResolver() }}
         onSubmit={(data) => {
           submitted = data;
         }}
@@ -100,7 +100,7 @@ describe("BlueForm – resolver vs rules", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{
+        formOptions={{
           mode: "onChange",
           resolver: makeResolver(), // resolver returns no errors
         }}
@@ -126,7 +126,7 @@ describe("BlueForm – resolver vs rules", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{
+        formOptions={{
           mode: "onChange",
           resolver: makeResolver(),
         }}
@@ -156,7 +156,7 @@ describe("BlueForm – resolver vs rules", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{
+        formOptions={{
           resolver: makeResolver({ name: "Schema error" }),
         }}
         config={{
@@ -210,7 +210,7 @@ describe("BlueForm – resolver vs rules", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: makeResolver() }}
+        formOptions={{ resolver: makeResolver() }}
         config={{
           profile: {
             type: "section",
@@ -244,7 +244,7 @@ describe("BlueForm – resolver vs rules", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: makeResolver() }}
+        formOptions={{ resolver: makeResolver() }}
         config={{
           name: {
             type: "inline",
@@ -271,7 +271,7 @@ describe("BlueForm – resolver vs rules", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: makeResolver() }}
+        formOptions={{ resolver: makeResolver() }}
         config={{
           name: {
             type: "inline",

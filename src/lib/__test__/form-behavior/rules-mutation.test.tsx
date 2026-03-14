@@ -147,7 +147,7 @@ describe("BlueFormEngine — rules must not be mutated", () => {
         }}
         fieldMapping={{ text: NameField }}
         config={config}
-        formProps={{ mode: "onSubmit" }}
+        formOptions={{ mode: "onSubmit" }}
       />,
     );
 

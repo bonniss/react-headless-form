@@ -785,7 +785,7 @@ describe("BlueForm - field array", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: zodResolver(schema) as any }}
+        formOptions={{ resolver: zodResolver(schema) as any }}
         config={{
           users: {
             type: "array",
@@ -831,7 +831,7 @@ describe("BlueForm - field array", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: zodResolver(schema) as any }}
+        formOptions={{ resolver: zodResolver(schema) as any }}
         config={{
           users: {
             type: "array",

@@ -88,7 +88,7 @@ describe("BlueForm – Zod resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: zodResolver(nameSchema) as any }}
+        formOptions={{ resolver: zodResolver(nameSchema) as any }}
         config={{
           name: {
             type: "inline",
@@ -109,7 +109,7 @@ describe("BlueForm – Zod resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{
+        formOptions={{
           mode: "onChange",
           resolver: zodResolver(nameSchema) as any,
         }}
@@ -145,7 +145,7 @@ describe("BlueForm – Zod resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{
+        formOptions={{
           mode: "onChange",
           resolver: zodResolver(nameSchema) as any,
         }}
@@ -181,7 +181,7 @@ describe("BlueForm – Zod resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: zodResolver(nameSchema) as any }}
+        formOptions={{ resolver: zodResolver(nameSchema) as any }}
         onSubmit={onSubmit}
         config={{
           name: {
@@ -207,7 +207,7 @@ describe("BlueForm – Zod resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: zodResolver(nameSchema) as any }}
+        formOptions={{ resolver: zodResolver(nameSchema) as any }}
         onSubmit={(data) => {
           submitted = data;
         }}
@@ -240,7 +240,7 @@ describe("BlueForm – Zod resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: zodResolver(schema) as any }}
+        formOptions={{ resolver: zodResolver(schema) as any }}
         onSubmit={(data) => {
           submitted = data;
         }}
@@ -269,7 +269,7 @@ describe("BlueForm – Zod resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: zodResolver(profileSchema) as any }}
+        formOptions={{ resolver: zodResolver(profileSchema) as any }}
         config={{
           name: {
             type: "inline",
@@ -315,7 +315,7 @@ describe("BlueForm – Zod resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: zodResolver(profileSchema) as any }}
+        formOptions={{ resolver: zodResolver(profileSchema) as any }}
         onSubmit={(data) => {
           submitted = data;
         }}
@@ -363,7 +363,7 @@ describe("BlueForm – Zod resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: zodResolver(nestedSchema) as any }}
+        formOptions={{ resolver: zodResolver(nestedSchema) as any }}
         config={{
           profile: {
             type: "section",
@@ -410,7 +410,7 @@ describe("BlueForm – Zod resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: zodResolver(permissiveSchema) as any }}
+        formOptions={{ resolver: zodResolver(permissiveSchema) as any }}
         config={{
           name: {
             type: "inline",
@@ -437,7 +437,7 @@ describe("BlueForm – Zod resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: zodResolver(nameSchema) as any }}
+        formOptions={{ resolver: zodResolver(nameSchema) as any }}
         config={{
           name: {
             type: "inline",
