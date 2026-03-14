@@ -1,58 +1,58 @@
-import { renderWithBlueFormProvider } from '@/__test__/_utils/render-form';
-import BlueForm from '@/components/form/BlueForm';
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
-import { DummyField } from '../_utils/field';
+import { renderWithBlueFormProvider } from "@/__test__/_utils/render-form";
+import BlueForm from "@/components/form/BlueForm";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { DummyField } from "../_utils/field";
 
-describe('BlueForm base config', () => {
-  it('throws error when renderRoot is not provided', () => {
+describe("BlueForm base config", () => {
+  it("throws error when renderRoot is not provided", () => {
     expect(() => render(<BlueForm config={{}} />)).toThrowError(/renderRoot/i);
   });
 
-  it('use renderRoot from provider when not provided by form', () => {
+  it("use renderRoot from provider when not provided by form", () => {
     renderWithBlueFormProvider(<BlueForm config={{}} />);
-    expect(screen.getByTestId('provider-root')).toBeDefined();
+    expect(screen.getByTestId("provider-root")).toBeDefined();
   });
 
-  it('use renderRoot form props over provider', () => {
+  it("use renderRoot form props over provider", () => {
     renderWithBlueFormProvider(
       <BlueForm
         config={{}}
         renderRoot={(props) => (
           <form data-testid="form-root">{props.children}</form>
         )}
-      />
+      />,
     );
-    expect(screen.getByTestId('form-root')).toBeDefined();
+    expect(screen.getByTestId("form-root")).toBeDefined();
   });
 
-  it('uses fieldMapping from provider when not provided by form', () => {
+  it("uses fieldMapping from provider when not provided by form", () => {
     const ProviderText = () => <DummyField name="provider-text" />;
 
     renderWithBlueFormProvider(
       <BlueForm
         config={{
-          name: { type: 'text' },
+          name: { type: "text" },
         }}
       />,
       {
         fieldMapping: {
           text: ProviderText,
         },
-      }
+      },
     );
 
-    expect(screen.queryByTestId('provider-text')).toBeDefined();
+    expect(screen.queryByTestId("provider-text")).toBeDefined();
   });
 
-  it('uses fieldMapping from form props over provider', () => {
+  it("uses fieldMapping from form props over provider", () => {
     const ProviderText = () => <DummyField name="provider-text" />;
     const FormText = () => <DummyField name="form-text" />;
 
     renderWithBlueFormProvider(
       <BlueForm
         config={{
-          name: { type: 'text' },
+          name: { type: "text" },
         }}
         fieldMapping={{
           text: FormText,
@@ -62,14 +62,14 @@ describe('BlueForm base config', () => {
         fieldMapping: {
           text: ProviderText,
         },
-      }
+      },
     );
 
-    expect(screen.getByTestId('form-text')).toBeDefined();
-    expect(screen.queryByTestId('provider-text')).toBeFalsy();
+    expect(screen.getByTestId("form-text")).toBeDefined();
+    expect(screen.queryByTestId("provider-text")).toBeFalsy();
   });
 
-  it('uses i18nConfig from form over provider', () => {
+  it("uses i18nConfig from form over provider", () => {
     renderWithBlueFormProvider(
       <BlueForm
         i18nConfig={{
@@ -77,11 +77,9 @@ describe('BlueForm base config', () => {
         }}
         config={{
           name: {
-            type: 'inline',
-            label: 'Name',
-            render: ({ fieldProps }) => (
-              <div data-testid="label">{fieldProps.label}</div>
-            ),
+            type: "inline",
+            label: "Name",
+            render: ({ label }) => <div data-testid="label">{label}</div>,
           },
         }}
       />,
@@ -89,22 +87,20 @@ describe('BlueForm base config', () => {
         i18nConfig: {
           t: (k) => `provider:${k}`,
         },
-      }
+      },
     );
 
-    expect(screen.getByTestId('label').textContent).toBe('form:Name');
+    expect(screen.getByTestId("label").textContent).toBe("form:Name");
   });
 
-  it('falls back to provider i18nConfig', () => {
+  it("falls back to provider i18nConfig", () => {
     renderWithBlueFormProvider(
       <BlueForm
         config={{
           name: {
-            type: 'inline',
-            label: 'Name',
-            render: ({ fieldProps }) => (
-              <div data-testid="label">{fieldProps.label}</div>
-            ),
+            type: "inline",
+            label: "Name",
+            render: ({ label }) => <div data-testid="label">{label}</div>,
           },
         }}
       />,
@@ -112,9 +108,9 @@ describe('BlueForm base config', () => {
         i18nConfig: {
           t: (k) => `provider:${k}`,
         },
-      }
+      },
     );
 
-    expect(screen.getByTestId('label').textContent).toBe('provider:Name');
+    expect(screen.getByTestId("label").textContent).toBe("provider:Name");
   });
 });

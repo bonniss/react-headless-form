@@ -1,21 +1,21 @@
-import BlueForm from "@/components/form/BlueForm"
-import { useField } from "@/components"
-import { fireEvent, screen, waitFor } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
-import { renderWithBlueFormProvider } from "../_utils/render-form"
+import BlueForm from "@/components/form/BlueForm";
+import { useField } from "@/components";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { renderWithBlueFormProvider } from "../_utils/render-form";
 
 // minimal resolver mock — simulates zodResolver / yupResolver shape
 function makeResolver(errors: Record<string, string> = {}) {
   return async (values: any) => {
-    const fieldErrors: Record<string, any> = {}
+    const fieldErrors: Record<string, any> = {};
     for (const [key, message] of Object.entries(errors)) {
-      fieldErrors[key] = { type: "manual", message }
+      fieldErrors[key] = { type: "manual", message };
     }
     return {
       values: Object.keys(errors).length ? {} : values,
       errors: fieldErrors,
-    }
-  }
+    };
+  };
 }
 
 const TestRoot = ({ children, onSubmit }: any) => (
@@ -23,12 +23,10 @@ const TestRoot = ({ children, onSubmit }: any) => (
     {children}
     <button type="submit">Submit</button>
   </form>
-)
+);
 
 const InlineInput = () => {
-  const {
-    fieldProps: { value, onChange, errorMessage },
-  } = useField()
+  const { value, onChange, errorMessage } = useField();
   return (
     <div>
       <input
@@ -38,8 +36,8 @@ const InlineInput = () => {
       />
       {errorMessage && <div data-testid="error">{errorMessage}</div>}
     </div>
-  )
-}
+  );
+};
 
 describe("BlueForm – resolver vs rules", () => {
   // ─── resolver takes effect ───────────────────────────────────────────────
@@ -58,24 +56,24 @@ describe("BlueForm – resolver vs rules", () => {
           },
         }}
       />,
-    )
+    );
 
-    fireEvent.click(screen.getByText("Submit"))
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(screen.getByTestId("error").textContent).toBe("Name is required")
-    })
-  })
+      expect(screen.getByTestId("error").textContent).toBe("Name is required");
+    });
+  });
 
   it("passes submit when resolver returns no errors", async () => {
-    let submitted: any = null
+    let submitted: any = null;
 
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
         formProps={{ resolver: makeResolver() }}
         onSubmit={(data) => {
-          submitted = data
+          submitted = data;
         }}
         config={{
           name: {
@@ -84,17 +82,17 @@ describe("BlueForm – resolver vs rules", () => {
           },
         }}
       />,
-    )
+    );
 
     fireEvent.change(screen.getByTestId("input"), {
       target: { value: "Alice" },
-    })
-    fireEvent.click(screen.getByText("Submit"))
+    });
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(submitted).toEqual({ name: "Alice" })
-    })
-  })
+      expect(submitted).toEqual({ name: "Alice" });
+    });
+  });
 
   // ─── rules are disabled when resolver is present ─────────────────────────
 
@@ -114,15 +112,15 @@ describe("BlueForm – resolver vs rules", () => {
           },
         }}
       />,
-    )
+    );
 
     // leave field empty and submit — rules should NOT fire
-    fireEvent.click(screen.getByText("Submit"))
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(screen.queryByTestId("error")).toBeNull()
-    })
-  })
+      expect(screen.queryByTestId("error")).toBeNull();
+    });
+  });
 
   it("does not show rules error on change when resolver is provided", async () => {
     renderWithBlueFormProvider(
@@ -142,17 +140,17 @@ describe("BlueForm – resolver vs rules", () => {
           },
         }}
       />,
-    )
+    );
 
     fireEvent.change(screen.getByTestId("input"), {
       target: { value: "ab" }, // would trigger minLength rule
-    })
+    });
 
     // wait a tick — no error should appear
     await waitFor(() => {
-      expect(screen.queryByTestId("error")).toBeNull()
-    })
-  })
+      expect(screen.queryByTestId("error")).toBeNull();
+    });
+  });
 
   it("resolver error takes precedence over rules — only resolver error shown", async () => {
     renderWithBlueFormProvider(
@@ -169,17 +167,17 @@ describe("BlueForm – resolver vs rules", () => {
           },
         }}
       />,
-    )
+    );
 
-    fireEvent.click(screen.getByText("Submit"))
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(screen.getByTestId("error").textContent).toBe("Schema error")
-    })
+      expect(screen.getByTestId("error").textContent).toBe("Schema error");
+    });
 
     // rules error must never appear
-    expect(screen.queryByText("Rules error")).toBeNull()
-  })
+    expect(screen.queryByText("Rules error")).toBeNull();
+  });
 
   // ─── rules still work when no resolver ───────────────────────────────────
 
@@ -195,16 +193,16 @@ describe("BlueForm – resolver vs rules", () => {
           },
         }}
       />,
-    )
+    );
 
-    fireEvent.click(screen.getByText("Submit"))
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(screen.getByTestId("error").textContent).toBe(
         "This field is required",
-      )
-    })
-  })
+      );
+    });
+  });
 
   // ─── nested fields ────────────────────────────────────────────────────────
 
@@ -229,19 +227,19 @@ describe("BlueForm – resolver vs rules", () => {
           },
         }}
       />,
-    )
+    );
 
-    fireEvent.click(screen.getByText("Submit"))
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(screen.queryByTestId("error")).toBeNull()
-    })
-  })
+      expect(screen.queryByTestId("error")).toBeNull();
+    });
+  });
 
   // ─── dev warning ─────────────────────────────────────────────────────────
 
   it("warns in dev when resolver and rules are both present", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     renderWithBlueFormProvider(
       <BlueForm
@@ -255,20 +253,20 @@ describe("BlueForm – resolver vs rules", () => {
           },
         }}
       />,
-    )
+    );
 
     expect(warn).toHaveBeenCalledWith(
       expect.stringContaining("[react-headless-form]"),
-    )
+    );
     expect(warn).toHaveBeenCalledWith(
       expect.stringContaining("automatically disabled"),
-    )
+    );
 
-    warn.mockRestore()
-  })
+    warn.mockRestore();
+  });
 
   it("does not warn when only resolver is present with no rules", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     renderWithBlueFormProvider(
       <BlueForm
@@ -281,17 +279,17 @@ describe("BlueForm – resolver vs rules", () => {
           },
         }}
       />,
-    )
+    );
 
     expect(warn).not.toHaveBeenCalledWith(
       expect.stringContaining("[react-headless-form]"),
-    )
+    );
 
-    warn.mockRestore()
-  })
+    warn.mockRestore();
+  });
 
   it("does not warn when only rules are present with no resolver", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     renderWithBlueFormProvider(
       <BlueForm
@@ -304,12 +302,12 @@ describe("BlueForm – resolver vs rules", () => {
           },
         }}
       />,
-    )
+    );
 
     expect(warn).not.toHaveBeenCalledWith(
       expect.stringContaining("[react-headless-form]"),
-    )
+    );
 
-    warn.mockRestore()
-  })
-})
+    warn.mockRestore();
+  });
+});

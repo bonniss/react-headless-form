@@ -10,13 +10,13 @@
  * Alternatively, set defaultValue in field config or defaultValues on the form.
  */
 
-import BlueForm from "@/components/form/BlueForm"
-import { useField } from "@/components"
-import { fireEvent, screen, waitFor } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
-import * as yup from "yup"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { renderWithBlueFormProvider } from "../_utils/render-form"
+import BlueForm from "@/components/form/BlueForm";
+import { useField } from "@/components";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { renderWithBlueFormProvider } from "../_utils/render-form";
 
 // ─── shared test components ───────────────────────────────────────────────────
 
@@ -25,12 +25,10 @@ const TestRoot = ({ children, onSubmit }: any) => (
     {children}
     <button type="submit">Submit</button>
   </form>
-)
+);
 
 const InputField = () => {
-  const {
-    fieldProps: { value, onChange, errorMessage },
-  } = useField()
+  const { value, onChange, errorMessage } = useField();
   return (
     <div>
       <input
@@ -40,13 +38,11 @@ const InputField = () => {
       />
       {errorMessage && <div data-testid="error">{errorMessage}</div>}
     </div>
-  )
-}
+  );
+};
 
 const MultiInputField = ({ name }: { name: string }) => {
-  const {
-    fieldProps: { value, onChange, errorMessage },
-  } = useField()
+  const { value, onChange, errorMessage } = useField();
   return (
     <div>
       <input
@@ -56,8 +52,8 @@ const MultiInputField = ({ name }: { name: string }) => {
       />
       {errorMessage && <div data-testid={`error-${name}`}>{errorMessage}</div>}
     </div>
-  )
-}
+  );
+};
 
 // ─── schemas ──────────────────────────────────────────────────────────────────
 
@@ -66,7 +62,7 @@ const nameSchema = yup.object({
     .string()
     .required("Name is required")
     .min(3, "Name must be at least 3 characters"),
-})
+});
 
 const profileSchema = yup.object({
   name: yup.string().required("Name is required"),
@@ -75,14 +71,14 @@ const profileSchema = yup.object({
     .number()
     .typeError("Must be at least 18")
     .min(18, "Must be at least 18"),
-})
+});
 
 const nestedSchema = yup.object({
   profile: yup.object({
     username: yup.string().required("Username is required"),
     bio: yup.string().max(100, "Bio must be 100 characters or less"),
   }),
-})
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -93,7 +89,7 @@ describe("BlueForm – Yup resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(nameSchema) }}
+        formProps={{ resolver: yupResolver(nameSchema) as any }}
         config={{
           name: {
             type: "inline",
@@ -102,14 +98,14 @@ describe("BlueForm – Yup resolver integration", () => {
           },
         }}
       />,
-    )
+    );
 
-    fireEvent.click(screen.getByText("Submit"))
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(screen.getByTestId("error").textContent).toBe("Name is required")
-    })
-  })
+      expect(screen.getByTestId("error").textContent).toBe("Name is required");
+    });
+  });
 
   it("shows correct yup error based on value length", async () => {
     renderWithBlueFormProvider(
@@ -117,7 +113,7 @@ describe("BlueForm – Yup resolver integration", () => {
         renderRoot={TestRoot}
         formProps={{
           mode: "onChange",
-          resolver: yupResolver(nameSchema),
+          resolver: yupResolver(nameSchema) as any,
         }}
         config={{
           name: {
@@ -127,24 +123,24 @@ describe("BlueForm – Yup resolver integration", () => {
           },
         }}
       />,
-    )
+    );
 
-    fireEvent.click(screen.getByText("Submit"))
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(screen.getByTestId("error").textContent).toBe("Name is required")
-    })
+      expect(screen.getByTestId("error").textContent).toBe("Name is required");
+    });
 
     fireEvent.change(screen.getByTestId("input"), {
       target: { value: "ab" },
-    })
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("error").textContent).toBe(
         "Name must be at least 3 characters",
-      )
-    })
-  })
+      );
+    });
+  });
 
   it("clears error when value becomes valid", async () => {
     renderWithBlueFormProvider(
@@ -152,7 +148,7 @@ describe("BlueForm – Yup resolver integration", () => {
         renderRoot={TestRoot}
         formProps={{
           mode: "onChange",
-          resolver: yupResolver(nameSchema),
+          resolver: yupResolver(nameSchema) as any,
         }}
         config={{
           name: {
@@ -162,32 +158,32 @@ describe("BlueForm – Yup resolver integration", () => {
           },
         }}
       />,
-    )
+    );
 
-    fireEvent.click(screen.getByText("Submit"))
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(screen.getByTestId("error")).toBeTruthy()
-    })
+      expect(screen.getByTestId("error")).toBeTruthy();
+    });
 
     fireEvent.change(screen.getByTestId("input"), {
       target: { value: "Alice" },
-    })
+    });
 
     await waitFor(() => {
-      expect(screen.queryByTestId("error")).toBeNull()
-    })
-  })
+      expect(screen.queryByTestId("error")).toBeNull();
+    });
+  });
 
   // ─── submit behavior ─────────────────────────────────────────────────────
 
   it("does not call onSubmit when schema validation fails", async () => {
-    const onSubmit = vi.fn()
+    const onSubmit = vi.fn();
 
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(nameSchema) }}
+        formProps={{ resolver: yupResolver(nameSchema) as any }}
         onSubmit={onSubmit}
         config={{
           name: {
@@ -197,26 +193,26 @@ describe("BlueForm – Yup resolver integration", () => {
           },
         }}
       />,
-    )
+    );
 
-    fireEvent.click(screen.getByText("Submit"))
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(screen.getByTestId("error")).toBeTruthy()
-    })
+      expect(screen.getByTestId("error")).toBeTruthy();
+    });
 
-    expect(onSubmit).not.toHaveBeenCalled()
-  })
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
 
   it("calls onSubmit with data when schema validation passes", async () => {
-    let submitted: any = null
+    let submitted: any = null;
 
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(nameSchema) }}
+        formProps={{ resolver: yupResolver(nameSchema) as any }}
         onSubmit={(data) => {
-          submitted = data
+          submitted = data;
         }}
         config={{
           name: {
@@ -226,17 +222,17 @@ describe("BlueForm – Yup resolver integration", () => {
           },
         }}
       />,
-    )
+    );
 
     fireEvent.change(screen.getByTestId("input"), {
       target: { value: "Alice" },
-    })
-    fireEvent.click(screen.getByText("Submit"))
+    });
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(submitted).toEqual({ name: "Alice" })
-    })
-  })
+      expect(submitted).toEqual({ name: "Alice" });
+    });
+  });
 
   it("casts value type per schema on submit (number field)", async () => {
     const schema = yup.object({
@@ -244,16 +240,16 @@ describe("BlueForm – Yup resolver integration", () => {
         .number()
         .typeError("Invalid number")
         .min(1, "Must be at least 1"),
-    })
+    });
 
-    let submitted: any = null
+    let submitted: any = null;
 
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(schema) }}
+        formProps={{ resolver: yupResolver(schema) as any }}
         onSubmit={(data) => {
-          submitted = data
+          submitted = data;
         }}
         config={{
           age: {
@@ -263,17 +259,17 @@ describe("BlueForm – Yup resolver integration", () => {
           },
         }}
       />,
-    )
+    );
 
     fireEvent.change(screen.getByTestId("input"), {
       target: { value: "25" },
-    })
-    fireEvent.click(screen.getByText("Submit"))
+    });
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(submitted).toEqual({ age: 25 }) // cast to number
-    })
-  })
+      expect(submitted).toEqual({ age: 25 }); // cast to number
+    });
+  });
 
   // ─── multiple fields ──────────────────────────────────────────────────────
 
@@ -282,7 +278,7 @@ describe("BlueForm – Yup resolver integration", () => {
       <BlueForm
         renderRoot={TestRoot}
         formProps={{
-          resolver: yupResolver(profileSchema, { abortEarly: false }),
+          resolver: yupResolver(profileSchema) as any,
         }}
         defaultValues={{ name: "", email: "", age: undefined }}
         config={{
@@ -300,40 +296,40 @@ describe("BlueForm – Yup resolver integration", () => {
           },
         }}
       />,
-    )
+    );
 
     fireEvent.change(screen.getByTestId("input-email"), {
       target: { value: "not-an-email" },
-    })
+    });
     fireEvent.change(screen.getByTestId("input-age"), {
       target: { value: "10" }, // under 18 — triggers min error
-    })
+    });
 
-    fireEvent.click(screen.getByText("Submit"))
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(screen.getByTestId("error-name").textContent).toBe(
         "Name is required",
-      )
+      );
       expect(screen.getByTestId("error-email").textContent).toBe(
         "Invalid email",
-      )
+      );
       expect(screen.getByTestId("error-age").textContent).toBe(
         "Must be at least 18",
-      )
-    })
-  })
+      );
+    });
+  });
 
   it("submits successfully when all fields pass schema", async () => {
-    let submitted: any = null
+    let submitted: any = null;
 
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(profileSchema) }}
+        formProps={{ resolver: yupResolver(profileSchema) as any }}
         defaultValues={{ name: "", email: "", age: undefined }}
         onSubmit={(data) => {
-          submitted = data
+          submitted = data;
         }}
         config={{
           name: {
@@ -350,28 +346,28 @@ describe("BlueForm – Yup resolver integration", () => {
           },
         }}
       />,
-    )
+    );
 
     fireEvent.change(screen.getByTestId("input-name"), {
       target: { value: "Alice" },
-    })
+    });
     fireEvent.change(screen.getByTestId("input-email"), {
       target: { value: "alice@example.com" },
-    })
+    });
     fireEvent.change(screen.getByTestId("input-age"), {
       target: { value: "25" },
-    })
+    });
 
-    fireEvent.click(screen.getByText("Submit"))
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(submitted).toEqual({
         name: "Alice",
         email: "alice@example.com",
         age: 25,
-      })
-    })
-  })
+      });
+    });
+  });
 
   // ─── nested schema ────────────────────────────────────────────────────────
 
@@ -379,7 +375,7 @@ describe("BlueForm – Yup resolver integration", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(nestedSchema) }}
+        formProps={{ resolver: yupResolver(nestedSchema) as any }}
         defaultValues={{ profile: { username: "", bio: "" } }}
         config={{
           profile: {
@@ -400,33 +396,33 @@ describe("BlueForm – Yup resolver integration", () => {
           },
         }}
       />,
-    )
+    );
 
     fireEvent.change(screen.getByTestId("input-bio"), {
       target: { value: "x".repeat(101) },
-    })
+    });
 
-    fireEvent.click(screen.getByText("Submit"))
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(screen.getByTestId("error-username").textContent).toBe(
         "Username is required",
-      )
+      );
       expect(screen.getByTestId("error-bio").textContent).toBe(
         "Bio must be 100 characters or less",
-      )
-    })
-  })
+      );
+    });
+  });
 
   // ─── rules are disabled with resolver ────────────────────────────────────
 
   it("does not fire field-level rules when yupResolver is provided", async () => {
-    const permissiveSchema = yup.object({ name: yup.string() })
+    const permissiveSchema = yup.object({ name: yup.string() });
 
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(permissiveSchema) }}
+        formProps={{ resolver: yupResolver(permissiveSchema) as any }}
         config={{
           name: {
             type: "inline",
@@ -436,24 +432,24 @@ describe("BlueForm – Yup resolver integration", () => {
           },
         }}
       />,
-    )
+    );
 
-    fireEvent.click(screen.getByText("Submit"))
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(screen.queryByTestId("error")).toBeNull()
-    })
-  })
+      expect(screen.queryByTestId("error")).toBeNull();
+    });
+  });
 
   // ─── dev warning ──────────────────────────────────────────────────────────
 
   it("warns when yupResolver and field rules are both present", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: yupResolver(nameSchema) }}
+        formProps={{ resolver: yupResolver(nameSchema) as any }}
         config={{
           name: {
             type: "inline",
@@ -463,12 +459,12 @@ describe("BlueForm – Yup resolver integration", () => {
           },
         }}
       />,
-    )
+    );
 
     expect(warn).toHaveBeenCalledWith(
       expect.stringContaining("[react-headless-form]"),
-    )
+    );
 
-    warn.mockRestore()
-  })
-})
+    warn.mockRestore();
+  });
+});

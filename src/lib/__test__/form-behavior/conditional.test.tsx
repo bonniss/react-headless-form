@@ -14,10 +14,10 @@
  *   - Subscription tests: engine must NOT re-render on form changes when no
  *     conditional fields exist (verified via render count spy)
  */
-import { useField } from '@/components';
-import BlueForm from '@/components/form/BlueForm';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { useField } from "@/components";
+import BlueForm from "@/components/form/BlueForm";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
 const TestRoot = ({ children, onSubmit }: any) => (
   <form onSubmit={onSubmit}>
@@ -30,19 +30,19 @@ const TestRoot = ({ children, onSubmit }: any) => (
 // Behavior: conditional visible
 // ---------------------------------------------------------------------------
 
-describe('conditional watch — visible behavior', () => {
-  it('shows field when visible() returns true', async () => {
+describe("conditional watch — visible behavior", () => {
+  it("shows field when visible() returns true", async () => {
     render(
       <BlueForm
         renderRoot={TestRoot}
         config={{
           type: {
-            type: 'inline',
-            render: ({ fieldProps }) => (
+            type: "inline",
+            render: ({ value, onChange }) => (
               <select
                 data-testid="type"
-                value={fieldProps.value ?? ''}
-                onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
               >
                 <option value="">-</option>
                 <option value="A">A</option>
@@ -51,107 +51,107 @@ describe('conditional watch — visible behavior', () => {
             ),
           },
           detail: {
-            type: 'inline',
-            visible: (values: any) => values.type === 'B',
-            // Field component is responsible for hiding itself based on fieldProps.visible.
+            type: "inline",
+            visible: (values: any) => values.type === "B",
+            // Field component is responsible for hiding itself based on visible.
             // The engine passes visible down as a resolved prop — it does not skip rendering.
-            render: ({ fieldProps }) =>
-              fieldProps.visible ? <div data-testid="detail" /> : null,
+            render: ({ visible }) =>
+              visible ? <div data-testid="detail" /> : null,
           },
         }}
       />,
     );
 
-    expect(screen.queryByTestId('detail')).toBeNull();
+    expect(screen.queryByTestId("detail")).toBeNull();
 
-    fireEvent.change(screen.getByTestId('type'), { target: { value: 'B' } });
+    fireEvent.change(screen.getByTestId("type"), { target: { value: "B" } });
 
     await waitFor(() => {
-      expect(screen.getByTestId('detail')).toBeDefined();
+      expect(screen.getByTestId("detail")).toBeDefined();
     });
   });
 
-  it('hides field when visible() returns false', async () => {
+  it("hides field when visible() returns false", async () => {
     render(
       <BlueForm
         renderRoot={TestRoot}
         config={{
           toggle: {
-            type: 'inline',
-            render: ({ fieldProps }) => (
+            type: "inline",
+            render: ({ value, onChange }) => (
               <input
                 data-testid="toggle"
                 type="checkbox"
-                checked={Boolean(fieldProps.value)}
-                onChange={(e) => fieldProps.onChange?.(e.target.checked)}
+                checked={Boolean(value)}
+                onChange={(e) => onChange?.(e.target.checked)}
               />
             ),
           },
           secret: {
-            type: 'inline',
+            type: "inline",
             visible: (values: any) => Boolean(values.toggle),
-            render: ({ fieldProps }) =>
-              fieldProps.visible ? <div data-testid="secret" /> : null,
+            render: ({ visible }) =>
+              visible ? <div data-testid="secret" /> : null,
           },
         }}
       />,
     );
 
     // Initially hidden
-    expect(screen.queryByTestId('secret')).toBeNull();
+    expect(screen.queryByTestId("secret")).toBeNull();
 
     // Show
-    fireEvent.click(screen.getByTestId('toggle'));
-    await waitFor(() => expect(screen.getByTestId('secret')).toBeDefined());
+    fireEvent.click(screen.getByTestId("toggle"));
+    await waitFor(() => expect(screen.getByTestId("secret")).toBeDefined());
 
     // Hide again
-    fireEvent.click(screen.getByTestId('toggle'));
-    await waitFor(() => expect(screen.queryByTestId('secret')).toBeNull());
+    fireEvent.click(screen.getByTestId("toggle"));
+    await waitFor(() => expect(screen.queryByTestId("secret")).toBeNull());
   });
 
-  it('evaluates visible() with the current full form values snapshot', async () => {
+  it("evaluates visible() with the current full form values snapshot", async () => {
     render(
       <BlueForm
         renderRoot={TestRoot}
         config={{
           a: {
-            type: 'inline',
-            render: ({ fieldProps }) => (
+            type: "inline",
+            render: ({ value, onChange }) => (
               <input
                 data-testid="a"
-                value={fieldProps.value ?? ''}
-                onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
               />
             ),
           },
           b: {
-            type: 'inline',
-            render: ({ fieldProps }) => (
+            type: "inline",
+            render: ({ value, onChange }) => (
               <input
                 data-testid="b"
-                value={fieldProps.value ?? ''}
-                onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
               />
             ),
           },
           result: {
-            type: 'inline',
+            type: "inline",
             // depends on both a and b
-            visible: (values: any) => values.a === 'x' && values.b === 'y',
-            render: ({ fieldProps }) =>
-              fieldProps.visible ? <div data-testid="result" /> : null,
+            visible: (values: any) => values.a === "x" && values.b === "y",
+            render: ({ visible }) =>
+              visible ? <div data-testid="result" /> : null,
           },
         }}
       />,
     );
 
-    expect(screen.queryByTestId('result')).toBeNull();
+    expect(screen.queryByTestId("result")).toBeNull();
 
-    fireEvent.change(screen.getByTestId('a'), { target: { value: 'x' } });
-    await waitFor(() => expect(screen.queryByTestId('result')).toBeNull()); // b not set yet
+    fireEvent.change(screen.getByTestId("a"), { target: { value: "x" } });
+    await waitFor(() => expect(screen.queryByTestId("result")).toBeNull()); // b not set yet
 
-    fireEvent.change(screen.getByTestId('b'), { target: { value: 'y' } });
-    await waitFor(() => expect(screen.getByTestId('result')).toBeDefined());
+    fireEvent.change(screen.getByTestId("b"), { target: { value: "y" } });
+    await waitFor(() => expect(screen.getByTestId("result")).toBeDefined());
   });
 });
 
@@ -159,51 +159,51 @@ describe('conditional watch — visible behavior', () => {
 // Behavior: conditional disabled
 // ---------------------------------------------------------------------------
 
-describe('conditional watch — disabled behavior', () => {
-  it('disables field when disabled() returns true', async () => {
+describe("conditional watch — disabled behavior", () => {
+  it("disables field when disabled() returns true", async () => {
     render(
       <BlueForm
         renderRoot={TestRoot}
         fieldMapping={{
           text: () => {
-            const { fieldProps } = useField();
+            const { disabled, value, onChange } = useField();
             return (
               <input
                 data-testid="target"
-                disabled={fieldProps.disabled}
-                value={fieldProps.value ?? ''}
-                onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                disabled={disabled}
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
               />
             );
           },
         }}
         config={{
           lock: {
-            type: 'inline',
-            render: ({ fieldProps }) => (
+            type: "inline",
+            render: ({ value, onChange }) => (
               <input
                 data-testid="lock"
                 type="checkbox"
-                checked={Boolean(fieldProps.value)}
-                onChange={(e) => fieldProps.onChange?.(e.target.checked)}
+                checked={Boolean(value)}
+                onChange={(e) => onChange?.(e.target.checked)}
               />
             ),
           },
           name: {
-            type: 'text',
+            type: "text",
             disabled: (values: any) => Boolean(values.lock),
           },
         }}
       />,
     );
 
-    const input = screen.getByTestId('target') as HTMLInputElement;
+    const input = screen.getByTestId("target") as HTMLInputElement;
     expect(input.disabled).toBe(false);
 
-    fireEvent.click(screen.getByTestId('lock'));
+    fireEvent.click(screen.getByTestId("lock"));
 
     await waitFor(() => {
-      expect((screen.getByTestId('target') as HTMLInputElement).disabled).toBe(
+      expect((screen.getByTestId("target") as HTMLInputElement).disabled).toBe(
         true,
       );
     });
@@ -214,8 +214,8 @@ describe('conditional watch — disabled behavior', () => {
 // Subscription: no watch() re-renders for static-only forms
 // ---------------------------------------------------------------------------
 
-describe('conditional watch — subscription optimization', () => {
-  it('does not re-render engine when no conditional fields exist', async () => {
+describe("conditional watch — subscription optimization", () => {
+  it("does not re-render engine when no conditional fields exist", async () => {
     // We count how many times the engine's field loop executes by counting
     // how many times a field's render function is called after mount.
     const renderCount = vi.fn();
@@ -225,25 +225,25 @@ describe('conditional watch — subscription optimization', () => {
         renderRoot={TestRoot}
         config={{
           firstName: {
-            type: 'inline',
-            render: ({ fieldProps }) => {
+            type: "inline",
+            render: ({ value, onChange }) => {
               renderCount();
               return (
                 <input
                   data-testid="firstName"
-                  value={fieldProps.value ?? ''}
-                  onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                  value={value ?? ""}
+                  onChange={(e) => onChange?.(e.target.value)}
                 />
               );
             },
           },
           lastName: {
-            type: 'inline',
-            render: ({ fieldProps }) => (
+            type: "inline",
+            render: ({ value, onChange }) => (
               <input
                 data-testid="lastName"
-                value={fieldProps.value ?? ''}
-                onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
               />
             ),
           },
@@ -255,19 +255,19 @@ describe('conditional watch — subscription optimization', () => {
     const countAfterMount = renderCount.mock.calls.length;
 
     // Type into lastName — this changes form state
-    fireEvent.change(screen.getByTestId('lastName'), {
-      target: { value: 'Doe' },
+    fireEvent.change(screen.getByTestId("lastName"), {
+      target: { value: "Doe" },
     });
-    fireEvent.change(screen.getByTestId('lastName'), {
-      target: { value: 'Doe2' },
+    fireEvent.change(screen.getByTestId("lastName"), {
+      target: { value: "Doe2" },
     });
-    fireEvent.change(screen.getByTestId('lastName'), {
-      target: { value: 'Doe3' },
+    fireEvent.change(screen.getByTestId("lastName"), {
+      target: { value: "Doe3" },
     });
 
     // Wait a tick to let any potential re-renders flush
     await waitFor(() => {
-      expect(screen.getByTestId('lastName')).toBeDefined();
+      expect(screen.getByTestId("lastName")).toBeDefined();
     });
 
     // firstName's render should NOT have been called again —
@@ -276,7 +276,7 @@ describe('conditional watch — subscription optimization', () => {
     expect(renderCount.mock.calls.length).toBe(countAfterMount);
   });
 
-  it('does re-render engine when a conditional field exists and a dependency changes', async () => {
+  it("does re-render engine when a conditional field exists and a dependency changes", async () => {
     const renderCount = vi.fn();
 
     render(
@@ -284,23 +284,21 @@ describe('conditional watch — subscription optimization', () => {
         renderRoot={TestRoot}
         config={{
           type: {
-            type: 'inline',
-            render: ({ fieldProps }) => (
+            type: "inline",
+            render: ({ value, onChange }) => (
               <input
                 data-testid="type"
-                value={fieldProps.value ?? ''}
-                onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
               />
             ),
           },
           detail: {
-            type: 'inline',
-            visible: (values: any) => values.type === 'B',
-            render: ({ fieldProps }) => {
+            type: "inline",
+            visible: (values: any) => values.type === "B",
+            render: ({ visible }) => {
               renderCount();
-              return fieldProps.visible ? (
-                <div data-testid="detail-render" />
-              ) : null;
+              return visible ? <div data-testid="detail-render" /> : null;
             },
           },
         }}
@@ -309,17 +307,17 @@ describe('conditional watch — subscription optimization', () => {
 
     // Engine subscribes because `detail` has a visible() function.
     // Changing `type` triggers engine re-render → detail re-evaluates.
-    fireEvent.change(screen.getByTestId('type'), { target: { value: 'B' } });
+    fireEvent.change(screen.getByTestId("type"), { target: { value: "B" } });
 
     await waitFor(() => {
-      expect(screen.getByTestId('detail-render')).toBeDefined();
+      expect(screen.getByTestId("detail-render")).toBeDefined();
     });
 
     // detail rendered at least once after the change
     expect(renderCount.mock.calls.length).toBeGreaterThan(0);
   });
 
-  it('nested section: conditional field inside section responds to form changes', async () => {
+  it("nested section: conditional field inside section responds to form changes", async () => {
     // This test verifies that a conditional field inside a nested section engine
     // correctly subscribes and reacts to form value changes — i.e. the optimization
     // (skipping watch() at parent level) does not break child-level conditional logic.
@@ -328,38 +326,36 @@ describe('conditional watch — subscription optimization', () => {
         renderRoot={TestRoot}
         config={{
           name: {
-            type: 'inline',
-            render: ({ fieldProps }) => (
+            type: "inline",
+            render: ({ value, onChange }) => (
               <input
                 data-testid="name"
-                value={fieldProps.value ?? ''}
-                onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
               />
             ),
           },
           section: {
-            type: 'section',
+            type: "section",
             props: {
               nested: false,
               config: {
                 toggle: {
-                  type: 'inline',
-                  render: ({ fieldProps }) => (
+                  type: "inline",
+                  render: ({ value, onChange }) => (
                     <input
                       data-testid="toggle"
                       type="checkbox"
-                      checked={Boolean(fieldProps.value)}
-                      onChange={(e) => fieldProps.onChange?.(e.target.checked)}
+                      checked={Boolean(value)}
+                      onChange={(e) => onChange?.(e.target.checked)}
                     />
                   ),
                 },
                 conditional: {
-                  type: 'inline',
+                  type: "inline",
                   visible: (values: any) => Boolean(values.toggle),
-                  render: ({ fieldProps }) =>
-                    fieldProps.visible ? (
-                      <div data-testid="conditional" />
-                    ) : null,
+                  render: ({ visible }) =>
+                    visible ? <div data-testid="conditional" /> : null,
                 },
               },
             },
@@ -369,26 +365,26 @@ describe('conditional watch — subscription optimization', () => {
     );
 
     // Initially hidden
-    expect(screen.queryByTestId('conditional')).toBeNull();
+    expect(screen.queryByTestId("conditional")).toBeNull();
 
     // Toggle on → conditional appears
-    fireEvent.click(screen.getByTestId('toggle'));
+    fireEvent.click(screen.getByTestId("toggle"));
     await waitFor(() =>
-      expect(screen.getByTestId('conditional')).toBeDefined(),
+      expect(screen.getByTestId("conditional")).toBeDefined(),
     );
 
     // Toggle off → conditional disappears
-    fireEvent.click(screen.getByTestId('toggle'));
-    await waitFor(() => expect(screen.queryByTestId('conditional')).toBeNull());
+    fireEvent.click(screen.getByTestId("toggle"));
+    await waitFor(() => expect(screen.queryByTestId("conditional")).toBeNull());
 
     // Typing into an unrelated field (name) does not affect conditional visibility
-    fireEvent.change(screen.getByTestId('name'), {
-      target: { value: 'Alice' },
+    fireEvent.change(screen.getByTestId("name"), {
+      target: { value: "Alice" },
     });
-    await waitFor(() => expect(screen.queryByTestId('conditional')).toBeNull());
+    await waitFor(() => expect(screen.queryByTestId("conditional")).toBeNull());
   });
 
-  it('static boolean visible/disabled fields do not cause subscription', async () => {
+  it("static boolean visible/disabled fields do not cause subscription", async () => {
     const renderCount = vi.fn();
 
     render(
@@ -396,27 +392,27 @@ describe('conditional watch — subscription optimization', () => {
         renderRoot={TestRoot}
         config={{
           a: {
-            type: 'inline',
+            type: "inline",
             visible: true, // boolean, not function
             disabled: false, // boolean, not function
-            render: ({ fieldProps }) => {
+            render: ({ value, onChange }) => {
               renderCount();
               return (
                 <input
                   data-testid="a"
-                  value={fieldProps.value ?? ''}
-                  onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                  value={value ?? ""}
+                  onChange={(e) => onChange?.(e.target.value)}
                 />
               );
             },
           },
           b: {
-            type: 'inline',
-            render: ({ fieldProps }) => (
+            type: "inline",
+            render: ({ value, onChange }) => (
               <input
                 data-testid="b"
-                value={fieldProps.value ?? ''}
-                onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
               />
             ),
           },
@@ -426,11 +422,11 @@ describe('conditional watch — subscription optimization', () => {
 
     const mountCount = renderCount.mock.calls.length;
 
-    fireEvent.change(screen.getByTestId('b'), { target: { value: 'x' } });
-    fireEvent.change(screen.getByTestId('b'), { target: { value: 'xy' } });
+    fireEvent.change(screen.getByTestId("b"), { target: { value: "x" } });
+    fireEvent.change(screen.getByTestId("b"), { target: { value: "xy" } });
 
     await waitFor(() => {
-      expect((screen.getByTestId('b') as HTMLInputElement).value).toBe('xy');
+      expect((screen.getByTestId("b") as HTMLInputElement).value).toBe("xy");
     });
 
     // Field `a` should not have re-rendered — static visible/disabled = no subscription

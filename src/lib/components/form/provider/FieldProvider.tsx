@@ -32,7 +32,7 @@ export const [useField, FieldProvider] = createProvider(
       fieldState,
     } = controller;
 
-    const fieldProps: FieldResolvedProps = {
+    const props: FieldResolvedProps = {
       value,
       onChange,
       onBlur,
@@ -43,7 +43,7 @@ export const [useField, FieldProvider] = createProvider(
     };
 
     return {
-      ...fieldProps,
+      ...props,
       controller,
       config,
     };

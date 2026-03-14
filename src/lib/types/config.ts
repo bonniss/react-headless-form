@@ -100,12 +100,13 @@ export type FormFieldConfig<
    * Optional escape hatch to manually render the field. If provided,
    * the entire rendering of this field will be overridden.
    */
-  render?: (context: {
-    fieldProps: FieldResolvedProps;
-    props?: ComponentProps<TComponentMap[TFieldType]>;
-    children?: ReactNode;
-    meta?: Record<string, any>;
-  }) => ReactNode;
+  render?: (
+    context: {
+      props?: ComponentProps<TComponentMap[TFieldType]>;
+      children?: ReactNode;
+      meta?: Record<string, any>;
+    } & FieldResolvedProps,
+  ) => ReactNode;
 };
 
 type FieldConfigUnion<

@@ -9,10 +9,10 @@
  *   2. React StrictMode double-invoke corrupts rules on first mount
  *   3. Shared config objects (array item config reused across instances) cross-contaminate
  */
-import BlueForm from '@/components/form/BlueForm';
-import { useArrayField, useField } from '@/components/form/provider';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import BlueForm from "@/components/form/BlueForm";
+import { useArrayField, useField } from "@/components/form/provider";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 
 const TestRoot = ({ children, onSubmit }: any) => (
   <form onSubmit={onSubmit}>
@@ -21,12 +21,12 @@ const TestRoot = ({ children, onSubmit }: any) => (
   </form>
 );
 
-describe('BlueFormEngine — rules must not be mutated', () => {
-  it('does not mutate the original config rules object', () => {
+describe("BlueFormEngine — rules must not be mutated", () => {
+  it("does not mutate the original config rules object", () => {
     const originalRules = { required: true };
     const config = {
       name: {
-        type: 'inline' as const,
+        type: "inline" as const,
         rules: originalRules,
         render: () => null,
       },
@@ -37,7 +37,7 @@ describe('BlueFormEngine — rules must not be mutated', () => {
         renderRoot={TestRoot}
         i18nConfig={{
           t: (key: any) => `t:${key}`,
-          validationTranslation: { required: 'validation.required' },
+          validationTranslation: { required: "validation.required" },
         }}
         config={config}
       />,
@@ -48,8 +48,8 @@ describe('BlueFormEngine — rules must not be mutated', () => {
     expect(config.name.rules.required).toBe(true);
   });
 
-  it('does not mutate rules across multiple re-renders', async () => {
-    const originalRules = { minLength: { value: 3, message: 'Too short' } };
+  it("does not mutate rules across multiple re-renders", async () => {
+    const originalRules = { minLength: { value: 3, message: "Too short" } };
     const capturedRuleValues: any[] = [];
 
     const NameField = () => {
@@ -60,7 +60,7 @@ describe('BlueFormEngine — rules must not be mutated', () => {
 
     const config = {
       name: {
-        type: 'text' as const,
+        type: "text" as const,
         rules: originalRules,
       },
     };
@@ -69,8 +69,8 @@ describe('BlueFormEngine — rules must not be mutated', () => {
       <BlueForm
         renderRoot={TestRoot}
         i18nConfig={{
-          t: (key: any, params: any) => `${params?.field ?? ''}:${key}`,
-          validationTranslation: { minLength: 'validation.minLength' },
+          t: (key: any, params: any) => `${params?.field ?? ""}:${key}`,
+          validationTranslation: { minLength: "validation.minLength" },
         }}
         fieldMapping={{ text: NameField }}
         config={config}
@@ -82,8 +82,8 @@ describe('BlueFormEngine — rules must not be mutated', () => {
       <BlueForm
         renderRoot={TestRoot}
         i18nConfig={{
-          t: (key: any, params: any) => `${params?.field ?? ''}:${key}`,
-          validationTranslation: { minLength: 'validation.minLength' },
+          t: (key: any, params: any) => `${params?.field ?? ""}:${key}`,
+          validationTranslation: { minLength: "validation.minLength" },
         }}
         fieldMapping={{ text: NameField }}
         config={config}
@@ -94,8 +94,8 @@ describe('BlueFormEngine — rules must not be mutated', () => {
       <BlueForm
         renderRoot={TestRoot}
         i18nConfig={{
-          t: (key: any, params: any) => `${params?.field ?? ''}:${key}`,
-          validationTranslation: { minLength: 'validation.minLength' },
+          t: (key: any, params: any) => `${params?.field ?? ""}:${key}`,
+          validationTranslation: { minLength: "validation.minLength" },
         }}
         fieldMapping={{ text: NameField }}
         config={config}
@@ -107,25 +107,23 @@ describe('BlueFormEngine — rules must not be mutated', () => {
     // and its value must still be the original shape
     expect(config.name.rules.minLength).toEqual({
       value: 3,
-      message: 'Too short',
+      message: "Too short",
     });
   });
 
-  it('applies i18n to validation messages without touching original rules', async () => {
+  it("applies i18n to validation messages without touching original rules", async () => {
     let submittedError: string | undefined;
 
     const NameField = () => {
-      const { fieldProps } = useField();
+      const { value, onChange, errorMessage } = useField();
       return (
         <div>
           <input
             data-testid="input"
-            value={fieldProps.value ?? ''}
-            onChange={(e) => fieldProps.onChange?.(e.target.value)}
+            value={value ?? ""}
+            onChange={(e) => onChange?.(e.target.value)}
           />
-          {fieldProps.errorMessage && (
-            <div data-testid="error">{fieldProps.errorMessage}</div>
-          )}
+          {errorMessage && <div data-testid="error">{errorMessage}</div>}
         </div>
       );
     };
@@ -133,8 +131,8 @@ describe('BlueFormEngine — rules must not be mutated', () => {
     const originalRules = { required: true };
     const config = {
       name: {
-        type: 'text' as const,
-        label: 'Username',
+        type: "text" as const,
+        label: "Username",
         rules: originalRules,
       },
     };
@@ -144,37 +142,37 @@ describe('BlueFormEngine — rules must not be mutated', () => {
         renderRoot={TestRoot}
         i18nConfig={{
           t: (_key: any, params: any) =>
-            params?.field ? `${params.field} is required` : 'Required',
-          validationTranslation: { required: 'validation.required' },
+            params?.field ? `${params.field} is required` : "Required",
+          validationTranslation: { required: "validation.required" },
         }}
         fieldMapping={{ text: NameField }}
         config={config}
-        formProps={{ mode: 'onSubmit' }}
+        formProps={{ mode: "onSubmit" }}
       />,
     );
 
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(screen.getByTestId('error')).toBeDefined();
+      expect(screen.getByTestId("error")).toBeDefined();
     });
 
     // i18n message should appear...
-    expect(screen.getByTestId('error').textContent).toContain('required');
+    expect(screen.getByTestId("error").textContent).toContain("required");
 
     // ...but original config must be untouched
     expect(config.name.rules).toBe(originalRules);
     expect(config.name.rules.required).toBe(true); // still boolean, not a resolved object
   });
 
-  it('shared config reused across array items is not cross-contaminated', async () => {
+  it("shared config reused across array items is not cross-contaminated", async () => {
     // This is the most dangerous case: array field reuses the same `props.config`
     // object for every item instance. With the bug, instance 0 mutates the shared
     // config, and instance 1 receives already-mutated rules.
     const sharedItemConfig = {
       label: {
-        type: 'inline' as const,
-        rules: { required: 'Item label is required' },
+        type: "inline" as const,
+        rules: { required: "Item label is required" },
         render: () => <div data-testid="item" />,
       },
     };
@@ -183,7 +181,7 @@ describe('BlueFormEngine — rules must not be mutated', () => {
       const { append, renderItems } = useArrayField();
       return (
         <div>
-          <button type="button" onClick={() => append({ label: '' })}>
+          <button type="button" onClick={() => append({ label: "" })}>
             Add
           </button>
           {renderItems()}
@@ -196,12 +194,12 @@ describe('BlueFormEngine — rules must not be mutated', () => {
         renderRoot={TestRoot}
         i18nConfig={{
           t: (key: any) => `t:${key}`,
-          validationTranslation: { required: 'validation.required' },
+          validationTranslation: { required: "validation.required" },
         }}
         fieldMapping={{ array: ArrayUI }}
         config={{
           tags: {
-            type: 'array' as const,
+            type: "array" as const,
             props: { config: sharedItemConfig },
           },
         }}
@@ -209,30 +207,30 @@ describe('BlueFormEngine — rules must not be mutated', () => {
     );
 
     // Add 3 items — each uses sharedItemConfig
-    fireEvent.click(screen.getByText('Add'));
-    fireEvent.click(screen.getByText('Add'));
-    fireEvent.click(screen.getByText('Add'));
+    fireEvent.click(screen.getByText("Add"));
+    fireEvent.click(screen.getByText("Add"));
+    fireEvent.click(screen.getByText("Add"));
 
     await waitFor(() => {
-      expect(screen.getAllByTestId('item')).toHaveLength(3);
+      expect(screen.getAllByTestId("item")).toHaveLength(3);
     });
 
     // sharedItemConfig must still have original rules
     expect(sharedItemConfig.label.rules.required).toBe(
-      'Item label is required',
+      "Item label is required",
     );
   });
 
-  it('resolveRules returns original object reference when nothing changes', () => {
+  it("resolveRules returns original object reference when nothing changes", () => {
     // When there are no validationResolver entries, the original rules object
     // should be returned by reference (no unnecessary allocation)
     const rules = {
       required: true,
-      minLength: { value: 5, message: 'Too short' },
+      minLength: { value: 5, message: "Too short" },
     };
     const config = {
       name: {
-        type: 'inline' as const,
+        type: "inline" as const,
         rules,
         render: () => null,
       },

@@ -1,11 +1,11 @@
-import BlueForm from "@/components/form/BlueForm"
-import { screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
-import { renderWithBlueFormProvider } from "../_utils/render-form"
+import BlueForm from "@/components/form/BlueForm";
+import { screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { renderWithBlueFormProvider } from "../_utils/render-form";
 
 const TestRoot = ({ children, onSubmit }: any) => (
   <form onSubmit={onSubmit}>{children}</form>
-)
+);
 
 describe("BlueForm i18n", () => {
   it("translates field label using i18nConfig", () => {
@@ -18,8 +18,8 @@ describe("BlueForm i18n", () => {
             label: {
               message: "form.name",
             },
-            render: ({ fieldProps }: any) => (
-              <span data-testid="label">{fieldProps.label}</span>
+            render: ({ label }: any) => (
+              <span data-testid="label">{label}</span>
             ),
           },
         }}
@@ -29,11 +29,11 @@ describe("BlueForm i18n", () => {
           t: (key) => `t:${key}`,
           enabled: true,
         },
-      }
-    )
+      },
+    );
 
-    expect(screen.getByTestId("label").textContent).toBe("t:form.name")
-  })
+    expect(screen.getByTestId("label").textContent).toBe("t:form.name");
+  });
 
   it("falls back to raw label when i18n is disabled", () => {
     renderWithBlueFormProvider(
@@ -43,8 +43,8 @@ describe("BlueForm i18n", () => {
           name: {
             type: "inline",
             label: "Raw label",
-            render: ({ fieldProps }: any) => (
-              <span data-testid="label">{fieldProps.label}</span>
+            render: ({ label }: any) => (
+              <span data-testid="label">{label}</span>
             ),
           },
         }}
@@ -54,11 +54,11 @@ describe("BlueForm i18n", () => {
           t: (key: string) => `t:${key}`,
           enabled: false,
         },
-      }
-    )
+      },
+    );
 
-    expect(screen.getByTestId("label").textContent).toBe("Raw label")
-  })
+    expect(screen.getByTestId("label").textContent).toBe("Raw label");
+  });
 
   it("supports TranslatableText object with params", () => {
     renderWithBlueFormProvider(
@@ -71,8 +71,8 @@ describe("BlueForm i18n", () => {
               message: "items.count",
               params: { count: 3 },
             },
-            render: ({ fieldProps }: any) => (
-              <span data-testid="label">{fieldProps.label}</span>
+            render: ({ label }: any) => (
+              <span data-testid="label">{label}</span>
             ),
           },
         }}
@@ -81,11 +81,11 @@ describe("BlueForm i18n", () => {
         i18nConfig: {
           t: (key: string, params?: any) => `${key}:${params?.count}`,
         },
-      }
-    )
+      },
+    );
 
-    expect(screen.getByTestId("label").textContent).toBe("items.count:3")
-  })
+    expect(screen.getByTestId("label").textContent).toBe("items.count:3");
+  });
 
   it("uses fallback when translation returns undefined", () => {
     renderWithBlueFormProvider(
@@ -98,8 +98,8 @@ describe("BlueForm i18n", () => {
               message: "missing.key",
               fallback: "Fallback label",
             },
-            render: ({ fieldProps }: any) => (
-              <span data-testid="label">{fieldProps.label}</span>
+            render: ({ label }: any) => (
+              <span data-testid="label">{label}</span>
             ),
           },
         }}
@@ -108,11 +108,11 @@ describe("BlueForm i18n", () => {
         i18nConfig: {
           t: () => undefined,
         },
-      }
-    )
+      },
+    );
 
-    expect(screen.getByTestId("label").textContent).toBe("Fallback label")
-  })
+    expect(screen.getByTestId("label").textContent).toBe("Fallback label");
+  });
 
   it("falls back to message when no translation and no fallback", () => {
     renderWithBlueFormProvider(
@@ -124,8 +124,8 @@ describe("BlueForm i18n", () => {
             label: {
               message: "Raw label",
             },
-            render: ({ fieldProps }: any) => (
-              <span data-testid="label">{fieldProps.label}</span>
+            render: ({ label }: any) => (
+              <span data-testid="label">{label}</span>
             ),
           },
         }}
@@ -134,11 +134,11 @@ describe("BlueForm i18n", () => {
         i18nConfig: {
           t: () => undefined,
         },
-      }
-    )
+      },
+    );
 
-    expect(screen.getByTestId("label").textContent).toBe("Raw label")
-  })
+    expect(screen.getByTestId("label").textContent).toBe("Raw label");
+  });
 
   it("translates description using i18nConfig", () => {
     renderWithBlueFormProvider(
@@ -148,8 +148,8 @@ describe("BlueForm i18n", () => {
           name: {
             type: "inline",
             description: "field.description",
-            render: ({ fieldProps }: any) => (
-              <span data-testid="desc">{fieldProps.description}</span>
+            render: ({ description }: any) => (
+              <span data-testid="desc">{description}</span>
             ),
           },
         }}
@@ -158,20 +158,20 @@ describe("BlueForm i18n", () => {
         i18nConfig: {
           t: (key: string) => `t:${key}`,
         },
-      }
-    )
+      },
+    );
 
-    expect(screen.getByTestId("desc").textContent).toBe("t:field.description")
-  })
+    expect(screen.getByTestId("desc").textContent).toBe("t:field.description");
+  });
 
   const t = (key: string, params?: Record<string, any>) => {
-    if (!params) return key
+    if (!params) return key;
     if ("field" in params && Object.keys(params).length === 1) {
-      return `${key}:${params.field}`
+      return `${key}:${params.field}`;
     }
-    const [, value] = Object.entries(params).find(([k]) => k !== "field") ?? []
-    return value != null ? `${key}:${value}` : key
-  }
+    const [, value] = Object.entries(params).find(([k]) => k !== "field") ?? [];
+    return value != null ? `${key}:${value}` : key;
+  };
 
   it("translates required rule using validationTranslation", () => {
     renderWithBlueFormProvider(
@@ -184,10 +184,8 @@ describe("BlueForm i18n", () => {
             rules: {
               required: true,
             },
-            render: ({ fieldProps }: any) => (
-              <span data-testid="rule">
-                {String(fieldProps.rules.required)}
-              </span>
+            render: ({ rules }: any) => (
+              <span data-testid="rule">{String(rules.required)}</span>
             ),
           },
         }}
@@ -199,13 +197,13 @@ describe("BlueForm i18n", () => {
             required: "form.rules.required",
           },
         },
-      }
-    )
+      },
+    );
 
     expect(screen.getByTestId("rule").textContent).toBe(
-      "form.rules.required:Name"
-    )
-  })
+      "form.rules.required:Name",
+    );
+  });
 
   it("translates minLength rule using validationTranslation", () => {
     renderWithBlueFormProvider(
@@ -218,10 +216,8 @@ describe("BlueForm i18n", () => {
             rules: {
               minLength: 3,
             },
-            render: ({ fieldProps }: any) => (
-              <span data-testid="rule">
-                {JSON.stringify(fieldProps.rules.minLength)}
-              </span>
+            render: ({ rules }: any) => (
+              <span data-testid="rule">{JSON.stringify(rules.minLength)}</span>
             ),
           },
         }}
@@ -233,16 +229,16 @@ describe("BlueForm i18n", () => {
             minLength: "form.rules.minLength",
           },
         },
-      }
-    )
+      },
+    );
 
     expect(screen.getByTestId("rule").textContent).toBe(
       JSON.stringify({
         value: 3,
         message: "form.rules.minLength:3",
-      })
-    )
-  })
+      }),
+    );
+  });
 
   it("translates maxLength rule using validationTranslation", () => {
     renderWithBlueFormProvider(
@@ -255,10 +251,8 @@ describe("BlueForm i18n", () => {
             rules: {
               maxLength: 10,
             },
-            render: ({ fieldProps }: any) => (
-              <span data-testid="rule">
-                {JSON.stringify(fieldProps.rules.maxLength)}
-              </span>
+            render: ({ rules }: any) => (
+              <span data-testid="rule">{JSON.stringify(rules.maxLength)}</span>
             ),
           },
         }}
@@ -270,16 +264,16 @@ describe("BlueForm i18n", () => {
             maxLength: "form.rules.maxLength",
           },
         },
-      }
-    )
+      },
+    );
 
     expect(screen.getByTestId("rule").textContent).toBe(
       JSON.stringify({
         value: 10,
         message: "form.rules.maxLength:10",
-      })
-    )
-  })
+      }),
+    );
+  });
 
   it("translates min rule using validationTranslation", () => {
     renderWithBlueFormProvider(
@@ -292,10 +286,8 @@ describe("BlueForm i18n", () => {
             rules: {
               min: 18,
             },
-            render: ({ fieldProps }: any) => (
-              <span data-testid="rule">
-                {JSON.stringify(fieldProps.rules.min)}
-              </span>
+            render: ({ rules }: any) => (
+              <span data-testid="rule">{JSON.stringify(rules.min)}</span>
             ),
           },
         }}
@@ -307,16 +299,16 @@ describe("BlueForm i18n", () => {
             min: "form.rules.min",
           },
         },
-      }
-    )
+      },
+    );
 
     expect(screen.getByTestId("rule").textContent).toBe(
       JSON.stringify({
         value: 18,
         message: "form.rules.min:18",
-      })
-    )
-  })
+      }),
+    );
+  });
 
   it("translates max rule using validationTranslation", () => {
     renderWithBlueFormProvider(
@@ -329,10 +321,8 @@ describe("BlueForm i18n", () => {
             rules: {
               max: 65,
             },
-            render: ({ fieldProps }: any) => (
-              <span data-testid="rule">
-                {JSON.stringify(fieldProps.rules.max)}
-              </span>
+            render: ({ rules }: any) => (
+              <span data-testid="rule">{JSON.stringify(rules.max)}</span>
             ),
           },
         }}
@@ -344,19 +334,19 @@ describe("BlueForm i18n", () => {
             max: "form.rules.max",
           },
         },
-      }
-    )
+      },
+    );
 
     expect(screen.getByTestId("rule").textContent).toBe(
       JSON.stringify({
         value: 65,
         message: "form.rules.max:65",
-      })
-    )
-  })
+      }),
+    );
+  });
 
   it("translates pattern rule using validationTranslation", () => {
-    const pattern = /^[a-z]+$/
+    const pattern = /^[a-z]+$/;
 
     renderWithBlueFormProvider(
       <BlueForm
@@ -368,10 +358,8 @@ describe("BlueForm i18n", () => {
             rules: {
               pattern,
             },
-            render: ({ fieldProps }: any) => (
-              <span data-testid="rule">
-                {JSON.stringify(fieldProps.rules.pattern)}
-              </span>
+            render: ({ rules }: any) => (
+              <span data-testid="rule">{JSON.stringify(rules.pattern)}</span>
             ),
           },
         }}
@@ -383,14 +371,14 @@ describe("BlueForm i18n", () => {
             pattern: "form.rules.pattern",
           },
         },
-      }
-    )
+      },
+    );
 
     expect(screen.getByTestId("rule").textContent).toBe(
       JSON.stringify({
         value: pattern,
         message: "form.rules.pattern:Username",
-      })
-    )
-  })
-})
+      }),
+    );
+  });
+});

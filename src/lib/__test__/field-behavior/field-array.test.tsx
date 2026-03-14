@@ -317,12 +317,12 @@ describe("BlueForm - field array", () => {
           users: {
             type: "array",
             rules: { required: "Users is required" },
-            render: ({ fieldProps }) => {
+            render: ({ errorMessage }) => {
               const { append } = useArrayField();
               return (
                 <>
-                  {fieldProps.errorMessage && (
-                    <div data-testid="error">{fieldProps.errorMessage}</div>
+                  {errorMessage && (
+                    <div data-testid="error">{errorMessage}</div>
                   )}
                   <button data-testid="submit" type="submit">
                     Submit
@@ -361,12 +361,12 @@ describe("BlueForm - field array", () => {
           users: {
             type: "array",
             rules: { minLength: { value: 2, message: "At least 2 users" } },
-            render: ({ fieldProps }) => {
+            render: ({ errorMessage }) => {
               const { append } = useArrayField();
               return (
                 <>
-                  {fieldProps.errorMessage && (
-                    <div data-testid="error">{fieldProps.errorMessage}</div>
+                  {errorMessage && (
+                    <div data-testid="error">{errorMessage}</div>
                   )}
                   <button type="button" onClick={() => append({ name: "" })}>
                     Add
@@ -404,12 +404,12 @@ describe("BlueForm - field array", () => {
           users: {
             type: "array",
             rules: { maxLength: { value: 1, message: "Only 1 user allowed" } },
-            render: ({ fieldProps }) => {
+            render: ({ errorMessage }) => {
               const { append } = useArrayField();
               return (
                 <>
-                  {fieldProps.errorMessage && (
-                    <div data-testid="error">{fieldProps.errorMessage}</div>
+                  {errorMessage && (
+                    <div data-testid="error">{errorMessage}</div>
                   )}
                   <button type="button" onClick={() => append({ name: "" })}>
                     Add
@@ -785,16 +785,16 @@ describe("BlueForm - field array", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: zodResolver(schema) }}
+        formProps={{ resolver: zodResolver(schema) as any }}
         config={{
           users: {
             type: "array",
-            render: ({ fieldProps }) => {
+            render: ({ errorMessage }) => {
               const { append } = useArrayField();
               return (
                 <>
-                  {fieldProps.errorMessage && (
-                    <div data-testid="error">{fieldProps.errorMessage}</div>
+                  {errorMessage && (
+                    <div data-testid="error">{errorMessage}</div>
                   )}
                   <button type="button" onClick={() => append({ name: "" })}>
                     Add
@@ -831,16 +831,16 @@ describe("BlueForm - field array", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        formProps={{ resolver: zodResolver(schema) }}
+        formProps={{ resolver: zodResolver(schema) as any }}
         config={{
           users: {
             type: "array",
-            render: ({ fieldProps }) => {
+            render: ({ errorMessage }) => {
               const { append, remove, items } = useArrayField();
               return (
                 <>
-                  {fieldProps.errorMessage && (
-                    <div data-testid="error">{fieldProps.errorMessage}</div>
+                  {errorMessage && (
+                    <div data-testid="error">{errorMessage}</div>
                   )}
                   {items.map((_, index) => (
                     <button

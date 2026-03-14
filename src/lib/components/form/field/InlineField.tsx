@@ -1,12 +1,12 @@
-import { FunctionComponent } from 'react'
-import { useField } from '../provider'
+import { FunctionComponent } from "react";
+import { useField } from "../provider";
 
 interface InlineFieldProps {}
 
 const InlineField: FunctionComponent<InlineFieldProps> = () => {
-  const { fieldProps, config } = useField()
+  const { config, controller, ...fieldProps } = useField();
 
-  return config.render?.({ fieldProps })
-}
+  return config.render?.({ ...fieldProps });
+};
 
-export default InlineField
+export default InlineField;

@@ -188,7 +188,7 @@ function BlueFormEngine<
 
             const node =
               render?.({
-                fieldProps: sectionResolvedProps,
+                ...sectionResolvedProps,
                 children,
                 props: componentProps,
               }) ?? children;
