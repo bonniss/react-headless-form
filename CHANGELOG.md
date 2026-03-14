@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/bonniss/react-headless-form/compare/v0.10.2...v0.11.0) (2026-03-14)
+
+
+### Features
+
+* **engine:** support render prop on custom mapped fields via self ([e1dc228](https://github.com/bonniss/react-headless-form/commit/e1dc22880dbc80eda34be3abfe0c6af943082f0b))
+
 ## [0.10.2](https://github.com/bonniss/react-headless-form/compare/v0.10.1...v0.10.2) (2026-03-14)
 
 
