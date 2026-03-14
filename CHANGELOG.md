@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/bonniss/react-headless-form/compare/v0.10.0...v0.10.1) (2026-03-14)
+
+
+### Bug Fixes
+
+* **api:** merge formOptions from setupForm and Form instance type safely ([af3d485](https://github.com/bonniss/react-headless-form/commit/af3d485525fc65d5a2b3df36258797fe0adaf168))
+
 ## [0.10.0](https://github.com/bonniss/react-headless-form/compare/v0.9.1...v0.10.0) (2026-03-14)
 
 
