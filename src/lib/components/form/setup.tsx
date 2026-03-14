@@ -164,19 +164,32 @@ export function setupForm(baseConfig?: BlueFormBaseConfig<ComponentMap>) {
     ...baseConfig,
   };
 
-  // Bind helpers to the mapping resolved at setup time.
   const defineConfig = createDefineConfigFn<any>();
 
   const InternalForm = forwardRef(function InternalForm(props: any, ref) {
-    // Prevent overriding `fieldMapping` at the Form level.
-    // Field mapping is intentionally fixed at setup time.
-    const { fieldMapping: _ignored, ...allowedProps } = props as any;
+    const {
+      fieldMapping: _ignored,
+      formOptions,
+      ...allowedProps
+    } = props as any;
 
-    return <BlueForm ref={ref} {...resolvedConfig} {...allowedProps} />;
+    // Merge formOptions so that per-form options override setup-level defaults,
+    // while setup-level options serve as the baseline for every form instance.
+    const mergedFormOptions = {
+      ...resolvedConfig.formOptions,
+      ...formOptions,
+    };
+
+    return (
+      <BlueForm
+        ref={ref}
+        {...resolvedConfig}
+        {...allowedProps}
+        formOptions={mergedFormOptions}
+      />
+    );
   });
 
-  // Typed helper for rendering config fragments in component-owned sections.
   const Section = createSectionComponent<any>();
-
   return [InternalForm as any, defineConfig, Section] as const;
 }

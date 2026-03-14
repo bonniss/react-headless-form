@@ -80,6 +80,18 @@ export type I18nResolvedConfig = {
   validationResolver: ValidationResolver;
 };
 
+// Type hẹp cho setupForm level
+export type BaseFormOptions = Omit<
+  UseFormProps,
+  | "resolver"
+  | "defaultValues"
+  | "context"
+  | "errors"
+  | "values"
+  | "resetOptions"
+  | "disabled"
+>;
+
 export interface BlueFormBaseConfig<
   TComponentMap extends ComponentMap = ComponentMap,
 > {
@@ -103,27 +115,29 @@ export interface BlueFormBaseConfig<
    * Props to pass to RHF's `useForm` hook.
    * @see https://react-hook-form.com/docs/useform
    */
-  formOptions?: Omit<
-    UseFormProps,
-    | "resolver"
-    | "defaultValues"
-    | "context"
-    | "errors"
-    | "values"
-    | "resetOptions"
-    | "disabled"
-  >;
+  formOptions?: BaseFormOptions;
 }
 
 export interface BlueFormProps<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap,
 >
-  extends BlueFormBaseConfig<TComponentMap>, PropsWithChildren {
+  extends
+    Omit<BlueFormBaseConfig<TComponentMap>, "formOptions">,
+    PropsWithChildren {
   /**
-   * Form field configuration including field type, name, label, props, etc.
+   * Form field configuration including field type, name, label,Ï props, etc.
    */
   config: FormConfig<TModel, TComponentMap>;
+
+  /**
+   * Options passed to RHF's `useForm` for this specific form instance.
+   * Merges over `formOptions` from `setupForm`. `defaultValues` always wins.
+   * Unlike `setupForm`, per-form `formOptions` also accepts `resolver`, `context`, etc.
+   *
+   * @see https://react-hook-form.com/docs/useform
+   */
+  formOptions?: UseFormProps<TModel>;
 
   /**
    * Called when the form is submitted successfully and passes validation.

@@ -28,16 +28,19 @@ export function BlueFormInner<
   blueFormProps: BlueFormProps<TModel, TComponentMap>,
   ref: React.Ref<BlueFormRef<TModel>>,
 ) {
-  const { defaultValues, formOptions: formProps, config } = blueFormProps;
+  const { defaultValues, formOptions, config } = blueFormProps;
   const form = useForm<TModel>({
     mode: "onTouched",
     reValidateMode: "onChange",
-    ...formProps,
+    ...formOptions,
     defaultValues,
   } as UseFormProps<TModel>);
   useImperativeHandle(ref, () => form, [form]);
 
-  if (formProps?.resolver && hasRulesInConfig(config as Record<string, any>)) {
+  if (
+    formOptions?.resolver &&
+    hasRulesInConfig(config as Record<string, any>)
+  ) {
     console.warn(
       "[react-headless-form] `rules` defined in field config are automatically disabled when `formProps.resolver` is provided. " +
         "Define all validation in your schema instead.",
