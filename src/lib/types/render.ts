@@ -15,9 +15,7 @@ export type ArrayRenderContext = ReturnType<typeof useArrayField> & {
 };
 
 // ── Conditional render fn ───────────────────────────────────────────────────
-
-export type RenderFn<TFieldType extends string & keyof any = string> = (
-  context: TFieldType extends "array"
-    ? ArrayRenderContext
-    : RegularRenderContext,
-) => ReactNode;
+export type RenderFn<TFieldType extends string & keyof any = string> =
+  TFieldType extends "array"
+    ? (context: ArrayRenderContext) => ReactNode
+    : (context: RegularRenderContext) => ReactNode;

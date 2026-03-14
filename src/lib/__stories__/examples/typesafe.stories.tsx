@@ -27,6 +27,9 @@ export const TypeSafeSchema: Story = () => {
         name: {
           type: "text",
           label: "Name",
+          props: {
+            autoFocus: true,
+          },
         },
         email: {
           type: "text",

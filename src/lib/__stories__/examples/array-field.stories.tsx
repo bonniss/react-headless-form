@@ -10,6 +10,9 @@ import InputField from "../components/InputField";
 
 interface User {
   fullName: string;
+  social: {
+    youtube: string;
+  };
   addresses: {
     street: string;
     city: string;
@@ -41,6 +44,15 @@ export const ArrayFields: Story = () => {
             required: "Full name is required",
           },
         },
+        "social.youtube": {
+          type: "text",
+          label: "YouTube",
+          props: {
+            style: {
+              backgroundColor: "red",
+            },
+          },
+        },
         addresses: {
           type: "array",
           label: "Addresses",
@@ -69,7 +81,8 @@ export const ArrayFields: Story = () => {
           render: ({ label, errorMessage, append, children }) => {
             return (
               <fieldset>
-                <legend>{label}</legend>Ï{children}
+                <legend>{label}</legend>
+                {children}
                 <button type="button" onClick={() => append({})}>
                   Add address
                 </button>

@@ -18,6 +18,7 @@ import InlineField from "../field/InlineField";
 import { FieldArrayProvider } from "../provider";
 import { FieldProvider } from "../provider/FieldProvider";
 import { useBlueFormInternal } from "./BlueFormInternalProvider";
+import { RegularRenderContext, RenderFn } from "@/types/render";
 
 interface BlueFormEngineProps<
   TModel extends FieldValues,
@@ -187,7 +188,7 @@ function BlueFormEngine<
             }
 
             const node =
-              render?.({
+              (render as RenderFn<"section">)?.({
                 ...sectionResolvedProps,
                 children,
               }) ?? children;

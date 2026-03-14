@@ -1,9 +1,10 @@
 import { FormFieldConfig } from "@/types";
 import { FunctionComponent } from "react";
 import { useArrayField } from "../provider";
+import { RenderFn } from "@/types/render";
 
 interface ArrayRenderSlotProps {
-  render?: FormFieldConfig<any, any>["render"];
+  render?: RenderFn<"array">;
 }
 
 const ArrayRenderSlot: FunctionComponent<ArrayRenderSlotProps> = ({
