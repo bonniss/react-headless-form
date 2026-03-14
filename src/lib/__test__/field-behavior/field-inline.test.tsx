@@ -551,3 +551,142 @@ describe("BlueForm – useField ref", () => {
     });
   });
 });
+
+describe("BlueForm – custom field render with self", () => {
+  it("render on custom field receives self as the rendered component", () => {
+    const CustomField = () => {
+      const { value } = useField();
+      return <div data-testid="custom">{value}</div>;
+    };
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        defaultValues={{ name: "Alice" }}
+        fieldMapping={{ custom: CustomField }}
+        config={{
+          name: {
+            type: "custom",
+            render: ({ self }) => <div data-testid="wrapper">{self}</div>,
+          },
+        }}
+      />,
+    );
+
+    // wrapper rendered
+    expect(screen.getByTestId("wrapper")).toBeDefined();
+    // self (CustomField) rendered inside wrapper
+    expect(screen.getByTestId("custom").textContent).toBe("Alice");
+  });
+
+  it("render on custom field can wrap self with additional UI", () => {
+    const CustomField = () => {
+      const { value } = useField();
+      return (
+        <input data-testid="input" value={value ?? ""} onChange={() => {}} />
+      );
+    };
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        fieldMapping={{ custom: CustomField }}
+        config={{
+          name: {
+            type: "custom",
+            label: "Name",
+            render: ({ label, self }) => (
+              <div data-testid="field-wrapper">
+                <label data-testid="label">{label}</label>
+                {self}
+              </div>
+            ),
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByTestId("field-wrapper")).toBeDefined();
+    expect(screen.getByTestId("label").textContent).toBe("Name");
+    expect(screen.getByTestId("input")).toBeDefined();
+  });
+
+  it("custom field without render still uses fieldMapping component directly", () => {
+    const CustomField = () => <div data-testid="custom-no-render" />;
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        fieldMapping={{ custom: CustomField }}
+        config={{
+          name: {
+            type: "custom",
+            // no render
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByTestId("custom-no-render")).toBeDefined();
+  });
+
+  it("self is wrapped in FieldProvider — useField works inside CustomField when render is present", () => {
+    let capturedValue: any = null;
+
+    const CustomField = () => {
+      const { value } = useField();
+      capturedValue = value;
+      return <div data-testid="custom" />;
+    };
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        defaultValues={{ name: "Bob" }}
+        fieldMapping={{ custom: CustomField }}
+        config={{
+          name: {
+            type: "custom",
+            render: ({ self }) => <div>{self}</div>,
+          },
+        }}
+      />,
+    );
+
+    expect(capturedValue).toBe("Bob");
+  });
+
+  it("render on custom field submits value correctly", async () => {
+    let submitted: any = null;
+
+    const CustomField = () => {
+      const { onChange } = useField();
+      return (
+        <button type="button" onClick={() => onChange?.("Wrapped")}>
+          Set
+        </button>
+      );
+    };
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onSubmit={(v) => (submitted = v)}
+        fieldMapping={{ custom: CustomField }}
+        config={{
+          name: {
+            type: "custom",
+            render: ({ self }) => <div data-testid="wrapper">{self}</div>,
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Set"));
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(submitted).toEqual({ name: "Wrapped" });
+    });
+  });
+});

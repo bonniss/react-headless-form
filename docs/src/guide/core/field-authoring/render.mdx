@@ -29,6 +29,29 @@ username: {
 
 No `useField()` call needed — `value`, `onChange`, `errorMessage`, and everything else arrive as arguments.
 
+## Custom mapped fields
+
+For fields with a registered component in `fieldMapping`, `render` receives the same field props plus `self` — the rendered instance of the registered component. Use it to wrap or decorate the component without replacing it:
+```tsx
+name: {
+  type: "text",
+  render: ({ label, self }) => (
+    <Tooltip content="This is your display name">
+      <div>
+        <label>{label}</label>
+        {self}
+      </div>
+    </Tooltip>
+  ),
+}
+```
+
+`self` is already wrapped in `FieldProvider` and ready to render — `useField` works correctly inside the component. There are no `children` in this context — custom fields do not have nested field config.
+
+:::tip
+`render` on a custom field is useful for one-off decoration — adding a tooltip, an icon, an extra label, or a conditional wrapper around a specific instance without creating a new component. For decoration that applies to all fields of that type, handle it inside the component itself instead.
+:::
+
 ## `section` fields
 
 For `section` fields, `render` receives the same field props plus `children` — the rendered output of the section's inner config:
@@ -55,7 +78,7 @@ Without `render`, the section's fields are rendered directly with no wrapper.
 
 ## `array` fields
 
-For `array` fields, `render` receives the full `useArrayField` context — all array helpers and field props — plus `children` as the pre-rendered output of all current items:
+For `array` fields, `render` receives the full `useArrayField` context — all array helpers and field props — plus `children` as the pre-rendered output of all current items via `renderItems()`.
 ```tsx
 addresses: {
   type: "array",
@@ -77,7 +100,7 @@ addresses: {
 }
 ```
 
-`children` is the result of `renderItems()`. For per-item control — individual remove buttons, item wrappers — use `renderItem` and `items` directly:
+`children` here is the result of `renderItems()`. For per-item control, use `renderItem` and `items` directly:
 ```tsx
 render: ({ label, items, append, renderItem, remove }) => (
   <fieldset>
@@ -95,6 +118,20 @@ render: ({ label, items, append, renderItem, remove }) => (
 
 The full list of available props matches what `useArrayField` returns — see [useArrayField](./use-array-field.mdx) for the complete reference.
 
+## `hidden` fields
+
+`render` has no effect on `hidden` fields. Hidden fields render no UI by design — they only participate in form state.
+
+## Summary
+
+| Field type | `render` context | Purpose |
+|---|---|---|
+| `inline` | `FieldResolvedProps` | Define the entire field UI inline |
+| Custom mapped | `FieldResolvedProps` + `self` | Wrap or decorate the registered component |
+| `section` | `FieldResolvedProps` + `children` | Wrap the section's inner fields in a container |
+| `array` | `useArrayField` context + `children` | Define the array shell — buttons, errors, item list |
+| `hidden` | — | Not supported |
+
 :::tip
-`render` works well for self-contained, one-off fields. When a field grows complex — multiple hooks, local state, side effects — extracting it into a dedicated component makes it easier to maintain and test. That component can still be passed directly to `render` if it's only used in one place, or registered in `fieldMapping` if it's shared across forms.
+`render` works well for self-contained, one-off cases. When a field grows complex — multiple hooks, local state, side effects — extracting it into a dedicated component makes it easier to maintain and test. That component can still be passed directly to `render` if it's only used in one place, or registered in `fieldMapping` if it's shared across forms.
 :::

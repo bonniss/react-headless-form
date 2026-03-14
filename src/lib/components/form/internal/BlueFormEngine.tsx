@@ -12,13 +12,13 @@ import type {
 } from "@/types";
 
 import { resolveRules } from "@/components/helper/resolve-rules";
+import { RenderFn } from "@/types/render";
 import { ArrayRenderSlot } from "../field";
 import HiddenField from "../field/HiddenField";
 import InlineField from "../field/InlineField";
 import { FieldArrayProvider } from "../provider";
 import { FieldProvider } from "../provider/FieldProvider";
 import { useBlueFormInternal } from "./BlueFormInternalProvider";
-import { RegularRenderContext, RenderFn } from "@/types/render";
 
 interface BlueFormEngineProps<
   TModel extends FieldValues,
@@ -145,7 +145,7 @@ function BlueFormEngine<
                 {ArrayField ? (
                   <ArrayField {...componentProps} />
                 ) : (
-                  <ArrayRenderSlot render={render} />
+                  <ArrayRenderSlot render={render as RenderFn<"array">} />
                 )}
               </FieldArrayProvider>
             );
@@ -206,26 +206,36 @@ function BlueFormEngine<
           }
 
           default: {
-            let Component = fieldMapping?.[type];
-            if (!Component && (type as CoreFieldType) === "hidden") {
-              Component = HiddenField;
-            }
-            if (!Component && (type as CoreFieldType) === "inline") {
-              Component = InlineField;
-            }
-            if (Component) {
-              component = (
-                <FieldProvider
-                  defaultValue={{ resolved: resolvedProps, config: field }}
-                >
-                  <Component {...componentProps} />
-                </FieldProvider>
-              );
+            let node: any;
+            if ((type as CoreFieldType) === "hidden") {
+              node = <HiddenField {...componentProps} />;
+            } else if ((type as CoreFieldType) === "inline") {
+              node = <InlineField {...componentProps} />;
             } else {
-              throw new Error(
-                `[react-headless-form] No renderer found for field **${path}** with type **${type}**`,
-              );
+              const Component = fieldMapping?.[type];
+
+              if (!Component) {
+                throw new Error(
+                  `[react-headless-form] No renderer found for field **${path}** with type **${type}**`,
+                );
+              }
+
+              const element = <Component {...componentProps} />;
+              node = render
+                ? (render as RenderFn<string>)({
+                    ...resolvedProps,
+                    self: element,
+                  })
+                : element;
             }
+
+            component = (
+              <FieldProvider
+                defaultValue={{ resolved: resolvedProps, config: field }}
+              >
+                {node}
+              </FieldProvider>
+            );
             break;
           }
         }
