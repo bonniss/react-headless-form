@@ -3,6 +3,8 @@ import { useField } from "@/components";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { renderWithBlueFormProvider } from "../_utils/render-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
 
 // minimal resolver mock — simulates zodResolver / yupResolver shape
 function makeResolver(errors: Record<string, string> = {}) {
@@ -309,5 +311,197 @@ describe("BlueForm – resolver vs rules", () => {
     );
 
     warn.mockRestore();
+  });
+});
+
+describe("FieldProvider — hasResolver=false (no schema resolver)", () => {
+  it("passes rules to useController — validation runs on submit", async () => {
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        config={{
+          name: {
+            type: "inline",
+            rules: { required: "Name is required" },
+            render: ({ errorMessage }) => (
+              <div>
+                {errorMessage && <div data-testid="error">{errorMessage}</div>}
+              </div>
+            ),
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("error").textContent).toBe("Name is required");
+    });
+  });
+});
+
+describe("FieldProvider — hasResolver=true (schema resolver provided)", () => {
+  it("does not run field-level rules — schema drives validation instead", async () => {
+    // field-level rules say required, but schema says it's optional
+    // if rules were passed through, submit would show error —
+    // if rules are suppressed, schema wins and submit succeeds
+    const schema = z.object({ name: z.string().optional() });
+
+    let submitted: any = null;
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        formOptions={{ resolver: zodResolver(schema) as any }}
+        onSubmit={(v) => (submitted = v)}
+        config={{
+          name: {
+            type: "inline",
+            rules: { required: "Should be suppressed" },
+            render: ({ errorMessage, onChange }) => (
+              <div>
+                {errorMessage && <div data-testid="error">{errorMessage}</div>}
+                <button type="button" onClick={() => onChange?.(undefined)}>
+                  Clear
+                </button>
+              </div>
+            ),
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      // schema says optional → submit succeeds, no error from field-level rules
+      expect(screen.queryByTestId("error")).toBeNull();
+      expect(submitted).toBeDefined();
+    });
+  });
+
+  it("schema error is shown when schema validation fails", async () => {
+    const schema = z.object({
+      name: z.string().min(1, "Name is required by schema"),
+    });
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        formOptions={{ resolver: zodResolver(schema) as any }}
+        config={{
+          name: {
+            type: "inline",
+            defaultValue: "", // ← thêm dòng này
+            render: ({ errorMessage }) => (
+              <div>
+                {errorMessage && <div data-testid="error">{errorMessage}</div>}
+              </div>
+            ),
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("error").textContent).toBe(
+        "Name is required by schema",
+      );
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// disabled — excluded from submit payload
+// ---------------------------------------------------------------------------
+
+describe("FieldProvider — disabled field", () => {
+  it("disabled field is excluded from submit payload", async () => {
+    let submitted: any = null;
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onSubmit={(v) => (submitted = v)}
+        config={{
+          name: {
+            type: "inline",
+            defaultValue: "Alice",
+            render: () => null,
+          },
+          role: {
+            type: "inline",
+            defaultValue: "admin",
+            disabled: true,
+            render: () => null,
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(submitted).toEqual({ name: "Alice" });
+      expect(submitted.role).toBeUndefined();
+    });
+  });
+
+  it("disabled via function is excluded from submit payload when condition is true", async () => {
+    let submitted: any = null;
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onSubmit={(v) => (submitted = v)}
+        config={{
+          locked: {
+            type: "inline",
+            defaultValue: true,
+            render: () => null,
+          },
+          secret: {
+            type: "inline",
+            defaultValue: "hidden",
+            disabled: (values: any) => Boolean(values.locked),
+            render: () => null,
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(submitted.secret).toBeUndefined();
+    });
+  });
+
+  it("disabled=false field is included in submit payload", async () => {
+    let submitted: any = null;
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onSubmit={(v) => (submitted = v)}
+        config={{
+          name: {
+            type: "inline",
+            defaultValue: "Bob",
+            disabled: false,
+            render: () => null,
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(submitted).toEqual({ name: "Bob" });
+    });
   });
 });

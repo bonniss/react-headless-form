@@ -84,21 +84,35 @@ export interface BlueFormBaseConfig<
   TComponentMap extends ComponentMap = ComponentMap,
 > {
   /**
-   * Internationalization (i18n) and validation message configuration.
-   */
-  i18nConfig?: I18nConfig;
-
-  /**
    * Mapping between field types and React components used to render them.
    * Example: `{ text: TextField, select: SelectField }`
    */
   fieldMapping?: TComponentMap;
 
   /**
-   * Custom root renderer for the form element.
-   * Defaults to rendering a native `<form>` element.
+   * Renderer for root form element.
    */
   renderRoot?: RootRenderer;
+
+  /**
+   * Internationalization (i18n) and validation message configuration.
+   */
+  i18nConfig?: I18nConfig;
+
+  /**
+   * Props to pass to RHF's `useForm` hook.
+   * @see https://react-hook-form.com/docs/useform
+   */
+  formOptions?: Omit<
+    UseFormProps,
+    | "resolver"
+    | "defaultValues"
+    | "context"
+    | "errors"
+    | "values"
+    | "resetOptions"
+    | "disabled"
+  >;
 }
 
 export interface BlueFormProps<
@@ -130,12 +144,6 @@ export interface BlueFormProps<
    * Initial values for the form.
    */
   defaultValues?: Partial<TModel>;
-
-  /**
-   * Props to pass to RHF's `useForm` hook.
-   * @see https://react-hook-form.com/docs/useform
-   */
-  formOptions?: UseFormProps<TModel>;
 
   /**
    * When true, the form renders in read-only mode with static text instead of inputs.

@@ -597,8 +597,7 @@ describe("BlueForm - field array", () => {
           config={{
             users: {
               type: "array",
-              render: () => {
-                const { append, duplicate } = useArrayField();
+              render: ({ append, duplicate }) => {
                 const { setValue } = useFormContext();
 
                 const users = useWatch({ name: "users" }) as any[] | undefined;
@@ -730,26 +729,23 @@ describe("BlueForm - field array", () => {
           config={{
             users: {
               type: "array",
-              render: () => {
-                const { append, items, idAt } = useArrayField();
-                return (
-                  <>
-                    <button type="button" onClick={() => append({ name: "" })}>
-                      Add
-                    </button>
+              render: ({ append, items, idAt }) => (
+                <>
+                  <button type="button" onClick={() => append({ name: "" })}>
+                    Add
+                  </button>
 
-                    <div data-testid="id0">
-                      {items[0] ? String(idAt(0)) : "none"}
-                    </div>
-                    <div data-testid="id1">
-                      {items[1] ? String(idAt(1)) : "none"}
-                    </div>
+                  <div data-testid="id0">
+                    {items[0] ? String(idAt(0)) : "none"}
+                  </div>
+                  <div data-testid="id1">
+                    {items[1] ? String(idAt(1)) : "none"}
+                  </div>
 
-                    <div data-testid="raw0">{items[0]?.id ?? "none"}</div>
-                    <div data-testid="raw1">{items[1]?.id ?? "none"}</div>
-                  </>
-                );
-              },
+                  <div data-testid="raw0">{items[0]?.id ?? "none"}</div>
+                  <div data-testid="raw1">{items[1]?.id ?? "none"}</div>
+                </>
+              ),
               props: {
                 config: {
                   name: { type: "inline", render: () => <div /> },
@@ -789,19 +785,14 @@ describe("BlueForm - field array", () => {
         config={{
           users: {
             type: "array",
-            render: () => {
-              const { errorMessage, append } = useArrayField();
-              return (
-                <>
-                  {errorMessage && (
-                    <div data-testid="error">{errorMessage}</div>
-                  )}
-                  <button type="button" onClick={() => append({ name: "" })}>
-                    Add
-                  </button>
-                </>
-              );
-            },
+            render: ({ errorMessage, append }) => (
+              <>
+                {errorMessage && <div data-testid="error">{errorMessage}</div>}
+                <button type="button" onClick={() => append({ name: "" })}>
+                  Add
+                </button>
+              </>
+            ),
             props: {
               config: {
                 name: { type: "inline", render: () => <div /> },
@@ -835,28 +826,23 @@ describe("BlueForm - field array", () => {
         config={{
           users: {
             type: "array",
-            render: () => {
-              const { errorMessage, append, remove, items } = useArrayField();
-              return (
-                <>
-                  {errorMessage && (
-                    <div data-testid="error">{errorMessage}</div>
-                  )}
-                  {items.map((_, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => remove(index)}
-                    >
-                      Remove
-                    </button>
-                  ))}
-                  <button type="button" onClick={() => append({ name: "" })}>
-                    Add
+            render: ({ errorMessage, append, remove, items }) => (
+              <>
+                {errorMessage && <div data-testid="error">{errorMessage}</div>}
+                {items.map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => remove(index)}
+                  >
+                    Remove
                   </button>
-                </>
-              );
-            },
+                ))}
+                <button type="button" onClick={() => append({ name: "" })}>
+                  Add
+                </button>
+              </>
+            ),
             props: {
               config: {
                 name: { type: "inline", render: () => <div /> },
@@ -877,5 +863,274 @@ describe("BlueForm - field array", () => {
         "At least one user required",
       );
     });
+  });
+});
+
+// append vào cuối file field-array.test.tsx
+
+describe("useArrayField - prepend()", () => {
+  it("prepends item to the beginning of the array", async () => {
+    let submitted: any = null;
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onSubmit={(v) => (submitted = v)}
+        config={{
+          users: {
+            type: "array",
+            render: ({ append, prepend }) => (
+              <>
+                <button type="button" onClick={() => append({ name: "B" })}>
+                  Append B
+                </button>
+                <button type="button" onClick={() => prepend({ name: "A" })}>
+                  Prepend A
+                </button>
+              </>
+            ),
+            props: { config: { name: { type: "inline", render: () => null } } },
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Append B"));
+    fireEvent.click(screen.getByText("Prepend A"));
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(submitted).toEqual({
+        users: [{ name: "A" }, { name: "B" }],
+      });
+    });
+  });
+});
+
+describe("useArrayField - insert()", () => {
+  it("inserts item at the given index", async () => {
+    let submitted: any = null;
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onSubmit={(v) => (submitted = v)}
+        config={{
+          users: {
+            type: "array",
+            render: ({ append, insert }) => (
+              <>
+                <button type="button" onClick={() => append({ name: "A" })}>
+                  Append A
+                </button>
+                <button type="button" onClick={() => append({ name: "C" })}>
+                  Append C
+                </button>
+                <button type="button" onClick={() => insert(1, { name: "B" })}>
+                  Insert B at 1
+                </button>
+              </>
+            ),
+            props: { config: { name: { type: "inline", render: () => null } } },
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Append A"));
+    fireEvent.click(screen.getByText("Append C"));
+    fireEvent.click(screen.getByText("Insert B at 1"));
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(submitted).toEqual({
+        users: [{ name: "A" }, { name: "B" }, { name: "C" }],
+      });
+    });
+  });
+});
+
+describe("useArrayField - swap()", () => {
+  it("swaps two items at the given indices", async () => {
+    let submitted: any = null;
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onSubmit={(v) => (submitted = v)}
+        config={{
+          users: {
+            type: "array",
+            _render: ({ append, swap }) => {
+              return (
+                <>
+                  <button type="button" onClick={() => append({ name: "A" })}>
+                    Append A
+                  </button>
+                  <button type="button" onClick={() => append({ name: "B" })}>
+                    Append B
+                  </button>
+                  <button type="button" onClick={() => swap(0, 1)}>
+                    Swap 0 1
+                  </button>
+                </>
+              );
+            },
+            get render() {
+              return this._render;
+            },
+            set render(value) {
+              this._render = value;
+            },
+            props: { config: { name: { type: "inline", render: () => null } } },
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Append A"));
+    fireEvent.click(screen.getByText("Append B"));
+    fireEvent.click(screen.getByText("Swap 0 1"));
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(submitted).toEqual({
+        users: [{ name: "B" }, { name: "A" }],
+      });
+    });
+  });
+});
+
+describe("useArrayField - move()", () => {
+  it("moves item from one index to another", async () => {
+    let submitted: any = null;
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onSubmit={(v) => (submitted = v)}
+        config={{
+          users: {
+            type: "array",
+            render: () => {
+              const { append, move } = useArrayField();
+              return (
+                <>
+                  <button type="button" onClick={() => append({ name: "A" })}>
+                    Append A
+                  </button>
+                  <button type="button" onClick={() => append({ name: "B" })}>
+                    Append B
+                  </button>
+                  <button type="button" onClick={() => append({ name: "C" })}>
+                    Append C
+                  </button>
+                  <button type="button" onClick={() => move(2, 0)}>
+                    Move 2 to 0
+                  </button>
+                </>
+              );
+            },
+            props: { config: { name: { type: "inline", render: () => null } } },
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Append A"));
+    fireEvent.click(screen.getByText("Append B"));
+    fireEvent.click(screen.getByText("Append C"));
+    fireEvent.click(screen.getByText("Move 2 to 0"));
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(submitted).toEqual({
+        users: [{ name: "C" }, { name: "A" }, { name: "B" }],
+      });
+    });
+  });
+});
+
+describe("useArrayField - replace()", () => {
+  it("replaces the entire array", async () => {
+    let submitted: any = null;
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onSubmit={(v) => (submitted = v)}
+        config={{
+          users: {
+            type: "array",
+            render: () => {
+              const { append, replace } = useArrayField();
+              return (
+                <>
+                  <button type="button" onClick={() => append({ name: "Old" })}>
+                    Append
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => replace([{ name: "X" }, { name: "Y" }])}
+                  >
+                    Replace
+                  </button>
+                </>
+              );
+            },
+            props: { config: { name: { type: "inline", render: () => null } } },
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Append"));
+    fireEvent.click(screen.getByText("Replace"));
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(submitted).toEqual({
+        users: [{ name: "X" }, { name: "Y" }],
+      });
+    });
+  });
+});
+
+describe("useArrayField - duplicate() edge cases", () => {
+  it("does nothing when duplicating an index that does not exist", async () => {
+    let submitted: any = null;
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onSubmit={(v) => (submitted = v)}
+        config={{
+          users: {
+            type: "array",
+            render: () => {
+              const { items, duplicate } = useArrayField();
+              return (
+                <>
+                  <div data-testid="count">{items.length}</div>
+                  <button type="button" onClick={() => duplicate(99)}>
+                    Duplicate 99
+                  </button>
+                </>
+              );
+            },
+            props: { config: { name: { type: "inline", render: () => null } } },
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Duplicate 99"));
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(submitted).toEqual({ users: [] });
+    });
+
+    expect(screen.getByTestId("count").textContent).toBe("0");
   });
 });

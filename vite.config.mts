@@ -51,6 +51,7 @@ const app = async (): Promise<UserConfigExport> => {
           ...tscBuildConfig.exclude,
           "ladle-static/**",
           "**/*.config.js",
+          "docs/**",
         ],
       },
     },
