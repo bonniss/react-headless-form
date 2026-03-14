@@ -21,8 +21,8 @@ importers:
         specifier: ^25.8.17
         version: 25.8.17
       react-headless-form:
-        specifier: latest
-        version: 0.8.0(@hookform/devtools@4.4.0(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^0.10.1
+        version: 0.10.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react-i18next:
         specifier: ^16.5.6
         version: 16.5.6(i18next@25.8.17)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1188,11 +1188,10 @@ packages:
       react: ^16.8.0 || ^17 || ^18 || ^19
       react-dom: ^16.8.0 || ^17 || ^18 || ^19
 
-  react-headless-form@0.8.0:
-    resolution: {integrity: sha512-CUB6iBRjpUm0YzPjD3KHsrCUladdtVFx5Spgx/OsdIYjJsigK9WQx3wQF7fa1FKJqvfJHSUF58SA7t+lXSF8DQ==}
+  react-headless-form@0.10.1:
+    resolution: {integrity: sha512-iZYtw/THycCpnjjIqCOKLUN1SnxAt1gphRsnmP8P0FJJ3QkJmhcw9ZM1rvh3SoZKEsx5owDIQHGx+pv03zlr8g==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@hookform/devtools': ^4.4.0
       react: ^16.8.0 || ^17 || ^18 || ^19
       react-dom: ^16.8.0 || ^17 || ^18 || ^19
 
@@ -3170,9 +3169,8 @@ snapshots:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
-  react-headless-form@0.8.0(@hookform/devtools@4.4.0(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  react-headless-form@0.10.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
-      '@hookform/devtools': 4.4.0(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       just-debounce-it: 3.2.0
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)

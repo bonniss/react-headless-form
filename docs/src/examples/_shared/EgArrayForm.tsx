@@ -39,7 +39,7 @@ const experienceConfig = defineConfig<ExperienceItem>({
 });
 
 function ArrayField() {
-  const { fieldProps, items, renderItem, append, remove, duplicate } =
+  const { items, renderItem, append, remove, duplicate, errorMessage } =
     useArrayField();
 
   return (
@@ -92,9 +92,7 @@ function ArrayField() {
         + Add experience
       </button>
 
-      {fieldProps.errorMessage && (
-        <div className="fieldError">{fieldProps.errorMessage}</div>
-      )}
+      {errorMessage && <div className="fieldError">{errorMessage}</div>}
     </div>
   );
 }

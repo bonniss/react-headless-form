@@ -5,18 +5,17 @@ interface TextAreaFieldProps extends React.TextareaHTMLAttributes<HTMLTextAreaEl
 
 const TextAreaField: FunctionComponent<TextAreaFieldProps> = (props) => {
   const {
-    fieldProps: {
-      id,
-      value = "",
-      onChange,
-      errorMessage,
-      label,
-      description,
-      required,
-      disabled,
-      readOnly,
-      visible,
-    },
+    id,
+    value = "",
+    onChange,
+    errorMessage,
+    label,
+    description,
+    required,
+    disabled,
+    readOnly,
+    visible,
+    ref,
   } = useField();
 
   if (!visible) return null;
@@ -26,6 +25,7 @@ const TextAreaField: FunctionComponent<TextAreaFieldProps> = (props) => {
       <span style={{ marginRight: 10 }}>{label}</span>
       <textarea
         {...props}
+        ref={ref}
         value={value}
         onChange={onChange}
         disabled={disabled}

@@ -5,17 +5,15 @@ interface CheckboxFieldProps extends React.InputHTMLAttributes<HTMLInputElement>
 
 const CheckboxField: FunctionComponent<CheckboxFieldProps> = (props) => {
   const {
-    fieldProps: {
-      id,
-      value,
-      onChange,
-      label,
-      description,
-      errorMessage,
-      disabled,
-      readOnly,
-      visible,
-    },
+    id,
+    value,
+    onChange,
+    label,
+    description,
+    errorMessage,
+    disabled,
+    readOnly,
+    visible,
   } = useField();
 
   if (!visible) return null;
