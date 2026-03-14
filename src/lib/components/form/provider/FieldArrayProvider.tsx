@@ -77,7 +77,7 @@ export const [useArrayField, FieldArrayProvider] = createProvider(
     const renderItems = () => fields.map(renderItem);
 
     return {
-      fieldProps,
+      ...fieldProps,
       config,
 
       fields,
@@ -105,3 +105,5 @@ export const [useArrayField, FieldArrayProvider] = createProvider(
   },
   "FieldArrayProvider",
 );
+
+export type ArrayFieldContext = Partial<ReturnType<typeof useArrayField>>;

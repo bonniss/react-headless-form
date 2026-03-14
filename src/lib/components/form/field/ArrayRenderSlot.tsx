@@ -9,9 +9,9 @@ interface ArrayRenderSlotProps {
 const ArrayRenderSlot: FunctionComponent<ArrayRenderSlotProps> = ({
   render,
 }) => {
-  const { fieldProps, renderItems } = useArrayField();
-  const children = renderItems();
-  return render?.({ ...fieldProps, children }) ?? null;
+  const field = useArrayField();
+  const children = field.renderItems();
+  return render?.({ ...field, children }) ?? null;
 };
 
 export default ArrayRenderSlot;

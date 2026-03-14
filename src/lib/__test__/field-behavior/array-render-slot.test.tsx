@@ -25,17 +25,14 @@ describe("ArrayRenderSlot — render() path (no fieldMapping[array])", () => {
         config={{
           users: {
             type: "array",
-            render: () => {
-              const { append, renderItems } = useArrayField();
-              return (
-                <>
-                  <button type="button" onClick={() => append({ name: "A" })}>
-                    Add
-                  </button>
-                  {renderItems()}
-                </>
-              );
-            },
+            render: ({ append, renderItems }) => (
+              <>
+                <button type="button" onClick={() => append?.({ name: "A" })}>
+                  Add
+                </button>
+                {renderItems?.()}
+              </>
+            ),
             props: {
               config: {
                 name: {

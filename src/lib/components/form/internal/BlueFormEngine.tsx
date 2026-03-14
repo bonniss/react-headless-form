@@ -190,7 +190,6 @@ function BlueFormEngine<
               render?.({
                 ...sectionResolvedProps,
                 children,
-                props: componentProps,
               }) ?? children;
 
             // allow deeply access to fieldProps for form section

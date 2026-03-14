@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { ComponentProps, ComponentType, ReactNode } from "react";
-import type { FieldValues, Path } from "react-hook-form";
 import type { TranslatableText } from "@/components/i18n";
-import type { FieldResolvedProps } from "./input";
+import type { ComponentProps, ComponentType } from "react";
+import type { FieldValues, Path } from "react-hook-form";
+import { RenderFn } from "./render";
 import type { ValidationRules } from "./rule";
 import type { WithKnownKeys } from "./utils";
 
@@ -40,7 +40,8 @@ export type ComponentMap = WithKnownKeys<CoreFieldType, ComponentType<any>>;
 export type FormFieldConfig<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap,
-  TFieldType extends keyof TComponentMap = keyof TComponentMap,
+  TFieldType extends string & keyof TComponentMap = string &
+    keyof TComponentMap,
 > = {
   /**
    * The type of field, used to select the appropriate renderer component.
@@ -97,16 +98,50 @@ export type FormFieldConfig<
   disabled?: boolean | ((values: Partial<TModel>) => boolean);
 
   /**
-   * Optional escape hatch to manually render the field. If provided,
-   * the entire rendering of this field will be overridden.
+   * Optional render override for the field.
+   *
+   * When provided, the entire rendering of this field is delegated to this function.
+   * The behavior and available context depends on the field type:
+   *
+   * **Regular fields** (`inline`, custom mapped types):
+   * Receives `FieldResolvedProps` — use this to render a fully custom field UI.
+   * `children` is `undefined`.
+   *
+   * ```tsx
+   * render: ({ value, onChange, label, errorMessage }) => (
+   *   <MyCustomInput value={value} onChange={onChange} label={label} />
+   * )
+   * ```
+   *
+   * **`section`**:
+   * Receives `FieldResolvedProps` + `children` (the rendered fields inside the section).
+   * Use this to wrap the section in a custom container.
+   *
+   * ```tsx
+   * render: ({ children, label }) => (
+   *   <Card title={label}>{children}</Card>
+   * )
+   * ```
+   *
+   * **`array`**:
+   * Receives `FieldResolvedProps` + `ArrayFieldContext` + `children` (all items rendered via `renderItems()`).
+   * Array helpers (`append`, `remove`, `items`...) are available directly in context —
+   * no need to call `useArrayField()` or extract to a separate component.
+   *
+   * ```tsx
+   * render: ({ children, items, append, remove, label, errorMessage }) => (
+   *   <fieldset>
+   *     <legend>{label}</legend>
+   *     {children}
+   *     {errorMessage && <div>{errorMessage}</div>}
+   *     <button type="button" onClick={() => append({})}>Add</button>
+   *   </fieldset>
+   * )
+   * ```
+   *
+   * @see {@link ArrayFieldContext} for the full list of array helpers available in context.
    */
-  render?: (
-    context: {
-      props?: ComponentProps<TComponentMap[TFieldType]>;
-      children?: ReactNode;
-      meta?: Record<string, any>;
-    } & FieldResolvedProps,
-  ) => ReactNode;
+  render?: RenderFn<TFieldType>;
 };
 
 type FieldConfigUnion<

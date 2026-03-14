@@ -317,8 +317,8 @@ describe("BlueForm - field array", () => {
           users: {
             type: "array",
             rules: { required: "Users is required" },
-            render: ({ errorMessage }) => {
-              const { append } = useArrayField();
+            render: () => {
+              const { errorMessage, append } = useArrayField();
               return (
                 <>
                   {errorMessage && (
@@ -361,8 +361,8 @@ describe("BlueForm - field array", () => {
           users: {
             type: "array",
             rules: { minLength: { value: 2, message: "At least 2 users" } },
-            render: ({ errorMessage }) => {
-              const { append } = useArrayField();
+            render: () => {
+              const { errorMessage, append } = useArrayField();
               return (
                 <>
                   {errorMessage && (
@@ -404,8 +404,8 @@ describe("BlueForm - field array", () => {
           users: {
             type: "array",
             rules: { maxLength: { value: 1, message: "Only 1 user allowed" } },
-            render: ({ errorMessage }) => {
-              const { append } = useArrayField();
+            render: () => {
+              const { errorMessage, append } = useArrayField();
               return (
                 <>
                   {errorMessage && (
@@ -789,8 +789,8 @@ describe("BlueForm - field array", () => {
         config={{
           users: {
             type: "array",
-            render: ({ errorMessage }) => {
-              const { append } = useArrayField();
+            render: () => {
+              const { errorMessage, append } = useArrayField();
               return (
                 <>
                   {errorMessage && (
@@ -835,8 +835,8 @@ describe("BlueForm - field array", () => {
         config={{
           users: {
             type: "array",
-            render: ({ errorMessage }) => {
-              const { append, remove, items } = useArrayField();
+            render: () => {
+              const { errorMessage, append, remove, items } = useArrayField();
               return (
                 <>
                   {errorMessage && (
