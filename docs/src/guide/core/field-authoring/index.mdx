@@ -22,7 +22,7 @@ import { useField } from 'react-headless-form'
 
 export function InputField() {
   const {
-    fieldProps: { value, onChange, label, errorMessage, required, disabled },
+    value, onChange, label, errorMessage, required, disabled,
   } = useField()
 
   return (
@@ -81,7 +81,7 @@ Each field in config can pass additional props to its component via the `props` 
 ```tsx
 // field component accepts HTML input attributes
 export function InputField(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  const { fieldProps: { value, onChange } } = useField()
+  const { value, onChange } = useField()
   return (
     <input
       {...props}
@@ -110,7 +110,7 @@ Field components can receive a `readOnly` prop via `fieldProps`. A common patter
 ```tsx
 export function InputField() {
   const {
-    fieldProps: { value, onChange, readOnly, disabled },
+    value, onChange, readOnly, disabled,
   } = useField()
 
   if (readOnly) {

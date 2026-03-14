@@ -55,8 +55,8 @@ export default defineConfig({
   markdown: {
     shiki: {
       themes: {
-        light: "min-light",
-        dark: "min-dark",
+        light: "github-light",
+        dark: "github-dark",
       },
       transformers: [
         transformerNotationHighlight(),

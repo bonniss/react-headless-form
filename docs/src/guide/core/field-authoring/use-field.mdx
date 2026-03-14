@@ -2,114 +2,35 @@
 title: useField
 ---
 
-Every field component interacts with the form through a shared contract exposed via `useField`. It provides a stable, normalized interface on top of RHF's `useController`, so field authors do not need to interact with RHF directly.
+`useField` is the primary hook for field components. Under the hood, it calls RHF's `useController` and merges the result with resolved field metadata — translated labels, visibility, disabled state, and validation rules — into a single flat object.
 
 ```ts
-const { fieldProps, controller, config } = useField()
+const { value, onChange, label, errorMessage, visible, ... } = useField()
 ```
 
-In most cases, **you only need `fieldProps`** — it contains everything a field needs to render itself correctly, without knowing anything about the rest of the form.
+The full list of returned props:
 
-## `fieldProps`
-
-### Value and interaction
-
-```ts
-fieldProps.value
-fieldProps.onChange
-```
-
-`value` is the current field value, sourced from RHF via `useController`.
-
-`onChange` also comes from RHF's `useController`. It accepts either a DOM event or a final value directly — RHF will extract `event.target.value` automatically if an event is passed. Passing the value directly is the recommended pattern in BlueForm since field components often receive non-DOM values (e.g. from date pickers, select components, or custom inputs):
-
-```tsx
-// passing value directly — recommended
-onChange?.(e.target.value)
-
-// passing event — works for standard HTML inputs
-onChange?.(e)
-```
-
-### Error handling
-
-```ts
-fieldProps.errorMessage
-```
-
-A translated error message derived from RHF's validation state, ready to render directly:
-
-```tsx
-{errorMessage && <div>{errorMessage}</div>}
-```
-
-Field components should not inspect validation rules or error objects — only display this message.
-
-### Identity and structure
-
-```ts
-fieldProps.id
-fieldProps.name
-fieldProps.path
-fieldProps.namespace
-```
-
-- `name` — the field key within its immediate object (e.g. `"email"`)
-- `path` — the full dot-notation path used by RHF (e.g. `"profile.email"`)
-- `namespace` — the parent scope, when the field is nested
-
-These are useful for accessibility (`id`, `htmlFor`), debugging, and advanced integrations.
-
-### Labeling and metadata
-
-```ts
-fieldProps.label
-fieldProps.description
-fieldProps.required
-```
-
-- `label` — a translated label, already resolved by BlueForm
-- `description` — optional helper text, also translated
-- `required` — a boolean derived from validation rules
-
-Field components should not infer `required` from rules themselves.
-
-### Read-only and disabled state
-
-```ts
-fieldProps.disabled
-fieldProps.readOnly
-```
-
-- `readOnly` — the field should display its value without allowing edits
-- `disabled` — the field should not accept interaction. Note that RHF excludes disabled fields from the submitted values automatically — disabling a field removes it from the submission payload.
-
-### Visibility
-
-```ts
-fieldProps.visible
-```
-
-Indicates whether the field should be rendered. Visibility is resolved at the engine level before reaching the field component — simply respect it:
-
-```tsx
-if (!visible) return null
-```
-
-Note that hidden fields (`visible: false`) are still registered in RHF form state and included in the submitted values. Visibility only affects rendering, not data.
-
-## `controller`
-
-```ts
-const { controller } = useField()
-```
-
-The raw result of RHF's `useController`. Most fields should not need this — use it only when integrating deeply with third-party components, needing direct access to `fieldState` or `formState`, or handling non-standard input behavior.
-
-## `config`
-
-```ts
-const { config } = useField()
-```
-
-The original field configuration object as defined in the form config. Useful for highly dynamic or meta-driven fields. Not required for standard field rendering.
+| Prop | Description | Notes |
+|---|---|---|
+| `value` | Current field value | From RHF `field.value` |
+| `onChange` | Update field value | From RHF `field.onChange` — accepts a plain value or a DOM event |
+| `onBlur` | Mark field as touched | From RHF `field.onBlur` |
+| `ref` | Attach to native input | From RHF `field.ref` — enables `form.setFocus()` |
+| `errorMessage` | Ready-to-render error string | Derived from `fieldState.error?.message` — already translated, prefer over `error` |
+| `error` | Raw RHF error object | From RHF `fieldState.error` — use only when branching on `error.type` |
+| `invalid` | `true` when field has a validation error | From RHF `fieldState.invalid` — shorthand for `!!error` |
+| `isDirty` | `true` after value changes from its default | From RHF `fieldState.isDirty` |
+| `isTouched` | `true` after `onBlur` is called | From RHF `fieldState.isTouched` |
+| `isValidating` | `true` during async validation | From RHF `fieldState.isValidating` |
+| `id` | Field identifier | Resolved from field path — use as `id` on input, `htmlFor` on label |
+| `name` | Field key within its immediate scope | e.g. `"email"`, not `"profile.email"` |
+| `path` | Full dot-notation path | e.g. `"profile.email"` — use with RHF APIs directly |
+| `namespace` | Parent section path | `undefined` for top-level fields |
+| `label` | Translated label | Resolved from field config through i18n pipeline |
+| `description` | Translated helper text | Resolved from field config through i18n pipeline |
+| `required` | Whether field is required | Derived from `rules.required` — do not infer this yourself |
+| `disabled` | Whether field is disabled | Resolved from field config and form state — excluded from submit payload |
+| `readOnly` | Whether field is read-only | Resolved from field-level and form-level `readOnly` — still included in submit payload |
+| `visible` | Whether field should render | Resolved from `visible` in field config — affects rendering only, value stays in form state |
+| `controller` | Raw return value of RHF's `useController` | Advanced integrations only |
+| `config` | Original field config object | Meta-driven or dynamic fields only |
