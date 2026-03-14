@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/bonniss/react-headless-form/compare/v0.9.1...v0.10.0) (2026-03-14)
+
+
+### Features
+
+* **api:** rename props; flatten fieldProps; conditional type for render fn ([#33](https://github.com/bonniss/react-headless-form/issues/33)) ([a2289ee](https://github.com/bonniss/react-headless-form/commit/a2289ee3697f2a59534223754e60c5865a70bd47))
+
 ## [0.9.1](https://github.com/bonniss/react-headless-form/compare/v0.9.0...v0.9.1) (2026-03-13)
 
 
