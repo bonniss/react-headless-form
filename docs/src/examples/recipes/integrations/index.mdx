@@ -20,7 +20,7 @@ config={{
   settings: {
     type: 'section',
     label: 'Settings',
-    render: ({ children, fieldProps: { label } }) => <SomeCard title={label}>{children}</SomeCard>,
+    render: ({ label, children }) => <SomeCard title={label}>{children}</SomeCard>,
     props: {
       nested: true,
       config: defineConfig<UserProfile['settings']>({
@@ -49,27 +49,28 @@ This config describes _what_ the form collects. It has zero knowledge of the UI 
 
 Migrating from one UI library to another basically means rewriting field components and nothing else.
 
-|                           | Changes                                          | Stays the same                              |
-| ------------------------- | ------------------------------------------------ | ------------------------------------------- |
-| **Field components**      | UI library imports, prop names, event signatures | `useField` call, `fieldProps` destructuring |
-| **Section / array shell** | Layout component (`Card`, `Fieldset`, `View`...) | `render` prop pattern, `useArrayField`      |
-| **App**                   | Button styles, visual grouping                   | Form config, `defineConfig`, submit logic   |
-| **`form.setup.ts`**       | Nothing                                          | Everything                                  |
+|                           | Changes                                          | Stays the same                           |
+| ------------------------- | ------------------------------------------------ | ---------------------------------------- |
+| **Field components**      | UI library imports, prop names, event signatures | `useField` call, destructuring           |
+| **Section / array shell** | Layout component (`Card`, `Fieldset`, `View`...) | `render` prop pattern, `useArrayField`   |
+| **App**                   | Button styles, visual grouping                   | Form config, `defineConfig`, submit logic |
+| **`form.setup.ts`**       | Nothing                                          | Everything                               |
 
 ## Adapting event signatures
 
-Different libraries expose different `onChange` signatures — some return the value directly, others wrap it in an event object, others use a custom object. BlueForm doesn't impose any convention. Under the hood, BlueForm's `onChange` is the `onChange` from React Hook Form's `useController` — which means it accepts both a native event and a plain value:
+Different libraries expose different `onChange` signatures — some return the value directly, others wrap it in an event object, others use a custom object. BlueForm doesn't impose any convention. `onChange` comes from RHF's `useController`, which accepts both a native event and a plain value:
 
 ```tsx
 // Both work — RHF handles either
-onChange(e); // RHF unwraps e.target.value internally
-onChange(e.target.value); // explicit clean value passed directly
+onChange(e);             // RHF unwraps e.target.value internally
+onChange(e.target.value) // explicit clean value passed directly
 ```
 
-However, for better maintainability, always pass a clean value explicitly:
+For better maintainability, always pass a clean value explicitly:
 
 ```tsx
 // ✅ Recommended — explicit, readable, no reliance on RHF internals
+
 // Value returned directly — Arco, TDesign, Semi, Mantine Select...
 <Input onChange={(val) => onChange?.(val)} />
 
@@ -83,21 +84,19 @@ However, for better maintainability, always pass a clean value explicitly:
 <Input onChange={onChange} />
 ```
 
-The unwrapping itself — whether you need `e.target.value`, `e.checked`, `({ checked })`, or nothing at all — depends entirely on the library's API. BlueForm imposes no convention here. BlueForm stays out of the way of the library's native API — you adapt at the boundary, not throughout your codebase.
-
 ## Bring your own library
 
 Don't see your library here? The pattern is always the same:
 
-1. Call `useField` inside your field component and destructure `fieldProps`
-2. Map `fieldProps.value` → the library's value prop, call `onChange?.(value)` inside the library's change handler
-3. Use `fieldProps.errorMessage`, `label`, `disabled`, `visible` to wire up the rest
+1. Call `useField` inside your field component and destructure what you need
+2. Map `value` → the library's value prop, call `onChange?.(value)` inside the library's change handler
+3. Use `errorMessage`, `label`, `disabled`, `visible` to wire up the rest
 
 If you can render an input, you can integrate with BlueForm.
 
 ## Validation libraries
 
-BlueForm delegates validation entirely to React Hook Form's resolver system, which means any library supported by [`@hookform/resolvers`](https://github.com/react-hook-form/resolvers) works without any changes to your field components or form config. Define your schema using your preferred library, then pass its resolver to `formProps.resolver`.
+BlueForm delegates validation entirely to React Hook Form's resolver system, which means any library supported by [`@hookform/resolvers`](https://github.com/react-hook-form/resolvers) works without any changes to your field components or form config. Define your schema using your preferred library, then pass its resolver via `formOptions`:
 
 ```tsx
 // 1. define schema (and infer type)
@@ -107,12 +106,12 @@ const schema = z.object({
 })
 type FormData = z.infer<typeof schema>
 
-// 2. use correct resolver
+// 2. pass resolver via formOptions
 <Form<FormData>
-  formProps={{ resolver: zodResolver(schema) }}
+  formOptions={{ resolver: zodResolver(schema) }}
 />
 ```
 
 When a resolver is provided, validation is fully handled by the schema — no `rules` needed on any field. Your config becomes purely structural: field type, label, and props only.
 
-Schema-level defaults (e.g. `.default()` in Zod) are not picked up by React Hook Form at initialization — the resolver only runs at validation time, not at mount. Always set initial values via `defaultValues` in `formProps` or the `defaultValue` prop on individual fields.
+Schema-level defaults (e.g. `.default()` in Zod) are not picked up by React Hook Form at initialization — the resolver only runs at validation time, not at mount. Always set initial values via `defaultValues` or the `defaultValue` prop on individual fields.

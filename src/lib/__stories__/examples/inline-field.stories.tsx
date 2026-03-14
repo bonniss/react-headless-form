@@ -9,21 +9,21 @@
  * one-off UI that still participates in the form.
  */
 
-import { defineMapping, setupForm } from "@/components/form/setup"
-import { Story, StoryDefault } from "@ladle/react"
+import { defineMapping, setupForm } from "@/components/form/setup";
+import { Story, StoryDefault } from "@ladle/react";
 
 interface InlineForm {
-  nickname: string
-  age: number
+  nickname: string;
+  age: number;
 }
 
 export default {
   title: "Core",
-} satisfies StoryDefault
+} satisfies StoryDefault;
 
 const [Form] = setupForm({
   fieldMapping: defineMapping({}),
-})
+});
 
 export const InlineField: Story = () => {
   return (
@@ -42,41 +42,34 @@ export const InlineField: Story = () => {
           rules: {
             required: "Nickname is required",
           },
-          render: ({ fieldProps }) => {
-            const { value, onChange, errorMessage, label, required } =
-              fieldProps
+          render: ({ value, onChange, errorMessage, label, required }) => (
+            <div
+              style={{
+                padding: 12,
+                border: "1px dashed #aaa",
+                marginBottom: 12,
+              }}
+            >
+              <span>
+                {label} {required && "*"}
+              </span>
 
-            return (
-              <div
-                style={{
-                  padding: 12,
-                  border: "1px dashed #aaa",
-                  marginBottom: 12,
-                }}
-              >
-                <span>
-                  {label} {required && "*"}
-                </span>
+              <input
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
+                placeholder="Enter your nickname"
+                style={{ display: "block", marginTop: 4 }}
+              />
 
-                <input
-                  value={value ?? ""}
-                  onChange={(e) => onChange?.(e.target.value)}
-                  placeholder="Enter your nickname"
-                  style={{ display: "block", marginTop: 4 }}
-                />
+              {errorMessage && (
+                <div style={{ color: "red", marginTop: 4 }}>{errorMessage}</div>
+              )}
 
-                {errorMessage && (
-                  <div style={{ color: "red", marginTop: 4 }}>
-                    {errorMessage}
-                  </div>
-                )}
-
-                <small style={{ opacity: 0.7 }}>
-                  Rendered inline via render callback
-                </small>
-              </div>
-            )
-          },
+              <small style={{ opacity: 0.7 }}>
+                Rendered inline via render callback
+              </small>
+            </div>
+          ),
         },
 
         /**
@@ -85,27 +78,23 @@ export const InlineField: Story = () => {
         age: {
           type: "inline",
           label: "Age",
-          render: ({ fieldProps }) => {
-            const { value, onChange } = fieldProps
-
-            return (
-              <div style={{ marginBottom: 12 }}>
-                <span>Age</span>
-                <input
-                  type="number"
-                  value={value ?? ""}
-                  onChange={(e) => onChange?.(Number(e.target.value))}
-                  style={{ display: "block" }}
-                />
-              </div>
-            )
-          },
+          render: ({ value, onChange }) => (
+            <div style={{ marginBottom: 12 }}>
+              <span>Age</span>
+              <input
+                type="number"
+                value={value ?? ""}
+                onChange={(e) => onChange?.(Number(e.target.value))}
+                style={{ display: "block" }}
+              />
+            </div>
+          ),
         },
       }}
     >
       <button type="submit">Submit</button>
     </Form>
-  )
-}
+  );
+};
 
-InlineField.storyName = "Builtin types: Inline Field"
+InlineField.storyName = "Builtin types: Inline Field";

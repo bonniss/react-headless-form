@@ -2,166 +2,91 @@
 title: useArrayField
 ---
 
-`useArrayField` is the field-level API for working with **array fields**. It provides a thin, predictable abstraction on top of React Hook Form’s [`useFieldArray`](https://react-hook-form.com/docs/usefieldarray).
+`useArrayField` is the hook for array field components. Under the hood, it combines RHF's [`useFieldArray`](https://react-hook-form.com/docs/usefieldarray) with the same field metadata layer as `useField` — giving array components access to both mutation methods and resolved field props in one place.
 
 ```ts
-const {
-  fieldProps,
-  items,
-  renderItem,
-  renderItems,
-
-  // RHF field-array operations
-  append,
-  prepend,
-  insert,
-  remove,
-  move,
-  swap,
-  update,
-  replace,
-
-  // convenience helpers
-  push,
-  pop,
-  clear,
-  duplicate,
-  idAt,
-  errorAt,
-} = useArrayField();
+const { label, errorMessage, items, renderItems, append, ... } = useArrayField()
 ```
 
-You typically use `useArrayField` in a dedicated component (recommended), or directly inside the `render` of the built-in `array` type.
+## Field props
 
-#### `fieldProps`
+The same field props as `useField` are available directly, scoped to the array field itself — not individual items:
 
-```ts
-fieldProps.errorMessage;
-fieldProps.label;
-fieldProps.required;
-fieldProps.disabled;
-```
+| Prop | Description | Notes |
+|---|---|---|
+| `label` | Translated label | Resolved from field config through i18n pipeline |
+| `description` | Translated helper text | Resolved from field config through i18n pipeline |
+| `errorMessage` | Array-level validation error | e.g. from `rules.minLength` or `rules.required` — not item errors |
+| `required` | Whether the array is required | Derived from `rules.required` |
+| `disabled` | Whether the array is disabled | |
+| `visible` | Whether the array should render | |
 
-`fieldProps` behaves the same way as in `useField`, but at the **array level**.
+## Array state
 
-- `errorMessage`
-  Represents array-level validation errors (e.g. `minLength`, `required`).
-  These errors are associated with the array itself, not individual items.
+| Prop | Description | Notes |
+|---|---|---|
+| `items` | Current list of array items | Alias of `fields` from RHF's `useFieldArray` — use `item.id` as React key |
+| `renderItem(field, index)` | Render a single item | Scoped automatically to the correct namespace (e.g. `addresses.0`) |
+| `renderItems()` | Render all items | Shorthand for `items.map(renderItem)` |
 
-```tsx
-{
-  fieldProps.errorMessage && <div>{fieldProps.errorMessage}</div>;
-}
-```
+## Array methods
 
-#### Array methods
+RHF's [`useFieldArray`](https://react-hook-form.com/docs/usefieldarray) methods, forwarded as-is:
 
-RHF's [`useFieldArray`](https://react-hook-form.com/docs/usefieldarray) methods are forwarded as-is:
+| Method | Description |
+|---|---|
+| `append(value)` | Add item at the end |
+| `prepend(value)` | Add item at the beginning |
+| `insert(index, value)` | Add item at a specific position |
+| `remove(index?)` | Remove item by index, or all items if omitted |
+| `update(index, value)` | Replace item at index |
+| `move(from, to)` | Move item to a new position |
+| `swap(a, b)` | Swap two items |
+| `replace(values)` | Replace the entire list |
 
-- `append(value)`
-- `prepend(value)`
-- `insert(index, value)`
-- `remove(index?)`
-- `move(from, to)`
-- `swap(a, b)`
-- `update(index, value)`
-- `replace(values)`
+Convenience helpers added by BlueForm:
 
-The following helpers are provided for convenience:
+| Helper | Description | Notes |
+|---|---|---|
+| `push(value)` | Add item at the end | Alias of `append` |
+| `pop()` | Remove the last item | No-op when array is empty |
+| `clear()` | Remove all items | Equivalent to `remove()` with no index |
+| `duplicate(index)` | Append a copy of the item at `index` | Uses current form values — reflects user edits. No-op when index does not exist |
+| `idAt(index)` | Stable key for the item | Use as React `key` — falls back to `index` if RHF id is unavailable |
+| `errorAt(index)` | Validation error subtree for item at `index` | Useful for highlighting collapsed items with errors |
 
-- `push(value)`
-  Alias of `append(value)`.
-
-- `pop()`
-  Removes the last item, if any.
-
-- `clear()`
-  Removes all items (equivalent to `remove()` with no index).
-
-- `duplicate(index)`
-  Duplicates the **current form value** at `index` and appends it as a new item.
-  (Implemented via `getValues`, so it reflects user edits.)
-
-- `idAt(index)`
-  Returns the stable key for the item (RHF `id`, fallback to `index`).
-
-- `errorAt(index)`
-  Returns the validation error subtree for the item at `index`, if present.
-
-#### Array items
-
-`items` is an alias of `fields` returned by React Hook Form’s [`useFieldArray`](https://react-hook-form.com/docs/usefieldarray).
-
-BlueForm handles array-specific wiring internally, so you only need to use the following helpers to render array items based on the array field’s `props.config`:
-
-```ts
-renderItem(field, index);
-renderItems();
-```
-
-`renderItem` renders a **single array item** using the configuration defined in the array field’s `props.config`.
-
-Each item is automatically scoped under the correct namespace (e.g. `addresses.0`), ensuring that nested fields are properly registered and isolated per index. This preserves composability and ensures that array items remain reusable, declarative, and configuration-driven.
-
-`renderItems` is a convenience helper equivalent to:
-
-```tsx
-items.map(renderItem);
-```
-
-#### A complete array field example
+## Complete example
 
 ```tsx
 addresses: {
   type: "array",
   label: "Addresses",
   rules: {
-    minLength: { value: 2, message: "At least 2 addresses is required" },
+    minLength: { value: 2, message: "At least 2 addresses required" },
   },
   props: {
     config: defineConfig<Address>({
-      street: {
-        type: "text",
-        label: "Street",
-      },
-      city: {
-        type: "text",
-        label: "City",
-      },
-      country: {
-        type: "text",
-        label: "Country",
-      },
+      street: { type: "text", label: "Street" },
+      city: { type: "text", label: "City" },
+      country: { type: "text", label: "Country" },
     }),
   },
-  render: ({ fieldProps }) => {
-    const {
-      items,
-      renderItems,
-      append,
-      duplicate,
-      pop,
-      clear,
-      errorAt,
-    } = useArrayField()
+  render: () => {
+    const { items, renderItems, append, duplicate, pop, clear, label, errorMessage } = useArrayField()
 
     return (
       <fieldset>
-        <legend>{fieldProps.label}</legend>
+        <legend>{label}</legend>
 
-        {/* Render all items using the array's props.config */}
         {renderItems()}
 
-        <div style={{ marginTop: 12 }}>
+        <div>
           <button
             type="button"
-            onClick={() =>
-              append({ street: "", city: "", country: "" })
-            }
+            onClick={() => append({ street: "", city: "", country: "" })}
           >
-            Add address
+            Add
           </button>
-
           <button
             type="button"
             disabled={!items.length}
@@ -169,7 +94,6 @@ addresses: {
           >
             Duplicate last
           </button>
-
           <button
             type="button"
             disabled={!items.length}
@@ -177,7 +101,6 @@ addresses: {
           >
             Remove last
           </button>
-
           <button
             type="button"
             disabled={!items.length}
@@ -187,12 +110,7 @@ addresses: {
           </button>
         </div>
 
-        {/* Array-level validation */}
-        {fieldProps.errorMessage && (
-          <div style={{ color: "red" }}>
-            {fieldProps.errorMessage}
-          </div>
-        )}
+        {errorMessage && <div>{errorMessage}</div>}
       </fieldset>
     )
   },

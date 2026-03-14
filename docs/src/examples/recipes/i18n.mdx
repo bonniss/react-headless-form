@@ -5,9 +5,9 @@ title: Internationalization (i18n)
 BlueForm handles i18n at the **orchestration level**, not inside field components. Labels, descriptions, and validation messages are translated before they reach fields — field components always receive ready-to-render strings and never need to know about locales or translation libraries.
 
 ```ts
-fieldProps.label        // already translated
-fieldProps.description  // already translated
-fieldProps.errorMessage // already translated
+label        // already translated
+description  // already translated
+errorMessage // already translated
 ```
 
 i18n is configured once in `setupForm` via `i18nConfig` and is entirely optional — if omitted, all text values are treated as plain strings.

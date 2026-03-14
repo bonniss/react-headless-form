@@ -59,12 +59,12 @@ Each step component is rendered *as the section* — meaning it receives section
 
 ```tsx title="wizard/AccountStep.tsx"
 function AccountStep() {
-  const { fieldProps } = useField()
-  if (!fieldProps.visible) return null
+  const { visible, label } = useField()
+  if (!visible) return null
 
   return (
     <fieldset>
-      <legend>{fieldProps.label}</legend>
+      <legend>{label}</legend>
       <Section<WizardForm["account"]>
         config={{
           email: { type: "text", label: "Email" },

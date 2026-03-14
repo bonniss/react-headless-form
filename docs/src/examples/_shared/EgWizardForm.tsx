@@ -77,20 +77,20 @@ const preferencesConfig = defineConfig<PreferencesData>({
 const STEPS = ["Account", "Profile", "Preferences"];
 
 function AccountStep() {
-  const { fieldProps } = useField();
-  if (!fieldProps.visible) return null;
+  const { visible } = useField();
+  if (!visible) return null;
   return <Section<WizardData["account"]> config={accountConfig} />;
 }
 
 function ProfileStep() {
-  const { fieldProps } = useField();
-  if (!fieldProps.visible) return null;
+  const { visible } = useField();
+  if (!visible) return null;
   return <Section<WizardData["profile"]> config={profileConfig} />;
 }
 
 function PreferencesStep() {
-  const { fieldProps } = useField();
-  if (!fieldProps.visible) return null;
+  const { visible } = useField();
+  if (!visible) return null;
   return <Section<WizardData["preferences"]> config={preferencesConfig} />;
 }
 

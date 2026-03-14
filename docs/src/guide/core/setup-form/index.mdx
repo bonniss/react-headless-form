@@ -2,8 +2,7 @@
 title: setupForm
 ---
 
-BlueForm does not expose a single global `<Form />` component. Instead, you create a form engine bounded to a base configuration through a setup step. This is the entry point of any BlueForm-powered form system.
-
+BlueForm does not expose a single global `<Form />` component. Instead, you create a form system bounded to a base configuration through a setup step. This is the entry point of any BlueForm-powered app.
 ```tsx
 import { setupForm, defineMapping } from 'react-headless-form'
 import InputField from './InputField'
@@ -15,9 +14,6 @@ export const [Form, defineConfig, Section] = setupForm({
   fieldMapping: defineMapping({
     text: InputField,
   }),
-  i18nConfig: {
-    t: (message) => message,
-  },
 })
 ```
 
@@ -30,21 +26,21 @@ export const [Form, defineConfig, Section] = setupForm({
 | [Section](section.mdx) | Component for authoring typed config fragments inside section components |
 
 :::tip
-`Form` is the name used throughout this documentation. Since it comes from destructuring the return value of `setupForm()`, you can rename it to anything that fits your codebase.
+`Form`, `defineConfig`, and `Section` are the names used throughout this documentation. Since they come from destructuring an array, you can rename them to anything that fits your codebase.
 :::
 
 ## Options
 
-| Option | Required | Description |
-|---|---|---|
-| `renderRoot` | Recommended | How the root form element is rendered |
-| `fieldMapping` | Recommended | Maps field type names to React components |
-| `i18nConfig` | Optional | Translation behavior for labels and validation messages |
+| Option | Description |
+|---|---|
+| `renderRoot` | How the root form element is rendered — see below |
+| `fieldMapping` | Maps field type names to React components |
+| `i18nConfig` | Translation behavior for labels and validation messages |
+| `formOptions` | Default options for RHF's `useForm`, applied to every form instance |
 
 ## `renderRoot`
 
-Controls how the root form element is rendered. This keeps BlueForm layout-agnostic and avoids coupling the library to the web platform.
-
+Controls how the root form element is rendered. This keeps BlueForm layout-agnostic and platform-independent.
 ```tsx
 renderRoot: ({ children, onSubmit }) => (
   <form onSubmit={onSubmit}>
@@ -53,25 +49,21 @@ renderRoot: ({ children, onSubmit }) => (
 )
 ```
 
-Since `renderRoot` is just a function, it can accept additional props — useful for injecting DevTools, form attributes, or custom wrappers:
-
+`renderRoot` receives `children`, `onSubmit`, `formMethods` (the full RHF `useForm` return), and any extra props passed through. This makes it easy to inject DevTools, form attributes, or custom wrappers:
 ```tsx
-const formRoot =
-  ({ enableDevTool } = {}) =>
-  ({ children, onSubmit, formMethods: { control } }) => (
-    <>
-      <form onSubmit={onSubmit}>{children}</form>
-      {enableDevTool && <DevTool control={control} />}
-    </>
-  )
-
-const [Form] = setupForm({ renderRoot: formRoot() })
+renderRoot: ({ children, onSubmit, formMethods: { control } }) => (
+  <>
+    <form onSubmit={onSubmit}>{children}</form>
+    <DevTool control={control} />
+  </>
+)
 ```
+
+`renderRoot` can be overridden per `<Form />` instance. If neither `setupForm` nor the `<Form />` instance provides it, the form will throw at render time.
 
 ## `fieldMapping`
 
-Maps field type names to React components. Each entry tells BlueForm which component to use when a field config declares a given `type`.
-
+Maps field type names to React components. Each entry tells the engine which component to render when a field config declares a given `type`.
 ```tsx
 fieldMapping: defineMapping({
   text: InputField,
@@ -80,22 +72,13 @@ fieldMapping: defineMapping({
 })
 ```
 
-When a field declares `type: "text"`, BlueForm renders `InputField` for it. The mapping is enforced at compile time — declaring an unknown `type` in form config will produce a TypeScript error.
+The mapping is enforced at compile time — declaring an unknown `type` in form config produces a TypeScript error. `fieldMapping` cannot be overridden per `<Form />` instance — it is fixed at setup time to preserve type safety.
 
 For how to author field components, see [Field authoring](../field-authoring/).
 
 ## `i18nConfig`
 
-Provides translation support for labels, descriptions, and validation messages. Completely optional — if omitted, all text values are treated as plain strings.
-
-```ts
-i18nConfig: {
-  t: (message, params) => translate(message, params),
-}
-```
-
-`validationTranslation` maps RHF rule names to translation keys, so validation messages are translated automatically without putting translation keys into field config:
-
+Provides translation support for labels, descriptions, and validation messages. Optional — if omitted, all text values are treated as plain strings.
 ```ts
 i18nConfig: {
   t: (key, params) => i18next.t(key, params),
@@ -106,4 +89,28 @@ i18nConfig: {
 }
 ```
 
-For a full i18n guide, see [Internationalization](../i18n.mdx).
+`validationTranslation` maps RHF rule names to translation keys so validation messages are translated automatically — without putting translation keys into field config. For a full guide, see [Internationalization](../i18n.mdx).
+
+## `formOptions`
+
+Default options passed to RHF's [`useForm`](https://react-hook-form.com/docs/useform) for every form instance created from this setup. Accepts a subset of `useForm` options — behavior-level settings that make sense app-wide:
+
+```tsx
+formOptions: {
+  mode: 'onChange',
+  shouldFocusError: false,
+}
+```
+
+Per-form concerns — `resolver`, `defaultValues`, `context` — belong on the `<Form />` instance instead. Per-form `formOptions` merges over these defaults, so individual forms can override specific keys without losing the rest:
+
+```tsx
+// setup-level: mode = "onChange"
+const [Form] = setupForm({
+  formOptions: { mode: 'onChange' },
+  ...
+})
+
+// this form overrides shouldFocusError, but still uses mode = "onChange"
+<Form formOptions={{ shouldFocusError: true }} ... />
+```

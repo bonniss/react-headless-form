@@ -38,7 +38,7 @@ describe("BlueForm – inline & custom field", () => {
     });
   });
 
-  it("inline field receives fieldProps and updates value", async () => {
+  it("inline field receives field props and updates value", async () => {
     let snapshot: any = null;
 
     renderWithBlueFormProvider(
@@ -456,7 +456,7 @@ describe("BlueForm – useField path and namespace", () => {
 });
 
 describe("BlueForm – useField readOnly", () => {
-  it("readOnly from form-level prop is passed down to fieldProps", () => {
+  it("readOnly from form-level prop is passed down to field", () => {
     let capturedReadOnly: boolean | undefined;
 
     renderWithBlueFormProvider(

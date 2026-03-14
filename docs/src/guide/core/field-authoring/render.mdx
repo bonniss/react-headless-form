@@ -1,0 +1,100 @@
+---
+title: render prop
+---
+
+Every field config accepts an optional `render` prop for defining the field UI inline — without creating a separate component or calling any hooks.
+
+The `render` function receives everything the field needs as arguments, the same props that `useField` or `useArrayField` would return. This makes inline field definitions self-contained: no hook calls, no extra components, no boilerplate.
+
+## `inline` fields
+
+For one-off fields, `render` receives the full `useField` context:
+```tsx
+username: {
+  type: "inline",
+  label: "Username",
+  rules: { required: "Required" },
+  render: ({ value, onChange, label, errorMessage, required }) => (
+    <div>
+      <label>{label}{required && " *"}</label>
+      <input
+        value={value ?? ""}
+        onChange={(e) => onChange?.(e.target.value)}
+      />
+      {errorMessage && <div>{errorMessage}</div>}
+    </div>
+  ),
+}
+```
+
+No `useField()` call needed — `value`, `onChange`, `errorMessage`, and everything else arrive as arguments.
+
+## `section` fields
+
+For `section` fields, `render` receives the same field props plus `children` — the rendered output of the section's inner config:
+```tsx
+__personalInfo: {
+  type: "section",
+  label: "Personal Information",
+  render: ({ label, children }) => (
+    <fieldset>
+      <legend>{label}</legend>
+      {children}
+    </fieldset>
+  ),
+  props: {
+    config: defineConfig({
+      firstName: { type: "text", label: "First name" },
+      lastName:  { type: "text", label: "Last name" },
+    }),
+  },
+}
+```
+
+Without `render`, the section's fields are rendered directly with no wrapper.
+
+## `array` fields
+
+For `array` fields, `render` receives the full `useArrayField` context — all array helpers and field props — plus `children` as the pre-rendered output of all current items:
+```tsx
+addresses: {
+  type: "array",
+  label: "Addresses",
+  render: ({ label, errorMessage, items, append, children }) => (
+    <fieldset>
+      <legend>{label}</legend>
+      {children}
+      <button type="button" onClick={() => append({})}>Add</button>
+      {errorMessage && <div>{errorMessage}</div>}
+    </fieldset>
+  ),
+  props: {
+    config: defineConfig<Address>({
+      street: { type: "text", label: "Street" },
+      city:   { type: "text", label: "City" },
+    }),
+  },
+}
+```
+
+`children` is the result of `renderItems()`. For per-item control — individual remove buttons, item wrappers — use `renderItem` and `items` directly:
+```tsx
+render: ({ label, items, append, renderItem, remove }) => (
+  <fieldset>
+    <legend>{label}</legend>
+    {items.map((field, index) => (
+      <div key={field.id}>
+        {renderItem(field, index)}
+        <button type="button" onClick={() => remove(index)}>Remove</button>
+      </div>
+    ))}
+    <button type="button" onClick={() => append({})}>Add</button>
+  </fieldset>
+),
+```
+
+The full list of available props matches what `useArrayField` returns — see [useArrayField](./use-array-field.mdx) for the complete reference.
+
+:::tip
+`render` works well for self-contained, one-off fields. When a field grows complex — multiple hooks, local state, side effects — extracting it into a dedicated component makes it easier to maintain and test. That component can still be passed directly to `render` if it's only used in one place, or registered in `fieldMapping` if it's shared across forms.
+:::

@@ -18,13 +18,9 @@ const [ // [!code focus]
 
 ## `Form` bound to field mapping
 
-When a `Form` is created, it is bound to a specific field mapping.
+When a `Form` is created, it is bound to a specific field mapping. This mapping defines which field types are available and how they are rendered.
 
-This mapping defines which field types are available and how they are rendered.
-
-By default, BlueForm provides a set of built-in structural field types (`inline`, `section`, `array`, `hidden`).
-
-Calling `setupForm()` with no arguments creates a form system that only includes these built-in types.
+By default, BlueForm provides a set of built-in structural field types (`inline`, `section`, `array`, `hidden`). Calling `setupForm()` with no arguments creates a form system that only includes these built-in types.
 
 ```ts
 const [Form] = setupForm();
@@ -41,24 +37,13 @@ const [Form] = setupForm({
 });
 ```
 
-With this setup, valid field types include:
-
-- all built-in field types
-- `"text"` and `"select"` defined above
-
 Any unknown field type will be caught at compile time.
 
 ```ts
 config={{
-  username: {
-    type: "text", // ✅ custom
-  },
-  profile: {
-    type: "section", // ✅ built-in
-  },
-  age: {
-    type: "number", // ❌ compile-time error
-  },
+  username: { type: "text",    },  // ✅ custom
+  profile:  { type: "section", },  // ✅ built-in
+  age:      { type: "number",  },  // ❌ compile-time error
 }}
 ```
 
@@ -66,15 +51,11 @@ config={{
 
 `Form` is generic. Field keys must match the data model, and `onSubmit` always receives fully typed data.
 
-```ts
+```tsx
 <Form<LoginData>
   config={{
-    username: {
-      type: "text",
-    },
-    password: {
-      type: "text",
-    },
+    username: { type: "text" },
+    password: { type: "text" },
   }}
   onSubmit={(data) => {
     // data is inferred as LoginData
@@ -84,60 +65,121 @@ config={{
 />
 ```
 
-## `Form` can override base configuration
+## `Form` props
 
-Base configuration defined in `setupForm` applies to all forms created from it. In some cases, you may want to override this behavior for a specific form instance.
+### `config`
 
-Via `<Form />` props at usage time, `renderRoot` can be customized per form.
+The field configuration object. Each key maps to a field in the form. See [Field config](#field-config) below.
+
+### `onSubmit`
+
+Called when the form is submitted and passes validation. Receives the typed form data and the RHF form methods:
+
+```tsx
+onSubmit={(data, formMethods, event) => {
+  console.log(data)
+}}
+```
+
+### `onSubmitSuccess`
+
+Called after `onSubmit` resolves. Receives the same arguments. Useful for side effects like resetting the form or showing a success message.
+
+### `onSubmitError`
+
+Called when submission fails due to validation errors. Receives the RHF errors object.
+
+### `defaultValues`
+
+Initial values for the form. Merged into RHF's `useForm` and always takes precedence over `formOptions.defaultValues`.
+
+```tsx
+<Form defaultValues={{ username: "alice" }} ... />
+```
+
+### `formOptions`
+
+Options passed to RHF's `useForm` for this specific form instance. Merges over `formOptions` defined in `setupForm` — per-form values always win.
+
+```tsx
+<Form formOptions={{ resolver: zodResolver(schema) }} ... />
+```
+
+Common use cases: `resolver` for schema validation, `mode` to override the default validation trigger.
+
+### `readOnly`
+
+When `true`, all fields in the form receive `readOnly: true`. Individual field components are responsible for rendering in read-only mode.
+
+### `onFormChange`
+
+Called whenever any field value changes. Receives the full form values and RHF form methods.
+
+### `onFieldChange`
+
+Called when a single field value changes. Receives the field name, new value, and RHF form methods.
+
+### `debounceMs`
+
+Delay in milliseconds before `onFormChange` and `onFieldChange` fire. Useful for debouncing side effects. Set to `0` or omit to disable.
+
+### `renderRoot` / `i18nConfig`
+
+Can be provided per-form to override the values set in `setupForm`. The only option that **cannot** be overridden is `fieldMapping` — it is fixed at setup time to preserve compile-time type safety.
 
 :::danger
-`renderRoot` must be defined either during setup or when rendering `<Form />`.  
-If neither is provided, the form will throw an error.
+`renderRoot` must be defined either in `setupForm` or on the `<Form />` instance. If neither is provided, the form will throw at render time.
 :::
 
-```tsx
-const [Form] = setupForm({
-  renderRoot: ({ children, onSubmit }) => (
-    <form className="default-form" onSubmit={onSubmit}>
-      {children}
-    </form>
-  ),
-});
+## Field config
 
-const RootOverridden = () => (
-  <Form
-    renderRoot={({ children, onSubmit }) => (
-      <form className="product-form" onSubmit={onSubmit}>
-        {children}
-      </form>
-    )}
-  />
-);
+Each entry in `config` describes a single field. All fields share a common set of options:
+
+| Option | Type | Description |
+|---|---|---|
+| `type` | `string` | Field type — must match a key in `fieldMapping` or a built-in type |
+| `label` | `string \| TranslatableText` | Field label, passed through i18n pipeline |
+| `description` | `string \| TranslatableText` | Helper text, passed through i18n pipeline |
+| `defaultValue` | `any` | Initial value for the field |
+| `rules` | `ValidationRules` | RHF validation rules — disabled when `formOptions.resolver` is provided |
+| `props` | `ComponentProps<...>` | Extra props passed to the field component — typed against the component's prop interface |
+| `render` | `RenderFn` | Per-field render override — see [render prop](../field-authoring/render.mdx) |
+| `visible` | `boolean \| (values) => boolean` | Controls field visibility — affects rendering only, value stays in form state |
+| `disabled` | `boolean \| (values) => boolean` | Controls disabled state — disabled fields are excluded from the submit payload |
+| `readOnly` | `boolean` | Field-level read-only state — merged with form-level `readOnly` |
+
+### `visible` and `disabled` as functions
+
+Both `visible` and `disabled` accept a function that receives the current form values and returns a boolean. The engine evaluates them reactively on every value change — no `useWatch` needed:
+
+```tsx
+email: {
+  type: "text",
+  visible: (values) => values.contactMethod === "email",
+},
+confirm: {
+  type: "text",
+  disabled: (values) => !values.password,
+},
 ```
 
-I18n behavior can also be overridden when needed:
+### `rules`
+
+Standard RHF validation rules. Automatically disabled when `formOptions.resolver` is provided — define all validation in the schema instead.
 
 ```tsx
-const [Form] = setupForm({
-  i18nConfig: {
-    t: defaultTranslate,
+username: {
+  type: "text",
+  rules: {
+    required: "Username is required",
+    minLength: { value: 3, message: "At least 3 characters" },
   },
-});
-
-const I18nOverridden = () => (
-  <Form
-    i18nConfig={{
-      t: adminTranslate,
-    }}
-  />
-);
+}
 ```
-
-The only option that **cannot** be overridden is `fieldMapping`, even at runtime. It is fixed at setup time to preserve compile-time type safety.
 
 ## `Form` accepts `children`
 
-Any children passed to the Form component are rendered inside the root container. This is typically used for submit buttons or additional UI.
+Any children passed to `Form` are rendered inside the root container. Typically used for submit buttons or additional UI:
 
 ```tsx
 <Form config={config} onSubmit={handleSubmit}>

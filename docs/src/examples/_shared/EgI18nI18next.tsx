@@ -45,6 +45,7 @@ const [Form] = setupForm({
   ),
   fieldMapping: defineMapping({ text: InputField }),
   i18nConfig: {
+    // @ts-ignore
     t: (key, params) => i18next.t(key, params as object),
     validationTranslation: {
       required: "validation.required",
