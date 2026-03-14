@@ -29,19 +29,18 @@ interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 const InputField: FunctionComponent<InputFieldProps> = (props) => {
   const {
-    fieldProps: {
-      id,
-      name,
-      value,
-      onChange,
-      errorMessage,
-      label,
-      description,
-      required,
-      disabled,
-      readOnly,
-      visible,
-    },
+    id,
+    name,
+    value,
+    onChange,
+    errorMessage,
+    label,
+    description,
+    required,
+    disabled,
+    readOnly,
+    visible,
+    ref,
   } = useField();
 
   if (!visible) return null;
@@ -53,6 +52,7 @@ const InputField: FunctionComponent<InputFieldProps> = (props) => {
       </span>
       <input
         {...props}
+        ref={ref}
         name={name}
         value={value}
         onChange={onChange}

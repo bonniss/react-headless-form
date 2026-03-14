@@ -23,7 +23,7 @@ import LoginForm from '../_shared/EgLoginForm';
 
 **`Form<LoginData>`** — the generic parameter binds the config to the data model. TypeScript will error if a field key doesn't exist on `LoginData`, or if `type` doesn't match the registered `fieldMapping`.
 
-**`rules`** — standard RHF validation rules. Errors are resolved to `fieldProps.errorMessage` inside the field component automatically.
+**`rules`** — standard RHF validation rules. Errors are resolved to `errorMessage` inside the field component automatically.
 
 **`props: { type: 'password' }`** — extra props passed directly to `InputField`. BlueForm enforces at compile time that these match the component's declared prop types.
 

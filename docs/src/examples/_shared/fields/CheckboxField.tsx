@@ -14,6 +14,7 @@ const CheckboxField: FunctionComponent<CheckboxFieldProps> = (props) => {
     disabled,
     readOnly,
     visible,
+    ref,
   } = useField();
 
   if (!visible) return null;
@@ -22,6 +23,7 @@ const CheckboxField: FunctionComponent<CheckboxFieldProps> = (props) => {
     <div id={id}>
       <label>
         <input
+          ref={ref}
           type="checkbox"
           checked={Boolean(value)}
           onChange={(e) => onChange?.(e.target.checked)}

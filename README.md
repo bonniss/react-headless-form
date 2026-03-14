@@ -58,7 +58,7 @@ export default function App() {
       config={{
         name: {
           type: "inline",
-          render: ({ fieldProps: { value = "", onChange } }) => (
+          render: ({ value = "", onChange }) => (
             <input
               placeholder="Your name"
               value={value}

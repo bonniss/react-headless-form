@@ -2,18 +2,37 @@
 title: Field authoring
 ---
 
-In BlueForm, a **field component** is a plain React component responsible for one thing: rendering a piece of UI that reflects and mutates a single form value. It does not manage state, does not know about other fields, and does not care about validation logic — all of that is handled by the engine.
+A **field component** in BlueForm is a plain React component with one responsibility: render a piece of UI that reflects and mutates a single form value. It does not manage state, does not know about other fields, and does not handle validation — the engine takes care of all of that before the component renders.
 
 This separation is what makes field components reusable. Write an `InputField` once, wire it to your design system, and use it across every form in your app without modification.
 
-## The field contract
+## How a field receives its context
 
-Every field component accesses its context through `useField` or `useArrayField`, depending on the field type:
+There are two ways a field component receives its context, depending on how it is used:
 
-- [`useField`](use-field.mdx) — for standard fields (`inline`, `section`, `hidden`, and any custom mapped type)
-- [`useArrayField`](use-array-field.mdx) — for `array` fields
+**Via hooks** — when the component is registered in `fieldMapping` and rendered by the engine:
 
-Both hooks expose a normalized interface on top of RHF's `useController`, so field authors never need to interact with RHF directly.
+```tsx
+export function InputField() {
+  const { value, onChange, label, errorMessage } = useField()
+  // ...
+}
+```
+
+**Via `render` prop** — when the field is defined inline in config, the same props arrive as function arguments — no hook call needed:
+
+```tsx
+name: {
+  type: "inline",
+  render: ({ value, onChange, label, errorMessage }) => (
+    // ...
+  ),
+}
+```
+
+Both approaches expose the same interface. The `render` prop is convenient for one-off fields. For fields used across multiple forms, a registered component is the better path.
+
+See [`useField`](./use-field.mdx), [`useArrayField`](./use-array-field.mdx), and [`render prop`](./render.mdx) for the full API of each approach.
 
 ## A minimal field
 
@@ -21,17 +40,11 @@ Both hooks expose a normalized interface on top of RHF's `useController`, so fie
 import { useField } from 'react-headless-form'
 
 export function InputField() {
-  const {
-    value, onChange, label, errorMessage, required, disabled,
-  } = useField()
+  const { value, onChange, label, errorMessage, required, disabled } = useField()
 
   return (
     <div>
-      {label && (
-        <label>
-          {label} {required && '*'}
-        </label>
-      )}
+      {label && <label>{label}{required && ' *'}</label>}
       <input
         value={value ?? ''}
         onChange={(e) => onChange?.(e.target.value)}
@@ -50,8 +63,6 @@ Notice what this component does not do:
 - It does not inspect validation rules
 - It does not handle i18n — `label` and `errorMessage` are already translated
 
-The engine handles all of that before the component renders.
-
 ## Registering field components
 
 Field components are registered once via `fieldMapping` in `setupForm`, then referenced by type name in any form config:
@@ -69,17 +80,16 @@ const [Form] = setupForm({
 ```tsx
 config={{
   username: { type: 'text', label: 'Username' },
-  role: { type: 'select', label: 'Role' },
+  role:     { type: 'select', label: 'Role' },
   birthdate: { type: 'datepicker', label: 'Date of Birth' },
 }}
 ```
 
-## Passing extra props to field components
+## Passing extra props
 
-Each field in config can pass additional props to its component via the `props` key. These map directly to the component's own prop types:
+Each field in config can pass additional props to its component via the `props` key, typed against the component's own prop interface:
 
 ```tsx
-// field component accepts HTML input attributes
 export function InputField(props: React.InputHTMLAttributes<HTMLInputElement>) {
   const { value, onChange } = useField()
   return (
@@ -103,19 +113,17 @@ config={{
 
 BlueForm enforces at compile time that `props` matches the component's declared prop types — invalid props are caught before runtime.
 
-## Read-only state
+## Common patterns
 
-Field components can receive a `readOnly` prop via `fieldProps`. A common pattern is to render a plain display value instead of an input:
+### Read-only state
+
+A common pattern is to render a plain display value when `readOnly` is true:
 
 ```tsx
 export function InputField() {
-  const {
-    value, onChange, readOnly, disabled,
-  } = useField()
+  const { value, onChange, readOnly, disabled } = useField()
 
-  if (readOnly) {
-    return <span>{value ?? '—'}</span>
-  }
+  if (readOnly) return <span>{value ?? '—'}</span>
 
   return (
     <input
@@ -127,4 +135,43 @@ export function InputField() {
 }
 ```
 
-How to handle an empty read-only value (e.g. show a dash or placeholder) is intentionally left to the field component — BlueForm does not impose a default.
+### Visibility guard
+
+Respect `visible` at the top of the component:
+
+```tsx
+export function InputField() {
+  const { value, onChange, visible } = useField()
+
+  if (!visible) return null
+
+  return (
+    <input
+      value={value ?? ''}
+      onChange={(e) => onChange?.(e.target.value)}
+    />
+  )
+}
+```
+
+### Accessibility
+
+Use `id` and `ref` from `useField` for proper label association and RHF's `setFocus`:
+
+```tsx
+export function InputField() {
+  const { id, ref, value, onChange, label, required } = useField()
+
+  return (
+    <div>
+      <label htmlFor={id}>{label}{required && ' *'}</label>
+      <input
+        id={id}
+        ref={ref}
+        value={value ?? ''}
+        onChange={(e) => onChange?.(e.target.value)}
+      />
+    </div>
+  )
+}
+```

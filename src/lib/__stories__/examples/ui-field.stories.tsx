@@ -10,16 +10,16 @@
  * - Form fields
  * - Layout and UI structure
  */
-import { defineMapping, setupForm } from "@/components/form/setup"
-import { Story, StoryDefault } from "@ladle/react"
+import { defineMapping, setupForm } from "@/components/form/setup";
+import { Story, StoryDefault } from "@ladle/react";
 
 export default {
   title: "Core",
-} satisfies StoryDefault
+} satisfies StoryDefault;
 
 const [Form] = setupForm({
   fieldMapping: defineMapping(),
-})
+});
 
 export const PureUISections: Story = () => {
   return (
@@ -42,15 +42,15 @@ export const PureUISections: Story = () => {
           label: "Name placeholder",
           // Still UI-only: label is resolved but this section does not
           // participate in form state unless it renders child fields.
-          render: ({ fieldProps }) => (
+          render: ({ label }) => (
             <div>
-              <strong>Static label:</strong> {fieldProps.label}
+              <strong>Static label:</strong> {label}
             </div>
           ),
         },
       }}
     />
-  )
-}
+  );
+};
 
-PureUISections.storyName = "Builtin types: Section (pure UI)"
+PureUISections.storyName = "Builtin types: Section (pure UI)";

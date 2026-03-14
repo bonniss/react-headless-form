@@ -53,10 +53,11 @@ export default defineConfig({
     ],
   },
   markdown: {
+    defaultWrapCode: true,
     shiki: {
       themes: {
-        light: "github-light",
-        dark: "github-dark",
+        light: "one-light",
+        dark: "horizon",
       },
       transformers: [
         transformerNotationHighlight(),

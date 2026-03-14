@@ -12,11 +12,7 @@ Type `inline` allow you to define a field directly in the form configuration wit
 password: {
   type: "inline",
   label: "Password",
-  render: ({ fieldProps: {
-    label,
-    value,
-    onChange,
-  }}) => (
+  render: ({ label, value, onChange }) => (
     <input
       type="password"
       placeholder={label}
@@ -35,7 +31,7 @@ Some fields are highly specific and only appear in a single form. Using `inline`
 price: {
   type: "inline",
   label: "Price",
-  render: ({ fieldProps: { value, onChange } }) => {
+  render: ({ value, onChange }) => {
     const formatted =
       value == null
         ? ""

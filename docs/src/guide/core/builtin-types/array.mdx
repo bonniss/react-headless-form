@@ -2,9 +2,7 @@
 title: array
 ---
 
-# Array
-
-`array` represents a repeatable group of fields — a list of items that share the same shape. It is backed by RHF's `useFieldArray` under the hood.
+`array` represents a repeatable list of fields where each item shares the same shape. It is backed by RHF's `useFieldArray` under the hood.
 
 ```tsx
 addresses: {
@@ -13,78 +11,90 @@ addresses: {
   props: {
     config: defineConfig<Address>({
       street: { type: "text", label: "Street" },
-      city: { type: "text", label: "City" },
+      city:   { type: "text", label: "City" },
     }),
   },
 }
 ```
 
-The `props.config` defines the shape of each item. BlueForm handles scoping automatically — fields inside each item are registered under the correct namespace (e.g. `addresses.0.street`, `addresses.1.city`).
+`props.config` defines the shape of each item. BlueForm handles namespace scoping automatically — a `street` field in item 2 is registered as `addresses.2.street` without any manual wiring.
 
-## Rendering array items
+## Rendering
 
-The array's `render` function is responsible for the **shell** — the container, the add/remove buttons, the error message. It does not render individual items directly.
+Array fields require a renderer — either `render` inline or a component registered in `fieldMapping["array"]`.
 
-Individual items are rendered using `renderItems()`, a helper from `useArrayField` that iterates over the current list and renders each item using `props.config` as the field definition. Each item is automatically scoped to its index — so a `street` field in item 2 is registered as `addresses.2.street` without any manual wiring.
+### Via `render`
 
+The `render` function is responsible for the shell — the container, action buttons, and error message. It receives the full [`useArrayField`](../../field-authoring/use-array-field.mdx) context as arguments, so no hook call is needed:
 
 ```tsx
-render: () => {
-  const { items, renderItems, append } = useArrayField()
-
-  return (
-    <div>
-      {/* renders each item using props.config */}
+addresses: {
+  type: "array",
+  render: ({ label, errorMessage, items, append, renderItems }) => (
+    <fieldset>
+      <legend>{label}</legend>
       {renderItems()}
-
       <button type="button" onClick={() => append({ street: "", city: "" })}>
-        Add address
+        Add
       </button>
-    </div>
-  )
+      {errorMessage && <div>{errorMessage}</div>}
+    </fieldset>
+  ),
+  props: {
+    config: defineConfig<Address>({ ... }),
+  },
 }
 ```
 
-`renderItems()` is shorthand for `items.map(renderItem)`. Use `renderItem(field, index)` directly when you need per-item control — for example, to wrap each item in a card with its own remove button:
+For per-item control — individual remove buttons, item wrappers — use `renderItem` and `items` directly:
 
 ```tsx
-{items.map((field, index) => (
-  <div key={idAt(index)}>
-    {renderItem(field, index)}
-    <button type="button" onClick={() => remove(index)}>Remove</button>
-  </div>
-))}
+render: ({ label, items, append, renderItem, remove }) => (
+  <fieldset>
+    <legend>{label}</legend>
+    {items.map((field, index) => (
+      <div key={field.id}>
+        {renderItem(field, index)}
+        <button type="button" onClick={() => remove(index)}>Remove</button>
+      </div>
+    ))}
+    <button type="button" onClick={() => append({})}>Add</button>
+  </fieldset>
+),
 ```
 
-## Array methods
+### Via `fieldMapping`
 
-All of RHF's [`useFieldArray`](https://react-hook-form.com/docs/usefieldarray) methods are available:
+For a consistent array shell across all forms, register a global component via `fieldMapping["array"]`. It uses `useArrayField` directly:
 
-| Method | Description |
-|---|---|
-| `append(value)` | Add item at the end |
-| `prepend(value)` | Add item at the beginning |
-| `insert(index, value)` | Add item at a specific position |
-| `remove(index?)` | Remove item by index, or all items if omitted |
-| `move(from, to)` | Move item to a new position |
-| `swap(a, b)` | Swap two items |
-| `update(index, value)` | Replace item at index |
-| `replace(values)` | Replace the entire list |
+```tsx
+const ArrayField = () => {
+  const { label, errorMessage, items, renderItems, append, pop } = useArrayField()
 
-BlueForm also provides convenience helpers:
+  return (
+    <fieldset>
+      <legend>{label}</legend>
+      {renderItems()}
+      <button type="button" onClick={() => append({})}>Add</button>
+      <button type="button" disabled={!items.length} onClick={pop}>Remove last</button>
+      {errorMessage && <div>{errorMessage}</div>}
+    </fieldset>
+  )
+}
 
-| Helper | Description |
-|---|---|
-| `push(value)` | Alias of `append` |
-| `pop()` | Remove the last item |
-| `clear()` | Remove all items |
-| `duplicate(index)` | Append a copy of the item at `index`, using current form values |
-| `idAt(index)` | Return the stable RHF key for the item (fallback to index) |
-| `errorAt(index)` | Return the validation error subtree for the item at `index` |
+const [Form] = setupForm({
+  fieldMapping: defineMapping({
+    text: InputField,
+    array: ArrayField,
+  }),
+})
+```
+
+Fields with no `render` automatically fall back to `fieldMapping["array"]`. If neither is provided, an error is thrown at render time.
 
 ## Array-level validation
 
-Validation rules on the array field apply to the array itself, not individual items. Use `fieldProps.errorMessage` to display them:
+`rules` on an array field apply to the array itself — not individual items. `errorMessage` carries the array-level error:
 
 ```tsx
 addresses: {
@@ -92,21 +102,17 @@ addresses: {
   rules: {
     minLength: { value: 2, message: "At least 2 addresses required" },
   },
-  render: () => {
-    const { fieldProps, renderItems } = useArrayField()
-    return (
-      <div>
-        {renderItems()}
-        {fieldProps.errorMessage && (
-          <div>{fieldProps.errorMessage}</div>
-        )}
-      </div>
-    )
-  },
+  render: ({ errorMessage, renderItems, append }) => (
+    <div>
+      {renderItems()}
+      <button type="button" onClick={() => append({})}>Add</button>
+      {errorMessage && <div>{errorMessage}</div>}
+    </div>
+  ),
 }
 ```
 
-Each item's fields define their own validation rules via `props.config`, and errors are handled the same way as regular fields. `errorAt(index)` exists for the cases where you need to inspect an item's error state from *outside* the item itself, such as highlighting a collapsed or minimized item that contains invalid fields.
+Item-level validation is defined in `props.config` and handled the same way as regular fields. Use `errorAt(index)` when you need to inspect an item's error state from outside the item — for example, to highlight a collapsed item that contains invalid fields.
 
 ## Complete example
 
@@ -119,113 +125,41 @@ addresses: {
   },
   props: {
     config: defineConfig<Address>({
-      street: { type: "text", label: "Street" },
-      city: { type: "text", label: "City" },
+      street:  { type: "text", label: "Street" },
+      city:    { type: "text", label: "City" },
       country: { type: "text", label: "Country" },
     }),
   },
-  render: ({ fieldProps }) => {
-    const { items, renderItems, append, duplicate, pop, clear } = useArrayField()
-
-    return (
-      <fieldset>
-        <legend>{fieldProps.label}</legend>
-
-        {renderItems()}
-
-        <div>
-          <button
-            type="button"
-            onClick={() => append({ street: "", city: "", country: "" })}
-          >
-            Add
-          </button>
-          <button
-            type="button"
-            disabled={!items.length}
-            onClick={() => duplicate(items.length - 1)}
-          >
-            Duplicate last
-          </button>
-          <button
-            type="button"
-            disabled={!items.length}
-            onClick={pop}
-          >
-            Remove last
-          </button>
-          <button
-            type="button"
-            disabled={!items.length}
-            onClick={clear}
-          >
-            Clear all
-          </button>
-        </div>
-
-        {fieldProps.errorMessage && (
-          <div>{fieldProps.errorMessage}</div>
-        )}
-      </fieldset>
-    )
-  },
-}
-```
-
-## Using fieldMapping for a global array component
-
-Instead of defining `render` inline on every array field, you can register a global array component via `fieldMapping`. This is useful when all array fields in your app share the same shell UI — add button, remove button, error display — and only differ in their `props.config`.
-
-```tsx
-const ArrayField = () => {
-  const { fieldProps, items, renderItems, append, pop } = useArrayField()
-
-  return (
+  render: ({ label, errorMessage, items, renderItems, append, duplicate, pop, clear }) => (
     <fieldset>
-      <legend>{fieldProps.label}</legend>
+      <legend>{label}</legend>
+
       {renderItems()}
-      <button type="button" onClick={() => append({})}>Add</button>
-      <button type="button" disabled={!items.length} onClick={pop}>Remove last</button>
-      {fieldProps.errorMessage && <div>{fieldProps.errorMessage}</div>}
+
+      <div>
+        <button
+          type="button"
+          onClick={() => append({ street: "", city: "", country: "" })}
+        >
+          Add
+        </button>
+        <button
+          type="button"
+          disabled={!items.length}
+          onClick={() => duplicate(items.length - 1)}
+        >
+          Duplicate last
+        </button>
+        <button type="button" disabled={!items.length} onClick={pop}>
+          Remove last
+        </button>
+        <button type="button" disabled={!items.length} onClick={clear}>
+          Clear all
+        </button>
+      </div>
+
+      {errorMessage && <div>{errorMessage}</div>}
     </fieldset>
-  )
+  ),
 }
-
-const [Form] = setupForm({
-  fieldMapping: defineMapping({
-    text: InputField,
-    array: ArrayField,   // registered once, used everywhere
-  }),
-})
 ```
-
-Array fields with no `render` automatically fall back to `fieldMapping["array"]`:
-
-```tsx
-config={{
-  addresses: {
-    type: "array",
-    label: "Addresses",
-    props: {
-      config: defineConfig<Address>({
-        street: { type: "text", label: "Street" },
-        city: { type: "text", label: "City" },
-      }),
-      // no render — uses fieldMapping["array"]
-    },
-  },
-  tags: {
-    type: "array",
-    label: "Tags",
-    props: {
-      config: defineConfig<Tag>({
-        name: { type: "text", label: "Name" },
-      }),
-    },
-  },
-}}
-```
-
-:::tip
-If neither `render` nor `fieldMapping["array"]` is provided, a warning will be issued that the array field has no renderer.
-:::

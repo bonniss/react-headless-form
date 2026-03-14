@@ -35,12 +35,12 @@ account: {
 
 **Validation runs across all steps on submit** — RHF validates the entire model regardless of which step is currently visible. If step 1 has an error, it will surface on final submission.
 
-**`Section` fills the boundary** — each step component receives section-level context via `useField`, checks `fieldProps.visible`, then uses `Section<T>` to render its own typed config fragment:
+**`Section` fills the boundary** — each step component receives section-level context via `useField`, checks `visible`, then uses `Section<T>` to render its own typed config fragment:
 
 ```tsx
 function AccountStep() {
-  const { fieldProps } = useField()
-  if (!fieldProps.visible) return null
+  const { visible } = useField()
+  if (!visible) return null
   return <Section<WizardData["account"]> config={accountConfig} />
 }
 ```

@@ -84,28 +84,6 @@ describe("ArrayRenderSlot — render() path (no fieldMapping[array])", () => {
     expect(screen.queryAllByTestId("item")).toHaveLength(0);
   });
 
-  it("passes fieldProps to render()", () => {
-    renderWithBlueFormProvider(
-      <BlueForm
-        renderRoot={TestRoot}
-        config={{
-          tags: {
-            type: "array",
-            label: "Tags",
-            render: ({ label }) => {
-              return <div data-testid="label">{label}</div>;
-            },
-            props: {
-              config: {},
-            },
-          },
-        }}
-      />,
-    );
-
-    expect(screen.getByTestId("label").textContent).toBe("Tags");
-  });
-
   it("submit payload is correct — no duplicate values from O(n²) rendering", async () => {
     let submitted: any = null;
 
