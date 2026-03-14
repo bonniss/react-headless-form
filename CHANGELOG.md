@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.2](https://github.com/bonniss/react-headless-form/compare/v0.10.1...v0.10.2) (2026-03-14)
+
+
+### Bug Fixes
+
+* dead link in array.mdx ([292763f](https://github.com/bonniss/react-headless-form/commit/292763f30743a99dfad89d62ba50f1e0aebb7a8e))
+
 ## [0.10.1](https://github.com/bonniss/react-headless-form/compare/v0.10.0...v0.10.1) (2026-03-14)
 
 
