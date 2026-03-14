@@ -5,13 +5,13 @@
  * - Translated validation messages
  */
 
-import { setupForm, defineMapping } from "@/components/form/setup"
-import { Story, StoryDefault } from "@ladle/react"
-import InputField from "../../components/with-native/InputField"
+import { setupForm, defineMapping } from "@/components/form/setup";
+import { Story, StoryDefault } from "@ladle/react";
+import InputField from "../components/InputField";
 
 export default {
   title: "Core",
-} satisfies StoryDefault
+} satisfies StoryDefault;
 
 const [Form] = setupForm({
   renderRoot: ({ children, onSubmit }) => (
@@ -28,22 +28,22 @@ const [Form] = setupForm({
     t: (message, params) => {
       switch (message) {
         case "label.username":
-          return "Username"
+          return "Username";
         case "desc.username":
-          return "Your public username"
+          return "Your public username";
 
         case "field.required":
-          return `${params?.field} is required`
+          return `${params?.field} is required`;
 
         case "field.minLength":
-          return `${params?.field} must be at least ${params?.minLength} characters`
+          return `${params?.field} must be at least ${params?.minLength} characters`;
 
         default:
-          return message
+          return message;
       }
     },
   },
-})
+});
 
 export const I18nValidation: Story = () => {
   return (
@@ -63,7 +63,7 @@ export const I18nValidation: Story = () => {
     >
       <button type="submit">Submit</button>
     </Form>
-  )
-}
+  );
+};
 
-I18nValidation.storyName = "I18n: Validation"
+I18nValidation.storyName = "I18n: Validation";

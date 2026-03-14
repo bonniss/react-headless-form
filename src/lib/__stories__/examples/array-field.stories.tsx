@@ -6,19 +6,22 @@
 import { useArrayField } from "@/components";
 import { defineMapping, setupForm } from "@/components/form/setup";
 import { Story, StoryDefault } from "@ladle/react";
-import InputField from "../../components/with-native/InputField";
+import InputField from "../components/InputField";
 
 interface User {
-  fullName: string
+  fullName: string;
+  social: {
+    youtube: string;
+  };
   addresses: {
-    street: string
-    city: string
-  }[]
+    street: string;
+    city: string;
+  }[];
 }
 
 export default {
   title: "Core",
-} satisfies StoryDefault
+} satisfies StoryDefault;
 
 const [Form, defineConfig] = setupForm({
   renderRoot: ({ children, onSubmit }) => (
@@ -27,7 +30,7 @@ const [Form, defineConfig] = setupForm({
   fieldMapping: defineMapping({
     text: InputField,
   }),
-})
+});
 
 export const ArrayFields: Story = () => {
   return (
@@ -39,6 +42,15 @@ export const ArrayFields: Story = () => {
           label: "Full name",
           rules: {
             required: "Full name is required",
+          },
+        },
+        "social.youtube": {
+          type: "text",
+          label: "YouTube",
+          props: {
+            style: {
+              backgroundColor: "red",
+            },
           },
         },
         addresses: {
@@ -66,28 +78,24 @@ export const ArrayFields: Story = () => {
               },
             }),
           },
-          render: ({ fieldProps, children }) => {
-            const { append } = useArrayField()
-
+          render: ({ label, errorMessage, append, children }) => {
             return (
               <fieldset>
-                <legend>{fieldProps.label}</legend>
+                <legend>{label}</legend>
                 {children}
                 <button type="button" onClick={() => append({})}>
                   Add address
                 </button>
-                {fieldProps.errorMessage && (
-                  <p style={{ color: "red" }}>{fieldProps.errorMessage}</p>
-                )}
+                {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
               </fieldset>
-            )
+            );
           },
         },
       }}
     >
       <button type="submit">Submit</button>
     </Form>
-  )
-}
+  );
+};
 
-ArrayFields.storyName = "Builtin types: Array field"
+ArrayFields.storyName = "Builtin types: Array field";

@@ -1,20 +1,18 @@
-import { useField } from "@/components"
-import { FunctionComponent } from "react"
+import { useField } from "@/components";
+import { FunctionComponent } from "react";
 
-interface SelectFieldProps
-  extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  options: { label: string; value: string }[]
+interface SelectFieldProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  options: { label: string; value: string }[];
 }
 
 const SelectField: FunctionComponent<SelectFieldProps> = ({
   options,
   ...props
 }) => {
-  const {
-    fieldProps: { id, value, onChange, label, disabled, readOnly, visible },
-  } = useField()
+  const { id, value, onChange, label, disabled, readOnly, visible } =
+    useField();
 
-  if (!visible) return null
+  if (!visible) return null;
 
   return (
     <div id={id}>
@@ -32,7 +30,7 @@ const SelectField: FunctionComponent<SelectFieldProps> = ({
         ))}
       </select>
     </div>
-  )
-}
+  );
+};
 
-export default SelectField
+export default SelectField;

@@ -4,14 +4,14 @@ import type {
   ComponentMap,
   FormConfig,
   FormSectionProps,
-} from "@/types"
-import type { BlueFormRef } from "@/types/form"
-import type { ComponentType, JSX } from "react"
-import { forwardRef } from "react"
-import type { FieldValues } from "react-hook-form"
-import BlueForm from "./BlueForm"
-import { useField } from "./provider"
-import BlueFormEngine from "./internal/BlueFormEngine"
+} from "@/types";
+import type { BlueFormRef } from "@/types/form";
+import type { ComponentType, JSX } from "react";
+import { forwardRef } from "react";
+import type { FieldValues } from "react-hook-form";
+import BlueForm from "./BlueForm";
+import { useField } from "./provider";
+import BlueFormEngine from "./internal/BlueFormEngine";
 
 /**
  * Placeholder components used to satisfy the type-level `ComponentMap`.
@@ -26,9 +26,9 @@ import BlueFormEngine from "./internal/BlueFormEngine"
  */
 const PlaceholderForNestedField = null as unknown as ComponentType<
   FormSectionProps<any, any>
->
-const PlaceholderForHidden = null as unknown as ComponentType<any>
-const PlaceholderForInline = null as unknown as ComponentType<any>
+>;
+const PlaceholderForHidden = null as unknown as ComponentType<any>;
+const PlaceholderForInline = null as unknown as ComponentType<any>;
 
 /**
  * Built-in field type registry.
@@ -41,9 +41,9 @@ export const BASE_MAPPING = {
   inline: PlaceholderForInline,
   array: PlaceholderForNestedField,
   section: PlaceholderForNestedField,
-} as const satisfies ComponentMap
+} as const satisfies ComponentMap;
 
-type DefaultComponentMap = typeof BASE_MAPPING
+type DefaultComponentMap = typeof BASE_MAPPING;
 
 /**
  * Defines the field mapping used by the form engine.
@@ -54,15 +54,15 @@ type DefaultComponentMap = typeof BASE_MAPPING
  * Overloads are used to preserve autocomplete and type inference when
  * `userMapping` is omitted.
  */
-export function defineMapping(): typeof BASE_MAPPING
+export function defineMapping(): typeof BASE_MAPPING;
 export function defineMapping<TUserMap extends ComponentMap>(
   userMapping: TUserMap,
-): typeof BASE_MAPPING & TUserMap
+): typeof BASE_MAPPING & TUserMap;
 export function defineMapping(userMapping?: ComponentMap) {
   return {
     ...BASE_MAPPING,
     ...(userMapping ?? {}),
-  } as const
+  } as const;
 }
 
 /**
@@ -76,8 +76,8 @@ export type TypedFormComponent<TComponentMap extends ComponentMap> = {
   <TModel extends FieldValues>(
     props: Omit<BlueFormProps<TModel, TComponentMap>, "fieldMapping"> &
       React.RefAttributes<BlueFormRef<TModel>>,
-  ): JSX.Element
-}
+  ): JSX.Element;
+};
 
 /**
  * A typed `<Section />` component signature.
@@ -91,9 +91,9 @@ export type TypedFormComponent<TComponentMap extends ComponentMap> = {
  */
 export type TypedSectionComponent<TComponentMap extends ComponentMap> = {
   <TModel extends FieldValues>(props: {
-    config: FormConfig<TModel, TComponentMap>
-  }): JSX.Element
-}
+    config: FormConfig<TModel, TComponentMap>;
+  }): JSX.Element;
+};
 
 /**
  * Creates a typed helper for defining form configuration objects.
@@ -107,8 +107,8 @@ function createDefineConfigFn<TComponentMap extends ComponentMap>() {
   return function defineConfig<TModel extends FieldValues>(
     config: FormConfig<TModel, TComponentMap>,
   ): FormConfig<TModel, TComponentMap> {
-    return config
-  }
+    return config;
+  };
 }
 
 /**
@@ -125,13 +125,11 @@ function createDefineConfigFn<TComponentMap extends ComponentMap>() {
  */
 function createSectionComponent<TComponentMap extends ComponentMap>() {
   const InternalSection = function InternalSection(props: any) {
-    const { fieldProps } = useField()
-    return (
-      <BlueFormEngine config={props.config} namespace={fieldProps.namespace} />
-    )
-  }
+    const { namespace } = useField();
+    return <BlueFormEngine config={props.config} namespace={namespace} />;
+  };
 
-  return InternalSection as TypedSectionComponent<TComponentMap>
+  return InternalSection as TypedSectionComponent<TComponentMap>;
 }
 
 /**
@@ -152,33 +150,33 @@ export function setupForm(): readonly [
   TypedFormComponent<DefaultComponentMap>,
   ReturnType<typeof createDefineConfigFn<DefaultComponentMap>>,
   TypedSectionComponent<DefaultComponentMap>,
-]
+];
 export function setupForm<TUserMap extends ComponentMap>(
   baseConfig: BlueFormBaseConfig<TUserMap>,
 ): readonly [
   TypedFormComponent<TUserMap>,
   ReturnType<typeof createDefineConfigFn<TUserMap>>,
   TypedSectionComponent<TUserMap>,
-]
+];
 export function setupForm(baseConfig?: BlueFormBaseConfig<ComponentMap>) {
   const resolvedConfig = {
     fieldMapping: defineMapping(),
     ...baseConfig,
-  }
+  };
 
   // Bind helpers to the mapping resolved at setup time.
-  const defineConfig = createDefineConfigFn<any>()
+  const defineConfig = createDefineConfigFn<any>();
 
   const InternalForm = forwardRef(function InternalForm(props: any, ref) {
     // Prevent overriding `fieldMapping` at the Form level.
     // Field mapping is intentionally fixed at setup time.
-    const { fieldMapping: _ignored, ...allowedProps } = props as any
+    const { fieldMapping: _ignored, ...allowedProps } = props as any;
 
-    return <BlueForm ref={ref} {...resolvedConfig} {...allowedProps} />
-  })
+    return <BlueForm ref={ref} {...resolvedConfig} {...allowedProps} />;
+  });
 
   // Typed helper for rendering config fragments in component-owned sections.
-  const Section = createSectionComponent<any>()
+  const Section = createSectionComponent<any>();
 
-  return [InternalForm as any, defineConfig, Section] as const
+  return [InternalForm as any, defineConfig, Section] as const;
 }

@@ -11,36 +11,36 @@
  * Layout is entirely controlled by the consumer.
  */
 
-import InputField from "@/__stories__/components/with-native/InputField"
-import TextAreaField from "@/__stories__/components/with-native/TextAreaField"
-import { defineMapping, setupForm } from "@/components/form/setup"
-import { LooseShape } from "@/types/utils"
-import { Story, StoryDefault } from "@ladle/react"
-import { useFormContext } from "react-hook-form"
+import InputField from "@/__stories__/components/InputField";
+import TextAreaField from "@/__stories__/components/TextAreaField";
+import { defineMapping, setupForm } from "@/components/form/setup";
+import { LooseShape } from "@/types/utils";
+import { Story, StoryDefault } from "@ladle/react";
+import { useFormContext } from "react-hook-form";
 
 interface ProfileForm {
-  title: string
-  description: string
+  title: string;
+  description: string;
 }
 
 export default {
   title: "Mixed",
-} satisfies StoryDefault
+} satisfies StoryDefault;
 
 const [Form] = setupForm({
   fieldMapping: defineMapping({
     text: InputField,
     longText: TextAreaField,
   }),
-})
+});
 
 /**
  * Live preview panel.
  * Reads form values directly from react-hook-form.
  */
 const PreviewPanel = () => {
-  const { watch } = useFormContext<ProfileForm>()
-  const values = watch()
+  const { watch } = useFormContext<ProfileForm>();
+  const values = watch();
 
   return (
     <div
@@ -60,15 +60,15 @@ const PreviewPanel = () => {
         <strong>Description:</strong> {values.description || <em>(empty)</em>}
       </p>
     </div>
-  )
-}
+  );
+};
 
 /**
  * Custom action panel.
  * Can live anywhere in the layout.
  */
 const ActionPanel = () => {
-  const { formState } = useFormContext()
+  const { formState } = useFormContext();
 
   return (
     <div
@@ -86,8 +86,8 @@ const ActionPanel = () => {
         </span>
       )}
     </div>
-  )
-}
+  );
+};
 
 export const MixedLayoutForm: Story = () => {
   return (
@@ -105,7 +105,7 @@ export const MixedLayoutForm: Story = () => {
         </form>
       )}
       onSubmit={(data) => {
-        alert(JSON.stringify(data, null, 2))
+        alert(JSON.stringify(data, null, 2));
       }}
       config={{
         /**
@@ -138,5 +138,5 @@ export const MixedLayoutForm: Story = () => {
         },
       }}
     />
-  )
-}
+  );
+};

@@ -1,21 +1,21 @@
-import { defineMapping, setupForm } from "@/components/form/setup"
-import { Story, StoryDefault } from "@ladle/react"
-import InputField from "../../components/with-native/InputField"
+import { defineMapping, setupForm } from "@/components/form/setup";
+import { Story, StoryDefault } from "@ladle/react";
+import InputField from "../components/InputField";
 
 interface User {
-  name: string
-  email: string
+  name: string;
+  email: string;
 }
 
 export default {
   title: "Core",
-} satisfies StoryDefault
+} satisfies StoryDefault;
 
 const [Form] = setupForm({
   fieldMapping: defineMapping({
     text: InputField,
   }),
-})
+});
 
 export const TypeSafeSchema: Story = () => {
   return (
@@ -27,6 +27,9 @@ export const TypeSafeSchema: Story = () => {
         name: {
           type: "text",
           label: "Name",
+          props: {
+            autoFocus: true,
+          },
         },
         email: {
           type: "text",
@@ -39,5 +42,5 @@ export const TypeSafeSchema: Story = () => {
     >
       <button type="submit">Submit</button>
     </Form>
-  )
-}
+  );
+};

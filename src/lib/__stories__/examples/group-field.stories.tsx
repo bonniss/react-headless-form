@@ -5,20 +5,20 @@
  * - `config` defines the child fields to render within the section.
  * - `render` wraps the section UI without affecting namespace behavior.
  */
-import { defineMapping, setupForm } from "@/components/form/setup"
-import { Story, StoryDefault } from "@ladle/react"
-import InputField from "../../components/with-native/InputField"
+import { defineMapping, setupForm } from "@/components/form/setup";
+import { Story, StoryDefault } from "@ladle/react";
+import InputField from "../components/InputField";
 
 interface UserProfile {
   personal: {
-    firstName: string
-    lastName: string
-  }
+    firstName: string;
+    lastName: string;
+  };
 }
 
 export default {
   title: "Core",
-} satisfies StoryDefault
+} satisfies StoryDefault;
 
 const [Form, defineConfig] = setupForm({
   renderRoot: ({ children, onSubmit }) => (
@@ -27,7 +27,7 @@ const [Form, defineConfig] = setupForm({
   fieldMapping: defineMapping({
     text: InputField,
   }),
-})
+});
 
 export const SectionNestedFields: Story = () => {
   return (
@@ -52,7 +52,7 @@ export const SectionNestedFields: Story = () => {
               },
             }),
           },
-          render: ({ children, fieldProps: { label } }) => (
+          render: ({ children, label }) => (
             <fieldset>
               <legend>{label}</legend>
               {children}
@@ -63,7 +63,7 @@ export const SectionNestedFields: Story = () => {
     >
       <button type="submit">Submit</button>
     </Form>
-  )
-}
+  );
+};
 
-SectionNestedFields.storyName = "Builtin types: Section (nested)"
+SectionNestedFields.storyName = "Builtin types: Section (nested)";

@@ -1,26 +1,23 @@
-import { useField } from "@/components"
-import { FunctionComponent } from "react"
+import { useField } from "@/components";
+import { FunctionComponent } from "react";
 
-interface TextAreaFieldProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+interface TextAreaFieldProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
 const TextAreaField: FunctionComponent<TextAreaFieldProps> = (props) => {
   const {
-    fieldProps: {
-      id,
-      value,
-      onChange,
-      errorMessage,
-      label,
-      description,
-      required,
-      disabled,
-      readOnly,
-      visible,
-    },
-  } = useField()
+    id,
+    value,
+    onChange,
+    errorMessage,
+    label,
+    description,
+    required,
+    disabled,
+    readOnly,
+    visible,
+  } = useField();
 
-  if (!visible) return null
+  if (!visible) return null;
 
   return (
     <div id={id}>
@@ -38,7 +35,7 @@ const TextAreaField: FunctionComponent<TextAreaFieldProps> = (props) => {
       {description && <div className="field-description">{description}</div>}
       {errorMessage && <div className="field-error">{errorMessage}</div>}
     </div>
-  )
-}
+  );
+};
 
-export default TextAreaField
+export default TextAreaField;

@@ -1,13 +1,13 @@
 /**
  * Demonstrates translating labels and descriptions.
  */
-import { defineMapping, setupForm } from "@/components/form/setup"
-import { Story, StoryDefault } from "@ladle/react"
-import InputField from "../../components/with-native/InputField"
+import { defineMapping, setupForm } from "@/components/form/setup";
+import { Story, StoryDefault } from "@ladle/react";
+import InputField from "../components/InputField";
 
 export default {
   title: "Core",
-} satisfies StoryDefault
+} satisfies StoryDefault;
 
 const [Form] = setupForm({
   renderRoot: ({ children, onSubmit }) => (
@@ -20,15 +20,15 @@ const [Form] = setupForm({
     t: (message) => {
       switch (message) {
         case "label.username":
-          return "Username"
+          return "Username";
         case "desc.username":
-          return "Your public username"
+          return "Your public username";
         default:
-          return message
+          return message;
       }
     },
   },
-})
+});
 
 export const I18nTranslateMessages: Story = () => {
   return (
@@ -44,7 +44,7 @@ export const I18nTranslateMessages: Story = () => {
     >
       <button type="submit">Submit</button>
     </Form>
-  )
-}
+  );
+};
 
-I18nTranslateMessages.storyName = "I18n: Messages"
+I18nTranslateMessages.storyName = "I18n: Messages";

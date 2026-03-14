@@ -1,15 +1,13 @@
-import { useField } from "@/components"
-import { FunctionComponent } from "react"
+import { useField } from "@/components";
+import { FunctionComponent } from "react";
 
-interface CheckboxFieldProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+interface CheckboxFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 const CheckboxField: FunctionComponent<CheckboxFieldProps> = (props) => {
-  const {
-    fieldProps: { id, value, onChange, label, disabled, readOnly, visible },
-  } = useField()
+  const { id, value, onChange, label, disabled, readOnly, visible } =
+    useField();
 
-  if (!visible) return null
+  if (!visible) return null;
 
   return (
     <label id={id}>
@@ -23,7 +21,7 @@ const CheckboxField: FunctionComponent<CheckboxFieldProps> = (props) => {
       />
       {label}
     </label>
-  )
-}
+  );
+};
 
-export default CheckboxField
+export default CheckboxField;

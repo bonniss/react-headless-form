@@ -1,8 +1,8 @@
-import { Story, StoryDefault } from "@ladle/react"
-import { setupForm, defineMapping } from "@/components/form/setup"
-import { useArrayField, useField } from "@/components"
-import InputField from "../../components/with-native/InputField"
-import CheckboxField from "../../components/with-native/CheckboxField"
+import { Story, StoryDefault } from "@ladle/react";
+import { setupForm, defineMapping } from "@/components/form/setup";
+import { useArrayField, useField } from "@/components";
+import InputField from "../components/InputField";
+import CheckboxField from "../components/CheckboxField";
 
 /**
  * Cấu trúc dữ liệu:
@@ -12,42 +12,42 @@ import CheckboxField from "../../components/with-native/CheckboxField"
  * - isDone: boolean (flat)
  */
 interface Task {
-  title: string
-  priority: string
+  title: string;
+  priority: string;
 }
 
 interface TaskItem {
-  mainInfo: Task
-  description: string
-  isDone: boolean
+  mainInfo: Task;
+  description: string;
+  isDone: boolean;
 }
 
 interface ProjectForm {
-  projectName: string
-  tasks: TaskItem[]
+  projectName: string;
+  tasks: TaskItem[];
 }
 
 export default {
   title: "Mixed",
-} satisfies StoryDefault
+} satisfies StoryDefault;
 
 const [Form, defineConfig, Section] = setupForm({
   fieldMapping: defineMapping({
     text: InputField,
     checkbox: CheckboxField,
   }),
-})
+});
 
 /**
  * Component cho Nested Section: mainInfo
  * Tự định nghĩa schema và layout cho sub-object
  */
 function TaskMainInfo() {
-  const { fieldProps } = useField()
+  const { label } = useField();
   return (
     <div className="p-3 bg-blue-50 rounded-t-lg border-b border-blue-200">
       <div className="text-xs font-bold text-blue-500 uppercase mb-2">
-        {fieldProps.label}
+        {label}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <Section<Task>
@@ -58,7 +58,7 @@ function TaskMainInfo() {
         />
       </div>
     </div>
-  )
+  );
 }
 
 export const ArrayComponentSection: Story = () => {
@@ -86,8 +86,7 @@ export const ArrayComponentSection: Story = () => {
         tasks: {
           type: "array",
           label: "Tasks List",
-          render: ({ children }) => {
-            const { append } = useArrayField()
+          render: ({ children, append }) => {
             return (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
@@ -102,7 +101,7 @@ export const ArrayComponentSection: Story = () => {
                 </div>
                 {children}
               </div>
-            )
+            );
           },
           props: {
             config: defineConfig<TaskItem>({
@@ -127,5 +126,5 @@ export const ArrayComponentSection: Story = () => {
         },
       }}
     />
-  )
-}
+  );
+};

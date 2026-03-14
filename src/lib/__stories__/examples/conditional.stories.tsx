@@ -1,18 +1,18 @@
-import { setupForm, defineMapping } from "@/components/form/setup"
-import { Story, StoryDefault } from "@ladle/react"
-import CheckboxField from "../../components/with-native/CheckboxField"
-import InputField from "../../components/with-native/InputField"
+import { setupForm, defineMapping } from "@/components/form/setup";
+import { Story, StoryDefault } from "@ladle/react";
+import CheckboxField from "../components/CheckboxField";
+import InputField from "../components/InputField";
 
 export default {
   title: "Mixed",
-} satisfies StoryDefault
+} satisfies StoryDefault;
 
 const [Form] = setupForm({
   fieldMapping: defineMapping({
     text: InputField,
     checkbox: CheckboxField,
   }),
-})
+});
 
 export const ConditionalFields: Story = () => {
   return (
@@ -34,5 +34,5 @@ export const ConditionalFields: Story = () => {
     >
       <button type="submit">Submit</button>
     </Form>
-  )
-}
+  );
+};

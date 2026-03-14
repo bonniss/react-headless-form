@@ -1,16 +1,16 @@
-import { setupForm, defineMapping } from "@/components/form/setup"
-import { Story, StoryDefault } from "@ladle/react"
-import InputField from "../../components/with-native/InputField"
+import { setupForm, defineMapping } from "@/components/form/setup";
+import { Story, StoryDefault } from "@ladle/react";
+import InputField from "../components/InputField";
 
 export default {
   title: "Core",
-} satisfies StoryDefault
+} satisfies StoryDefault;
 
 const [Form] = setupForm({
   fieldMapping: defineMapping({
     text: InputField,
   }),
-})
+});
 
 export const HelloWorld: Story = () => {
   return (
@@ -28,5 +28,5 @@ export const HelloWorld: Story = () => {
     >
       <button type="submit">Submit</button>
     </Form>
-  )
-}
+  );
+};

@@ -1,10 +1,10 @@
 /** biome-ignore-all lint/suspicious/noAssignInExpressions: legacy test style */
-import BlueForm from '@/components/form/BlueForm';
-import { HiddenField } from '@/components/form/field';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
-import { renderWithBlueFormProvider } from '../_utils/render-form';
-import { useArrayField } from '@/components';
+import BlueForm from "@/components/form/BlueForm";
+import { HiddenField } from "@/components/form/field";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { renderWithBlueFormProvider } from "../_utils/render-form";
+import { useArrayField } from "@/components";
 
 /**
  * A minimal root renderer for BlueForm tests.
@@ -18,8 +18,8 @@ const TestRoot = ({ children, onSubmit }: any) => (
   </form>
 );
 
-describe('BlueForm – section', () => {
-  it('nests child fields under the section key when nested=true', async () => {
+describe("BlueForm – section", () => {
+  it("nests child fields under the section key when nested=true", async () => {
     let submitted: any = null;
 
     renderWithBlueFormProvider(
@@ -28,13 +28,13 @@ describe('BlueForm – section', () => {
         onSubmit={(v) => (submitted = v)}
         config={{
           profile: {
-            type: 'section',
+            type: "section",
             props: {
               nested: true,
               config: {
                 name: {
-                  type: 'hidden',
-                  defaultValue: 'Bob',
+                  type: "hidden",
+                  defaultValue: "Bob",
                 },
               },
             },
@@ -44,16 +44,16 @@ describe('BlueForm – section', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(submitted).toEqual({
-        profile: { name: 'Bob' },
+        profile: { name: "Bob" },
       });
     });
   });
 
-  it('does not create a namespace when nested=false (flat section)', async () => {
+  it("does not create a namespace when nested=false (flat section)", async () => {
     let submitted: any = null;
 
     renderWithBlueFormProvider(
@@ -62,13 +62,13 @@ describe('BlueForm – section', () => {
         onSubmit={(v) => (submitted = v)}
         config={{
           layout: {
-            type: 'section',
+            type: "section",
             props: {
               nested: false,
               config: {
                 name: {
-                  type: 'hidden',
-                  defaultValue: 'Charlie',
+                  type: "hidden",
+                  defaultValue: "Charlie",
                 },
               },
             },
@@ -78,16 +78,16 @@ describe('BlueForm – section', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(submitted).toEqual({
-        name: 'Charlie',
+        name: "Charlie",
       });
     });
   });
 
-  it('defaults nested to false when omitted', async () => {
+  it("defaults nested to false when omitted", async () => {
     let submitted: any = null;
 
     renderWithBlueFormProvider(
@@ -96,13 +96,13 @@ describe('BlueForm – section', () => {
         onSubmit={(v) => (submitted = v)}
         config={{
           layout: {
-            type: 'section',
+            type: "section",
             props: {
               // nested omitted
               config: {
                 userId: {
-                  type: 'hidden',
-                  defaultValue: 'u-123',
+                  type: "hidden",
+                  defaultValue: "u-123",
                 },
               },
             },
@@ -112,16 +112,16 @@ describe('BlueForm – section', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(submitted).toEqual({
-        userId: 'u-123',
+        userId: "u-123",
       });
     });
   });
 
-  it('supports nested sections (nested=true across multiple levels)', async () => {
+  it("supports nested sections (nested=true across multiple levels)", async () => {
     let submitted: any = null;
 
     renderWithBlueFormProvider(
@@ -130,18 +130,18 @@ describe('BlueForm – section', () => {
         onSubmit={(data) => (submitted = data)}
         config={{
           profile: {
-            type: 'section',
+            type: "section",
             props: {
               nested: true,
               config: {
                 address: {
-                  type: 'section',
+                  type: "section",
                   props: {
                     nested: true,
                     config: {
                       city: {
-                        type: 'hidden',
-                        defaultValue: 'HN',
+                        type: "hidden",
+                        defaultValue: "HN",
                       },
                     },
                   },
@@ -154,16 +154,16 @@ describe('BlueForm – section', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(submitted).toEqual({
-        profile: { address: { city: 'HN' } },
+        profile: { address: { city: "HN" } },
       });
     });
   });
 
-  it('supports flat section containing a nested section (nested=false then nested=true)', async () => {
+  it("supports flat section containing a nested section (nested=false then nested=true)", async () => {
     let submitted: any = null;
 
     renderWithBlueFormProvider(
@@ -172,18 +172,18 @@ describe('BlueForm – section', () => {
         onSubmit={(data) => (submitted = data)}
         config={{
           layout: {
-            type: 'section',
+            type: "section",
             props: {
               nested: false,
               config: {
                 profile: {
-                  type: 'section',
+                  type: "section",
                   props: {
                     nested: true,
                     config: {
                       userId: {
-                        type: 'hidden',
-                        defaultValue: 'u-123',
+                        type: "hidden",
+                        defaultValue: "u-123",
                       },
                     },
                   },
@@ -196,16 +196,16 @@ describe('BlueForm – section', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(submitted).toEqual({
-        profile: { userId: 'u-123' },
+        profile: { userId: "u-123" },
       });
     });
   });
 
-  it('render wrapper does not affect namespace behavior (nested=true)', async () => {
+  it("render wrapper does not affect namespace behavior (nested=true)", async () => {
     let submitted: any = null;
 
     renderWithBlueFormProvider(
@@ -214,13 +214,13 @@ describe('BlueForm – section', () => {
         onSubmit={(data) => (submitted = data)}
         config={{
           profile: {
-            type: 'section',
+            type: "section",
             props: {
               nested: true,
               config: {
                 userId: {
-                  type: 'hidden',
-                  defaultValue: 'u-123',
+                  type: "hidden",
+                  defaultValue: "u-123",
                 },
               },
             },
@@ -233,18 +233,18 @@ describe('BlueForm – section', () => {
       />,
     );
 
-    expect(screen.getByTestId('wrapper')).toBeDefined();
+    expect(screen.getByTestId("wrapper")).toBeDefined();
 
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(submitted).toEqual({
-        profile: { userId: 'u-123' },
+        profile: { userId: "u-123" },
       });
     });
   });
 
-  it('render wrapper does not affect namespace behavior (nested=false)', async () => {
+  it("render wrapper does not affect namespace behavior (nested=false)", async () => {
     let submitted: any = null;
 
     renderWithBlueFormProvider(
@@ -253,13 +253,13 @@ describe('BlueForm – section', () => {
         onSubmit={(data) => (submitted = data)}
         config={{
           layout: {
-            type: 'section',
+            type: "section",
             props: {
               nested: false,
               config: {
                 userId: {
-                  type: 'hidden',
-                  defaultValue: 'u-123',
+                  type: "hidden",
+                  defaultValue: "u-123",
                 },
               },
             },
@@ -272,19 +272,19 @@ describe('BlueForm – section', () => {
       />,
     );
 
-    expect(screen.getByTestId('wrapper')).toBeDefined();
+    expect(screen.getByTestId("wrapper")).toBeDefined();
 
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(submitted).toEqual({
-        userId: 'u-123',
+        userId: "u-123",
       });
     });
   });
 
-  it('prioritizes section.component over section.config and warns (component wins)', async () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  it("prioritizes section.component over section.config and warns (component wins)", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     let submitted: any = null;
 
     const StubSection = () => (
@@ -297,15 +297,15 @@ describe('BlueForm – section', () => {
         onSubmit={(data) => (submitted = data)}
         config={{
           profile: {
-            type: 'section',
+            type: "section",
             props: {
               nested: true,
               component: StubSection,
               config: {
                 // should be ignored because component wins
                 userId: {
-                  type: 'hidden',
-                  defaultValue: 'u-ignored',
+                  type: "hidden",
+                  defaultValue: "u-ignored",
                 },
               },
             },
@@ -316,9 +316,9 @@ describe('BlueForm – section', () => {
     );
 
     // component renders, config should be ignored (no HiddenField child)
-    expect(screen.getByTestId('component-section')).toBeTruthy();
+    expect(screen.getByTestId("component-section")).toBeTruthy();
 
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(warnSpy).toHaveBeenCalled();
@@ -330,7 +330,7 @@ describe('BlueForm – section', () => {
     warnSpy.mockRestore();
   });
 
-  it('renders a section with only component (no config)', async () => {
+  it("renders a section with only component (no config)", async () => {
     let submitted: any = null;
 
     const StubSection = () => (
@@ -343,7 +343,7 @@ describe('BlueForm – section', () => {
         onSubmit={(data) => (submitted = data)}
         config={{
           profile: {
-            type: 'section',
+            type: "section",
             props: {
               nested: true,
               component: StubSection,
@@ -354,16 +354,16 @@ describe('BlueForm – section', () => {
       />,
     );
 
-    expect(screen.getByTestId('component-only')).toBeTruthy();
+    expect(screen.getByTestId("component-only")).toBeTruthy();
 
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(submitted).toEqual({});
     });
   });
 
-  it('renders a section with only config (no component)', async () => {
+  it("renders a section with only config (no component)", async () => {
     let submitted: any = null;
 
     renderWithBlueFormProvider(
@@ -372,13 +372,13 @@ describe('BlueForm – section', () => {
         onSubmit={(data) => (submitted = data)}
         config={{
           profile: {
-            type: 'section',
+            type: "section",
             props: {
               nested: true,
               config: {
                 userId: {
-                  type: 'hidden',
-                  defaultValue: 'u-123',
+                  type: "hidden",
+                  defaultValue: "u-123",
                 },
               },
             },
@@ -388,11 +388,11 @@ describe('BlueForm – section', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(submitted).toEqual({
-        profile: { userId: 'u-123' },
+        profile: { userId: "u-123" },
       });
     });
   });
@@ -402,18 +402,18 @@ describe('BlueForm – section', () => {
       <BlueForm
         renderRoot={({ children }) => <form>{children}</form>}
         config={{
-          'nested.key': {
-            type: 'inline',
+          "nested.key": {
+            type: "inline",
             render: () => <input data-testid="input" />,
           },
         }}
       />,
     );
 
-    expect(screen.getByTestId('input')).toBeTruthy();
+    expect(screen.getByTestId("input")).toBeTruthy();
   });
 
-  it('maps flat path values into nested objects on submit', async () => {
+  it("maps flat path values into nested objects on submit", async () => {
     const onSubmit = vi.fn();
 
     render(
@@ -423,13 +423,13 @@ describe('BlueForm – section', () => {
           <form onSubmit={onSubmit}>{children}</form>
         )}
         config={{
-          'nested.key': {
-            type: 'inline',
-            render: ({ fieldProps }) => (
+          "nested.key": {
+            type: "inline",
+            render: ({ value, onChange }) => (
               <input
                 data-testid="input"
-                value={fieldProps.value ?? ''}
-                onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
               />
             ),
           },
@@ -439,15 +439,15 @@ describe('BlueForm – section', () => {
       </BlueForm>,
     );
 
-    fireEvent.change(screen.getByTestId('input'), {
-      target: { value: 'hello' },
+    fireEvent.change(screen.getByTestId("input"), {
+      target: { value: "hello" },
     });
 
-    fireEvent.submit(screen.getByText('Submit').closest('form')!);
+    fireEvent.submit(screen.getByText("Submit").closest("form")!);
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
-        { nested: { key: 'hello' } },
+        { nested: { key: "hello" } },
         expect.any(Object),
         expect.anything(),
       );
@@ -464,13 +464,13 @@ describe('BlueForm – section', () => {
           <form onSubmit={onSubmit}>{children}</form>
         )}
         config={{
-          'a.b.c': {
-            type: 'inline',
-            render: ({ fieldProps }) => (
+          "a.b.c": {
+            type: "inline",
+            render: ({ value, onChange }) => (
               <input
                 data-testid="deep"
-                value={fieldProps.value ?? ''}
-                onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
               />
             ),
           },
@@ -480,22 +480,22 @@ describe('BlueForm – section', () => {
       </BlueForm>,
     );
 
-    fireEvent.change(screen.getByTestId('deep'), {
-      target: { value: 'deep-value' },
+    fireEvent.change(screen.getByTestId("deep"), {
+      target: { value: "deep-value" },
     });
 
-    fireEvent.submit(screen.getByText('Submit').closest('form')!);
+    fireEvent.submit(screen.getByText("Submit").closest("form")!);
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
-        { a: { b: { c: 'deep-value' } } },
+        { a: { b: { c: "deep-value" } } },
         expect.any(Object),
         expect.anything(),
       );
     });
   });
 
-  it('merges multiple flat paths into the same nested object', async () => {
+  it("merges multiple flat paths into the same nested object", async () => {
     const onSubmit = vi.fn();
 
     render(
@@ -505,23 +505,23 @@ describe('BlueForm – section', () => {
           <form onSubmit={onSubmit}>{children}</form>
         )}
         config={{
-          'user.name': {
-            type: 'inline',
-            render: ({ fieldProps }) => (
+          "user.name": {
+            type: "inline",
+            render: ({ value, onChange }) => (
               <input
                 data-testid="name"
-                value={fieldProps.value ?? ''}
-                onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
               />
             ),
           },
-          'user.age': {
-            type: 'inline',
-            render: ({ fieldProps }) => (
+          "user.age": {
+            type: "inline",
+            render: ({ value, onChange }) => (
               <input
                 data-testid="age"
-                value={fieldProps.value ?? ''}
-                onChange={(e) => fieldProps.onChange?.(Number(e.target.value))}
+                value={value ?? ""}
+                onChange={(e) => onChange?.(Number(e.target.value))}
               />
             ),
           },
@@ -531,25 +531,25 @@ describe('BlueForm – section', () => {
       </BlueForm>,
     );
 
-    fireEvent.change(screen.getByTestId('name'), {
-      target: { value: 'John' },
+    fireEvent.change(screen.getByTestId("name"), {
+      target: { value: "John" },
     });
-    fireEvent.change(screen.getByTestId('age'), {
-      target: { value: '30' },
+    fireEvent.change(screen.getByTestId("age"), {
+      target: { value: "30" },
     });
 
-    fireEvent.submit(screen.getByText('Submit').closest('form')!);
+    fireEvent.submit(screen.getByText("Submit").closest("form")!);
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
-        { user: { name: 'John', age: 30 } },
+        { user: { name: "John", age: 30 } },
         expect.any(Object),
         expect.anything(),
       );
     });
   });
 
-  it('allows flat path and nested section config to coexist', async () => {
+  it("allows flat path and nested section config to coexist", async () => {
     const onSubmit = vi.fn();
 
     render(
@@ -560,30 +560,30 @@ describe('BlueForm – section', () => {
         )}
         config={{
           profile: {
-            type: 'section',
+            type: "section",
             props: {
               nested: true,
               config: {
                 email: {
-                  type: 'inline',
-                  render: ({ fieldProps }) => (
+                  type: "inline",
+                  render: ({ value, onChange }) => (
                     <input
                       data-testid="email"
-                      value={fieldProps.value ?? ''}
-                      onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                      value={value ?? ""}
+                      onChange={(e) => onChange?.(e.target.value)}
                     />
                   ),
                 },
               },
             },
           },
-          'profile.name': {
-            type: 'inline',
-            render: ({ fieldProps }) => (
+          "profile.name": {
+            type: "inline",
+            render: ({ value, onChange }) => (
               <input
                 data-testid="name"
-                value={fieldProps.value ?? ''}
-                onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
               />
             ),
           },
@@ -593,25 +593,25 @@ describe('BlueForm – section', () => {
       </BlueForm>,
     );
 
-    fireEvent.change(screen.getByTestId('email'), {
-      target: { value: 'a@b.com' },
+    fireEvent.change(screen.getByTestId("email"), {
+      target: { value: "a@b.com" },
     });
-    fireEvent.change(screen.getByTestId('name'), {
-      target: { value: 'Alice' },
+    fireEvent.change(screen.getByTestId("name"), {
+      target: { value: "Alice" },
     });
 
-    fireEvent.submit(screen.getByText('Submit').closest('form')!);
+    fireEvent.submit(screen.getByText("Submit").closest("form")!);
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
-        { profile: { email: 'a@b.com', name: 'Alice' } },
+        { profile: { email: "a@b.com", name: "Alice" } },
         expect.any(Object),
         expect.anything(),
       );
     });
   });
 
-  it('handles deep flat paths across multiple nested sections', async () => {
+  it("handles deep flat paths across multiple nested sections", async () => {
     const onSubmit = vi.fn();
 
     render(
@@ -622,24 +622,22 @@ describe('BlueForm – section', () => {
         )}
         config={{
           settings: {
-            type: 'section',
+            type: "section",
             props: {
               nested: true,
               config: {
                 theme: {
-                  type: 'section',
+                  type: "section",
                   props: {
                     nested: true,
                     config: {
                       mode: {
-                        type: 'inline',
-                        render: ({ fieldProps }) => (
+                        type: "inline",
+                        render: ({ value, onChange }) => (
                           <input
                             data-testid="mode"
-                            value={fieldProps.value ?? ''}
-                            onChange={(e) =>
-                              fieldProps.onChange?.(e.target.value)
-                            }
+                            value={value ?? ""}
+                            onChange={(e) => onChange?.(e.target.value)}
                           />
                         ),
                       },
@@ -649,13 +647,13 @@ describe('BlueForm – section', () => {
               },
             },
           },
-          'settings.theme.color': {
-            type: 'inline',
-            render: ({ fieldProps }) => (
+          "settings.theme.color": {
+            type: "inline",
+            render: ({ value, onChange }) => (
               <input
                 data-testid="color"
-                value={fieldProps.value ?? ''}
-                onChange={(e) => fieldProps.onChange?.(e.target.value)}
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
               />
             ),
           },
@@ -665,18 +663,18 @@ describe('BlueForm – section', () => {
       </BlueForm>,
     );
 
-    fireEvent.change(screen.getByTestId('mode'), {
-      target: { value: 'dark' },
+    fireEvent.change(screen.getByTestId("mode"), {
+      target: { value: "dark" },
     });
-    fireEvent.change(screen.getByTestId('color'), {
-      target: { value: 'blue' },
+    fireEvent.change(screen.getByTestId("color"), {
+      target: { value: "blue" },
     });
 
-    fireEvent.submit(screen.getByText('Submit').closest('form')!);
+    fireEvent.submit(screen.getByText("Submit").closest("form")!);
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
-        { settings: { theme: { mode: 'dark', color: 'blue' } } },
+        { settings: { theme: { mode: "dark", color: "blue" } } },
         expect.any(Object),
         expect.anything(),
       );
@@ -684,8 +682,8 @@ describe('BlueForm – section', () => {
   });
 });
 
-describe('BlueForm – section inside array', () => {
-  it('nests fields under section key inside an array when nested=true', async () => {
+describe("BlueForm – section inside array", () => {
+  it("nests fields under section key inside an array when nested=true", async () => {
     let submitted: any = null;
 
     renderWithBlueFormProvider(
@@ -694,7 +692,7 @@ describe('BlueForm – section inside array', () => {
         onSubmit={(v) => (submitted = v)}
         config={{
           users: {
-            type: 'array',
+            type: "array",
             render: ({ children }) => {
               const { append } = useArrayField();
               // Append một object có data ban đầu để test
@@ -705,7 +703,7 @@ describe('BlueForm – section inside array', () => {
                     type="button"
                     onClick={() =>
                       append({
-                        profile: { name: 'New User' },
+                        profile: { name: "New User" },
                       })
                     }
                   >
@@ -717,11 +715,11 @@ describe('BlueForm – section inside array', () => {
             props: {
               config: {
                 profile: {
-                  type: 'section',
+                  type: "section",
                   props: {
                     nested: true,
                     config: {
-                      name: { type: 'hidden' },
+                      name: { type: "hidden" },
                     },
                   },
                 },
@@ -734,18 +732,18 @@ describe('BlueForm – section inside array', () => {
     );
 
     // Click Add để tạo row
-    fireEvent.click(screen.getByText('Add'));
+    fireEvent.click(screen.getByText("Add"));
     // Submit form
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(submitted).toEqual({
-        users: [{ profile: { name: 'New User' } }],
+        users: [{ profile: { name: "New User" } }],
       });
     });
   });
 
-  it('keeps fields flat inside an array when section has nested=false', async () => {
+  it("keeps fields flat inside an array when section has nested=false", async () => {
     let submitted: any = null;
 
     renderWithBlueFormProvider(
@@ -754,13 +752,13 @@ describe('BlueForm – section inside array', () => {
         onSubmit={(v) => (submitted = v)}
         config={{
           items: {
-            type: 'array',
+            type: "array",
             render: ({ children }) => {
               const { append } = useArrayField();
               return (
                 <div>
                   {children}
-                  <button type="button" onClick={() => append({ sku: 'ABC' })}>
+                  <button type="button" onClick={() => append({ sku: "ABC" })}>
                     Add Item
                   </button>
                 </div>
@@ -769,11 +767,11 @@ describe('BlueForm – section inside array', () => {
             props: {
               config: {
                 metadata: {
-                  type: 'section',
+                  type: "section",
                   props: {
                     nested: false,
                     config: {
-                      sku: { type: 'hidden' },
+                      sku: { type: "hidden" },
                     },
                   },
                 },
@@ -785,17 +783,17 @@ describe('BlueForm – section inside array', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Add Item'));
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Add Item"));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(submitted).toEqual({
-        items: [{ sku: 'ABC' }], // Không có key 'metadata' vì nested=false
+        items: [{ sku: "ABC" }], // Không có key 'metadata' vì nested=false
       });
     });
   });
 
-  it('supports array nested inside a section', async () => {
+  it("supports array nested inside a section", async () => {
     let submitted: any = null;
 
     renderWithBlueFormProvider(
@@ -804,18 +802,18 @@ describe('BlueForm – section inside array', () => {
         onSubmit={(v) => (submitted = v)}
         config={{
           group: {
-            type: 'section',
+            type: "section",
             props: {
               nested: true,
               config: {
                 tags: {
-                  type: 'array',
+                  type: "array",
                   render: ({ children }) => {
                     const { append } = useArrayField();
                     return (
                       <div>
                         {children}
-                        <button type="button" onClick={() => append('react')}>
+                        <button type="button" onClick={() => append("react")}>
                           Add Tag
                         </button>
                       </div>
@@ -824,7 +822,7 @@ describe('BlueForm – section inside array', () => {
                   // Array đơn giản (primitive)
                   props: {
                     config: {
-                      $el: { type: 'hidden' },
+                      $el: { type: "hidden" },
                     },
                   },
                 },
@@ -836,8 +834,8 @@ describe('BlueForm – section inside array', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Add Tag'));
-    fireEvent.click(screen.getByText('Submit'));
+    fireEvent.click(screen.getByText("Add Tag"));
+    fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
       expect(submitted).toEqual({

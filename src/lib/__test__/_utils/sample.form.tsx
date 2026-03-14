@@ -1,5 +1,5 @@
-import InputField from "@/__stories__/components/with-native/InputField"
-import { defineMapping, setupForm } from "@/components/form/setup"
+import InputField from "@/__stories__/components/InputField";
+import { defineMapping, setupForm } from "@/components/form/setup";
 
 export const [Form, defineConfig] = setupForm({
   fieldMapping: defineMapping({
@@ -10,7 +10,7 @@ export const [Form, defineConfig] = setupForm({
       {children}
     </form>
   ),
-})
+});
 
 export const loginFormConfig = defineConfig<LoginData>({
   username: {
@@ -22,9 +22,9 @@ export const loginFormConfig = defineConfig<LoginData>({
       type: "password",
     },
   },
-})
+});
 
 export type LoginData = {
-  username: string
-  password: string
-}
+  username: string;
+  password: string;
+};
