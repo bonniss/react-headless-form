@@ -7,24 +7,24 @@
  * - Do not render visible UI
  */
 
-import InputField from "@/__stories__/components/with-native/InputField"
-import { defineMapping, setupForm } from "@/components/form/setup"
-import { Story, StoryDefault } from "@ladle/react"
+import InputField from "@/__stories__/components/InputField";
+import { defineMapping, setupForm } from "@/components/form/setup";
+import { Story, StoryDefault } from "@ladle/react";
 
 interface HiddenForm {
-  name: string
-  token: string
+  name: string;
+  token: string;
 }
 
 export default {
   title: "Core",
-} satisfies StoryDefault
+} satisfies StoryDefault;
 
 const [Form] = setupForm({
   fieldMapping: defineMapping({
     text: InputField,
   }),
-})
+});
 
 export const HiddenField: Story = () => {
   return (
@@ -51,7 +51,7 @@ export const HiddenField: Story = () => {
     >
       <button type="submit">Submit</button>
     </Form>
-  )
-}
+  );
+};
 
-HiddenField.storyName = "Builtin types: Hidden Field"
+HiddenField.storyName = "Builtin types: Hidden Field";

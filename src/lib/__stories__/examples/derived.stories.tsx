@@ -8,38 +8,38 @@
  * The form engine remains unaware of derived logic.
  */
 
-import InputField from "@/__stories__/components/with-native/InputField"
-import { defineMapping, setupForm } from "@/components/form/setup"
-import { Story, StoryDefault } from "@ladle/react"
-import { useFormContext } from "react-hook-form"
+import InputField from "@/__stories__/components/InputField";
+import { defineMapping, setupForm } from "@/components/form/setup";
+import { Story, StoryDefault } from "@ladle/react";
+import { useFormContext } from "react-hook-form";
 
 interface UserForm {
-  firstName: string
-  lastName: string
-  fullNamePreview: string
+  firstName: string;
+  lastName: string;
+  fullNamePreview: string;
 }
 
 export default {
   title: "Mixed",
-} satisfies StoryDefault
+} satisfies StoryDefault;
 
 const [Form] = setupForm({
   fieldMapping: defineMapping({
     text: InputField,
   }),
-})
+});
 
 /**
  * A render-only derived field.
  * It reads form values directly from react-hook-form.
  */
 const FullNamePreview = () => {
-  const { watch } = useFormContext<UserForm>()
+  const { watch } = useFormContext<UserForm>();
 
-  const firstName = watch("firstName")
-  const lastName = watch("lastName")
+  const firstName = watch("firstName");
+  const lastName = watch("lastName");
 
-  const fullName = [firstName, lastName].filter(Boolean).join(" ")
+  const fullName = [firstName, lastName].filter(Boolean).join(" ");
 
   return (
     <div
@@ -51,8 +51,8 @@ const FullNamePreview = () => {
     >
       <strong>Full name:</strong> {fullName || <em>(empty)</em>}
     </div>
-  )
-}
+  );
+};
 
 export const DerivedFields: Story = () => {
   return (
@@ -61,7 +61,7 @@ export const DerivedFields: Story = () => {
         <form onSubmit={onSubmit}>{children}</form>
       )}
       onSubmit={(data) => {
-        alert(JSON.stringify(data, null, 2))
+        alert(JSON.stringify(data, null, 2));
       }}
       config={{
         firstName: {
@@ -85,5 +85,5 @@ export const DerivedFields: Story = () => {
     >
       <button type="submit">Submit</button>
     </Form>
-  )
-}
+  );
+};

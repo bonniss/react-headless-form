@@ -1,25 +1,23 @@
-import { useField } from "@/components"
-import { FunctionComponent } from "react"
+import { useField } from "@/components";
+import { FunctionComponent } from "react";
 
 interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 const InputField: FunctionComponent<InputFieldProps> = (props) => {
   const {
-    fieldProps: {
-      id,
-      value,
-      onChange,
-      errorMessage,
-      label,
-      description,
-      required,
-      disabled,
-      readOnly,
-      visible,
-    },
-  } = useField()
+    id,
+    value,
+    onChange,
+    errorMessage,
+    label,
+    description,
+    required,
+    disabled,
+    readOnly,
+    visible,
+  } = useField();
 
-  if (!visible) return null
+  if (!visible) return null;
 
   return (
     <div id={id}>
@@ -39,7 +37,7 @@ const InputField: FunctionComponent<InputFieldProps> = (props) => {
       {description && <div className="field-description">{description}</div>}
       {errorMessage && <div className="field-error">{errorMessage}</div>}
     </div>
-  )
-}
+  );
+};
 
-export default InputField
+export default InputField;
