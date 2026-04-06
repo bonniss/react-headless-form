@@ -208,6 +208,64 @@ describe("conditional watch — disabled behavior", () => {
       );
     });
   });
+
+  it("re-enables field when disabled() changes back to false", async () => {
+    render(
+      <BlueForm
+        renderRoot={TestRoot}
+        fieldMapping={{
+          text: () => {
+            const { disabled, value, onChange } = useField();
+            return (
+              <input
+                data-testid="target"
+                disabled={disabled}
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
+              />
+            );
+          },
+        }}
+        config={{
+          lock: {
+            type: "inline",
+            render: ({ value, onChange }) => (
+              <input
+                data-testid="lock"
+                type="checkbox"
+                checked={Boolean(value)}
+                onChange={(e) => onChange?.(e.target.checked)}
+              />
+            ),
+          },
+          name: {
+            type: "text",
+            disabled: (values: any) => Boolean(values.lock),
+          },
+        }}
+      />,
+    );
+
+    expect((screen.getByTestId("target") as HTMLInputElement).disabled).toBe(
+      false,
+    );
+
+    fireEvent.click(screen.getByTestId("lock"));
+
+    await waitFor(() => {
+      expect((screen.getByTestId("target") as HTMLInputElement).disabled).toBe(
+        true,
+      );
+    });
+
+    fireEvent.click(screen.getByTestId("lock"));
+
+    await waitFor(() => {
+      expect((screen.getByTestId("target") as HTMLInputElement).disabled).toBe(
+        false,
+      );
+    });
+  });
 });
 
 // ---------------------------------------------------------------------------

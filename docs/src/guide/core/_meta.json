@@ -11,6 +11,7 @@
     "type": "dir",
     "name": "field-authoring"
   },
+  "conditional-rendering",
   "type-safety",
   "i18n",
   "schema-validation",

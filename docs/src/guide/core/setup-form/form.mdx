@@ -144,7 +144,7 @@ Each entry in `config` describes a single field. All fields share a common set o
 | `rules` | `ValidationRules` | RHF validation rules — disabled when `formOptions.resolver` is provided |
 | `props` | `ComponentProps<...>` | Extra props passed to the field component — typed against the component's prop interface |
 | `render` | `RenderFn` | Per-field render override — see [render prop](../field-authoring/render.mdx) |
-| `visible` | `boolean \| (values) => boolean` | Controls field visibility — affects rendering only, value stays in form state |
+| `visible` | `boolean \| (values) => boolean` | Controls field visibility — hidden fields unmount, so state retention depends on whether the field ever mounted and on RHF `shouldUnregister` |
 | `disabled` | `boolean \| (values) => boolean` | Controls disabled state — disabled fields are excluded from the submit payload |
 | `readOnly` | `boolean` | Field-level read-only state — merged with form-level `readOnly` |
 
@@ -162,6 +162,8 @@ confirm: {
   disabled: (values) => !values.password,
 },
 ```
+
+For the full runtime behavior — including hidden-from-start fields, `defaultValue`, and `shouldUnregister` — see [conditional rendering](../conditional-rendering.mdx).
 
 ### `rules`
 

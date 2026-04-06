@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Fragment, useMemo } from "react";
-import { type FieldValues, useFormContext } from "react-hook-form";
+import { Fragment, useMemo } from "react"
+import { type FieldValues, useFormContext } from "react-hook-form"
 
 import type {
   BlueFormProps,
@@ -9,22 +9,22 @@ import type {
   FieldResolvedProps,
   FormFieldConfig,
   FormSectionProps,
-} from "@/types";
+} from "@/types"
 
-import { resolveRules } from "@/components/helper/resolve-rules";
-import { RenderFn } from "@/types/render";
-import { ArrayRenderSlot } from "../field";
-import HiddenField from "../field/HiddenField";
-import InlineField from "../field/InlineField";
-import { FieldArrayProvider } from "../provider";
-import { FieldProvider } from "../provider/FieldProvider";
-import { useBlueFormInternal } from "./BlueFormInternalProvider";
+import { resolveRules } from "@/components/helper/resolve-rules"
+import type { RenderFn } from "@/types/render"
+import { ArrayRenderSlot } from "../field"
+import HiddenField from "../field/HiddenField"
+import InlineField from "../field/InlineField"
+import { FieldArrayProvider } from "../provider"
+import { FieldProvider } from "../provider/FieldProvider"
+import { useBlueFormInternal } from "./BlueFormInternalProvider"
 
 interface BlueFormEngineProps<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap,
 > extends Pick<BlueFormProps<TModel, TComponentMap>, "config"> {
-  namespace?: string;
+  namespace?: string
 }
 
 /**
@@ -43,7 +43,7 @@ function hasConditionalFields(config: Record<string, any>): boolean {
     (field) =>
       typeof field?.visible === "function" ||
       typeof field?.disabled === "function",
-  );
+  )
 }
 
 function BlueFormEngine<
@@ -54,15 +54,15 @@ function BlueFormEngine<
     i18nConfig: { t, validationResolver },
     fieldMapping,
     readOnly: isFormReadOnly,
-  } = useBlueFormInternal();
-  const { watch } = useFormContext();
+  } = useBlueFormInternal()
+  const { watch } = useFormContext()
 
   // Determine whether any field at this config level uses conditional logic.
   // Memoized because config is typically a stable object reference (defined
   // outside the component tree), and the scan itself is cheap O(n).
   // Even when config is unstable, this avoids the watch() subscription cost
   // for the common case where no conditional fields exist.
-  const needsValues = useMemo(() => hasConditionalFields(config), [config]);
+  const needsValues = useMemo(() => hasConditionalFields(config), [config])
 
   // Only call watch() — and therefore only subscribe to form state changes —
   // when at least one field at this level needs it.
@@ -76,14 +76,14 @@ function BlueFormEngine<
   //   - Behavior is identical to before: full form subscription
   //   - Future optimization: scope to specific field paths via useWatch({ name: deps })
   //     once visibleDeps/disabledDeps API is added (roadmap P1 #5)
-  const values = (needsValues ? watch() : {}) as Partial<TModel>;
+  const values = (needsValues ? watch() : {}) as Partial<TModel>
 
   const body = (
     <>
       {Object.entries(config).map(([key, fieldConfig], index) => {
-        let component = null;
-        const field = fieldConfig as FormFieldConfig<TModel, TComponentMap>;
-        const type = field.type as string;
+        let component = null
+        const field = fieldConfig as FormFieldConfig<TModel, TComponentMap>
+        const type = field.type as string
         const {
           props: componentProps,
           render,
@@ -94,24 +94,29 @@ function BlueFormEngine<
           rules = {},
           description,
           readOnly: isFieldReadOnly,
-        } = field;
+        } = field
 
-        const path = (namespace ? `${namespace}.${key}` : key) as string;
+        const path = (namespace ? `${namespace}.${key}` : key) as string
 
-        const translatedLabel = t(label);
-        const translatedDescription = t(description);
+        const translatedLabel = t(label)
+        const translatedDescription = t(description)
 
         const isVisible =
-          typeof visible === "function" ? visible(values) : visible !== false;
+          typeof visible === "function" ? visible(values) : visible !== false
+
+        if (!isVisible) {
+          return <Fragment key={path} />
+        }
+
         const isDisabled =
-          typeof disabled === "function" ? disabled(values) : !!disabled;
-        const isReadonly = Boolean(isFormReadOnly ?? isFieldReadOnly);
-        const isRequired = Boolean(rules?.required);
+          typeof disabled === "function" ? disabled(values) : !!disabled
+        const isReadonly = Boolean(isFormReadOnly ?? isFieldReadOnly)
+        const isRequired = Boolean(rules?.required)
         const resolvedRules = resolveRules(
           rules,
           validationResolver,
           translatedLabel,
-        );
+        )
 
         const resolvedProps = {
           id: path,
@@ -127,15 +132,15 @@ function BlueFormEngine<
           required: isRequired,
           rules: resolvedRules,
           defaultValue,
-        } as FieldResolvedProps;
+        } as FieldResolvedProps
 
         switch (type as CoreFieldType) {
           case "array": {
-            const ArrayField = fieldMapping?.["array"];
+            const ArrayField = fieldMapping?.["array"]
             if (!ArrayField && !render) {
               throw new Error(
                 `[react-headless-form] Array field "${resolvedProps.name}" requires either a fieldMapping["array"] component or a render() function in its config.`,
-              );
+              )
             }
 
             component = (
@@ -148,50 +153,50 @@ function BlueFormEngine<
                   <ArrayRenderSlot render={render as RenderFn<"array">} />
                 )}
               </FieldArrayProvider>
-            );
+            )
 
-            break;
+            break
           }
 
           case "section": {
             const sectionProps = componentProps as FormSectionProps<
               TModel,
               TComponentMap
-            >;
-            let children = null;
+            >
+            let children = null
 
-            const nested = sectionProps?.nested ?? false;
-            const effectiveNamespace = nested ? path : namespace;
+            const nested = sectionProps?.nested ?? false
+            const effectiveNamespace = nested ? path : namespace
             const sectionResolvedProps = {
               ...resolvedProps,
               namespace: effectiveNamespace,
-            } as FieldResolvedProps;
+            } as FieldResolvedProps
 
-            const contentConfig = sectionProps?.config;
-            const SectionComponent = sectionProps?.component;
+            const contentConfig = sectionProps?.config
+            const SectionComponent = sectionProps?.component
 
             if (SectionComponent) {
               if (contentConfig) {
                 console.warn(
                   `[react-headless-form] Section "${path}" has both "component" and "config". ` +
                     `"component" will be used and "config" will be ignored.`,
-                );
+                )
               }
-              children = <SectionComponent />;
+              children = <SectionComponent />
             } else if (contentConfig) {
               children = (
                 <BlueFormEngine
                   config={contentConfig}
                   namespace={effectiveNamespace}
                 />
-              );
+              )
             }
 
             const node =
               (render as RenderFn<"section">)?.({
                 ...sectionResolvedProps,
                 children,
-              }) ?? children;
+              }) ?? children
 
             // allow deeply access to fieldProps for form section
             component = (
@@ -200,33 +205,33 @@ function BlueFormEngine<
               >
                 {node}
               </FieldProvider>
-            );
+            )
 
-            break;
+            break
           }
 
           default: {
-            let node: any;
+            let node: any
             if ((type as CoreFieldType) === "hidden") {
-              node = <HiddenField {...componentProps} />;
+              node = <HiddenField {...componentProps} />
             } else if ((type as CoreFieldType) === "inline") {
-              node = <InlineField {...componentProps} />;
+              node = <InlineField {...componentProps} />
             } else {
-              const Component = fieldMapping?.[type];
+              const Component = fieldMapping?.[type]
 
               if (!Component) {
                 throw new Error(
                   `[react-headless-form] No renderer found for field **${path}** with type **${type}**`,
-                );
+                )
               }
 
-              const element = <Component {...componentProps} />;
+              const element = <Component {...componentProps} />
               node = render
                 ? (render as RenderFn<string>)({
                     ...resolvedProps,
                     self: element,
                   })
-                : element;
+                : element
             }
 
             component = (
@@ -235,17 +240,17 @@ function BlueFormEngine<
               >
                 {node}
               </FieldProvider>
-            );
-            break;
+            )
+            break
           }
         }
 
-        return <Fragment key={path}>{component}</Fragment>;
+        return <Fragment key={path}>{component}</Fragment>
       })}
     </>
-  );
+  )
 
-  return body;
+  return body
 }
 
-export default BlueFormEngine;
+export default BlueFormEngine
