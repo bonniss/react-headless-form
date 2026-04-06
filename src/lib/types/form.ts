@@ -14,6 +14,7 @@ import type {
   SubmitHandler,
   UseFormProps,
   UseFormReturn,
+  Path,
 } from 'react-hook-form';
 import type { ComponentMap, FormConfig } from './config';
 
@@ -178,7 +179,7 @@ export interface BlueFormProps<
    * Called when a single field value changes.
    */
   onFieldChange?: (
-    name: string,
+    name: Path<TModel>,
     value: any,
     form: UseFormReturn<TModel>,
   ) => void;
