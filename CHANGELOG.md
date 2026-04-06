@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.2](https://github.com/bonniss/react-headless-form/compare/v0.11.1...v0.11.2) (2026-04-06)
+
+
+### Bug Fixes
+
+* **docs:** bump react-headless-form to latest for docs site ([2d0f2a3](https://github.com/bonniss/react-headless-form/commit/2d0f2a3e500d3c702812bb17db3badcc66ae68cf))
+
 ## [0.11.1](https://github.com/bonniss/react-headless-form/compare/v0.11.0...v0.11.1) (2026-04-06)
 
 
