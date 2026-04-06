@@ -4,5 +4,6 @@
   "nested-form",
   "array-form",
   "conditional-form",
+  "computed-field",
   "wizard-form"
 ]
