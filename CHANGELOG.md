@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1](https://github.com/bonniss/react-headless-form/compare/v0.11.0...v0.11.1) (2026-04-06)
+
+
+### Bug Fixes
+
+* **docs:** align examples with visible unmount behavior ([69c1421](https://github.com/bonniss/react-headless-form/commit/69c14213c16788ff0564fba5459595da32e840c4))
+
 ## [0.11.0](https://github.com/bonniss/react-headless-form/compare/v0.10.2...v0.11.0) (2026-03-14)
 
 
