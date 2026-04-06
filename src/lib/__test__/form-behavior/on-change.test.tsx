@@ -23,7 +23,7 @@ describe("BlueForm – change behavior", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        onFieldChange={(name, value) => {
+        onFieldChange={({ name, value }) => {
           calls.push({ name, value });
         }}
         config={{
@@ -62,7 +62,7 @@ describe("BlueForm – change behavior", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        onFieldChange={(name, value) => {
+        onFieldChange={({ name, value }) => {
           calls.push({ name, value });
         }}
         fieldMapping={{
@@ -112,7 +112,7 @@ describe("BlueForm – change behavior", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        onFieldChange={(name, value) => {
+        onFieldChange={({ name, value }) => {
           calls.push({ name, value });
         }}
         config={{
@@ -152,19 +152,21 @@ describe("BlueForm – change behavior", () => {
     });
   });
 
-  it("supports object-style onFieldChange handlers by field path", async () => {
+  it("passes form snapshot and write helpers to onFieldChange", async () => {
     const calls: any[] = [];
 
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
-        onFieldChange={{
-          title: (value) => {
-            calls.push({ name: "title", value });
-          },
-          slug: (value) => {
-            calls.push({ name: "slug", value });
-          },
+        onFieldChange={({ name, value, values, setValue, trigger, formState }) => {
+          calls.push({
+            name,
+            value,
+            values,
+            hasSetValue: typeof setValue === "function",
+            hasTrigger: typeof trigger === "function",
+            hasFormState: typeof formState === "object",
+          });
         }}
         config={{
           title: {
@@ -181,78 +183,23 @@ describe("BlueForm – change behavior", () => {
               </>
             ),
           },
-          slug: {
-            type: "inline",
-            render: ({ onChange }) => (
-              <button
-                type="button"
-                data-testid="slug"
-                onClick={() => onChange?.("hello-world")}
-              >
-                Change slug
-              </button>
-            ),
-          },
         }}
       />,
     );
 
     fireEvent.click(screen.getByTestId("title"));
-    fireEvent.click(screen.getByTestId("slug"));
 
     await waitFor(() => {
       expect(calls).toEqual([
-        { name: "title", value: "Hello World" },
-        { name: "slug", value: "hello-world" },
+        {
+          name: "title",
+          value: "Hello World",
+          values: { title: "Hello World" },
+          hasSetValue: true,
+          hasTrigger: true,
+          hasFormState: true,
+        },
       ]);
-    });
-  });
-
-  it("ignores object-style onFieldChange when changed field has no matching handler", async () => {
-    const calls: any[] = [];
-
-    renderWithBlueFormProvider(
-      <BlueForm
-        renderRoot={TestRoot}
-        onFieldChange={{
-          title: (value) => {
-            calls.push({ name: "title", value });
-          },
-        }}
-        config={{
-          title: {
-            type: "inline",
-            render: ({ onChange }) => (
-              <button
-                type="button"
-                data-testid="title"
-                onClick={() => onChange?.("Hello World")}
-              >
-                Change title
-              </button>
-            ),
-          },
-          slug: {
-            type: "inline",
-            render: ({ onChange }) => (
-              <button
-                type="button"
-                data-testid="slug"
-                onClick={() => onChange?.("hello-world")}
-              >
-                Change slug
-              </button>
-            ),
-          },
-        }}
-      />,
-    );
-
-    fireEvent.click(screen.getByTestId("slug"));
-    fireEvent.click(screen.getByTestId("title"));
-
-    await waitFor(() => {
-      expect(calls).toEqual([{ name: "title", value: "Hello World" }]);
     });
   });
 

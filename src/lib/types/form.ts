@@ -11,10 +11,12 @@ import type {
   FieldErrors,
   FieldValues,
   PathValue,
+  UseFormSetValue,
   SubmitErrorHandler,
   SubmitHandler,
   UseFormProps,
   UseFormReturn,
+  UseFormTrigger,
   Path,
 } from 'react-hook-form';
 import type { ComponentMap, FormConfig } from './config';
@@ -55,25 +57,19 @@ export type RootRenderer<TModel extends FieldValues = FieldValues> = (
   args: RootRendererArgs<TModel>,
 ) => ReactNode;
 
-export type FieldChangeHandler<
-  TModel extends FieldValues,
-  TName extends Path<TModel>,
-> = (
-  value: PathValue<TModel, TName>,
+export type FieldChangeContext<TModel extends FieldValues> = {
+  name: Path<TModel>;
+  value: PathValue<TModel, Path<TModel>>;
+  values: TModel;
+  setValue: UseFormSetValue<TModel>;
+  trigger: UseFormTrigger<TModel>;
+  formState: UseFormReturn<TModel>['formState'];
+};
+
+export type OnFieldChange<TModel extends FieldValues> = (
+  context: FieldChangeContext<TModel>,
   form: UseFormReturn<TModel>,
 ) => void;
-
-export type FieldChangeHandlerMap<TModel extends FieldValues> = Partial<{
-  [K in Path<TModel>]: FieldChangeHandler<TModel, K>;
-}>;
-
-export type OnFieldChange<TModel extends FieldValues> =
-  | ((
-      name: Path<TModel>,
-      value: PathValue<TModel, Path<TModel>>,
-      form: UseFormReturn<TModel>,
-    ) => void)
-  | FieldChangeHandlerMap<TModel>;
 
 export type BlueFormRef<TModel = FieldValues> = UseFormReturn<
   any,

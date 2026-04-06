@@ -1,8 +1,7 @@
 import type { ComponentMap } from '@/types';
 import {
   ExposedFormMethods,
-  FieldChangeHandlerMap,
-  OnFieldChange,
+  FieldChangeContext,
   RootRendererArgs,
 } from '@/types/form';
 import debounce from 'just-debounce-it';
@@ -11,30 +10,12 @@ import {
   type Path,
   type FieldValues,
   type SubmitHandler,
-  type UseFormReturn,
   type WatchObserver,
   get as getProperty,
   useFormContext,
 } from 'react-hook-form';
 import BlueFormEngine from './BlueFormEngine';
 import { useBlueFormInternal } from './BlueFormInternalProvider';
-
-function emitFieldChange<TModel extends FieldValues>(
-  onFieldChange: OnFieldChange<TModel> | undefined,
-  name: Path<TModel>,
-  value: unknown,
-  form: UseFormReturn<TModel>,
-) {
-  if (!onFieldChange) return;
-
-  if (typeof onFieldChange === 'function') {
-    onFieldChange(name, value as any, form);
-    return;
-  }
-
-  const fieldHandler = (onFieldChange as FieldChangeHandlerMap<TModel>)[name];
-  fieldHandler?.(value as never, form);
-}
 
 export function BlueFormContent<
   TModel extends FieldValues,
@@ -61,12 +42,16 @@ export function BlueFormContent<
     (value, { name }) => {
       if (name && onFieldChange) {
         const next = getProperty(value, name);
-        emitFieldChange(
-          onFieldChange as OnFieldChange<TModel>,
-          name as Path<TModel>,
-          next,
-          form,
-        );
+        const context = {
+          name: name as Path<TModel>,
+          value: next as FieldChangeContext<TModel>['value'],
+          values: value as TModel,
+          setValue: form.setValue,
+          trigger: form.trigger,
+          formState: form.formState,
+        } as FieldChangeContext<TModel>;
+
+        onFieldChange(context, form);
       }
       onFormChange?.(value as TModel, form);
     },
