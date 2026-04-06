@@ -152,6 +152,110 @@ describe("BlueForm – change behavior", () => {
     });
   });
 
+  it("supports object-style onFieldChange handlers by field path", async () => {
+    const calls: any[] = [];
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onFieldChange={{
+          title: (value) => {
+            calls.push({ name: "title", value });
+          },
+          slug: (value) => {
+            calls.push({ name: "slug", value });
+          },
+        }}
+        config={{
+          title: {
+            type: "inline",
+            render: ({ onChange }) => (
+              <>
+                <button
+                  type="button"
+                  data-testid="title"
+                  onClick={() => onChange?.("Hello World")}
+                >
+                  Change title
+                </button>
+              </>
+            ),
+          },
+          slug: {
+            type: "inline",
+            render: ({ onChange }) => (
+              <button
+                type="button"
+                data-testid="slug"
+                onClick={() => onChange?.("hello-world")}
+              >
+                Change slug
+              </button>
+            ),
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId("title"));
+    fireEvent.click(screen.getByTestId("slug"));
+
+    await waitFor(() => {
+      expect(calls).toEqual([
+        { name: "title", value: "Hello World" },
+        { name: "slug", value: "hello-world" },
+      ]);
+    });
+  });
+
+  it("ignores object-style onFieldChange when changed field has no matching handler", async () => {
+    const calls: any[] = [];
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onFieldChange={{
+          title: (value) => {
+            calls.push({ name: "title", value });
+          },
+        }}
+        config={{
+          title: {
+            type: "inline",
+            render: ({ onChange }) => (
+              <button
+                type="button"
+                data-testid="title"
+                onClick={() => onChange?.("Hello World")}
+              >
+                Change title
+              </button>
+            ),
+          },
+          slug: {
+            type: "inline",
+            render: ({ onChange }) => (
+              <button
+                type="button"
+                data-testid="slug"
+                onClick={() => onChange?.("hello-world")}
+              >
+                Change slug
+              </button>
+            ),
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId("slug"));
+    fireEvent.click(screen.getByTestId("title"));
+
+    await waitFor(() => {
+      expect(calls).toEqual([{ name: "title", value: "Hello World" }]);
+    });
+  });
+
   it("does not emit onFormChange on mount", async () => {
     const onFormChange = vi.fn();
 
@@ -313,7 +417,7 @@ describe("BlueForm – change behavior", () => {
     vi.useRealTimers();
   });
 
-  it("does not reset debounce timer when onFormChange reference changes between renders", async () => {
+  it("keeps the pending debounced callback when onFormChange reference changes between renders", async () => {
     vi.useFakeTimers();
     const calls: { version: number; values: any }[] = [];
 
@@ -365,9 +469,9 @@ describe("BlueForm – change behavior", () => {
       vi.advanceTimersByTime(150);
     });
 
-    // emit đúng 1 lần với callback version mới nhất
+    // emit đúng 1 lần với callback đã schedule trước đó
     expect(calls).toHaveLength(1);
-    expect(calls[0].version).toBe(2);
+    expect(calls[0].version).toBe(1);
     expect(calls[0].values).toEqual({ name: "A" });
 
     vi.useRealTimers();

@@ -10,6 +10,7 @@ import type { BaseSyntheticEvent, ReactNode } from 'react';
 import type {
   FieldErrors,
   FieldValues,
+  PathValue,
   SubmitErrorHandler,
   SubmitHandler,
   UseFormProps,
@@ -53,6 +54,26 @@ export type RootRendererArgs<TModel extends FieldValues = FieldValues> = {
 export type RootRenderer<TModel extends FieldValues = FieldValues> = (
   args: RootRendererArgs<TModel>,
 ) => ReactNode;
+
+export type FieldChangeHandler<
+  TModel extends FieldValues,
+  TName extends Path<TModel>,
+> = (
+  value: PathValue<TModel, TName>,
+  form: UseFormReturn<TModel>,
+) => void;
+
+export type FieldChangeHandlerMap<TModel extends FieldValues> = Partial<{
+  [K in Path<TModel>]: FieldChangeHandler<TModel, K>;
+}>;
+
+export type OnFieldChange<TModel extends FieldValues> =
+  | ((
+      name: Path<TModel>,
+      value: PathValue<TModel, Path<TModel>>,
+      form: UseFormReturn<TModel>,
+    ) => void)
+  | FieldChangeHandlerMap<TModel>;
 
 export type BlueFormRef<TModel = FieldValues> = UseFormReturn<
   any,
@@ -178,11 +199,7 @@ export interface BlueFormProps<
   /**
    * Called when a single field value changes.
    */
-  onFieldChange?: (
-    name: Path<TModel>,
-    value: any,
-    form: UseFormReturn<TModel>,
-  ) => void;
+  onFieldChange?: OnFieldChange<TModel>;
 
   /**
    * Called whenever the entire form state changes.

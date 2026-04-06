@@ -1,16 +1,40 @@
 import type { ComponentMap } from '@/types';
-import { ExposedFormMethods, RootRendererArgs } from '@/types/form';
-import debounce from 'just-debounce-it';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
+  ExposedFormMethods,
+  FieldChangeHandlerMap,
+  OnFieldChange,
+  RootRendererArgs,
+} from '@/types/form';
+import debounce from 'just-debounce-it';
+import { useCallback, useEffect, useMemo } from 'react';
+import {
+  type Path,
   type FieldValues,
   type SubmitHandler,
+  type UseFormReturn,
   type WatchObserver,
   get as getProperty,
   useFormContext,
 } from 'react-hook-form';
 import BlueFormEngine from './BlueFormEngine';
 import { useBlueFormInternal } from './BlueFormInternalProvider';
+
+function emitFieldChange<TModel extends FieldValues>(
+  onFieldChange: OnFieldChange<TModel> | undefined,
+  name: Path<TModel>,
+  value: unknown,
+  form: UseFormReturn<TModel>,
+) {
+  if (!onFieldChange) return;
+
+  if (typeof onFieldChange === 'function') {
+    onFieldChange(name, value as any, form);
+    return;
+  }
+
+  const fieldHandler = (onFieldChange as FieldChangeHandlerMap<TModel>)[name];
+  fieldHandler?.(value as never, form);
+}
 
 export function BlueFormContent<
   TModel extends FieldValues,
@@ -33,19 +57,16 @@ export function BlueFormContent<
     onSubmitError,
   } = useBlueFormInternal();
 
-  // Keep latest callbacks in a ref so the stable observer below
-  // always calls the current version without being a dep itself.
-  const callbacksRef = useRef({ onFieldChange, onFormChange });
-  useEffect(() => {
-    callbacksRef.current = { onFieldChange, onFormChange };
-  });
-
   const observer = useCallback<WatchObserver<TModel>>(
     (value, { name }) => {
-      const { onFieldChange, onFormChange } = callbacksRef.current;
       if (name && onFieldChange) {
         const next = getProperty(value, name);
-        onFieldChange(name, next, form);
+        emitFieldChange(
+          onFieldChange as OnFieldChange<TModel>,
+          name as Path<TModel>,
+          next,
+          form,
+        );
       }
       onFormChange?.(value as TModel, form);
     },
