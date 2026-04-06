@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { BaseSyntheticEvent, PropsWithChildren, ReactNode } from "react";
+import type {
+  TranslateFn,
+  TranslationResolver,
+  ValidationResolver,
+  ValidationTranslationMap,
+} from '@/components/i18n';
+import type { BaseSyntheticEvent, ReactNode } from 'react';
 import type {
   FieldErrors,
   FieldValues,
@@ -8,14 +14,8 @@ import type {
   SubmitHandler,
   UseFormProps,
   UseFormReturn,
-} from "react-hook-form";
-import type {
-  TranslateFn,
-  TranslationResolver,
-  ValidationResolver,
-  ValidationTranslationMap,
-} from "@/components/i18n";
-import type { ComponentMap, FormConfig } from "./config";
+} from 'react-hook-form';
+import type { ComponentMap, FormConfig } from './config';
 
 export type SubmitHandlerWithFormMethods<
   TModel extends FieldValues = FieldValues,
@@ -25,13 +25,26 @@ export type SubmitHandlerWithFormMethods<
   event?: React.BaseSyntheticEvent,
 ) => ReturnType<SubmitHandler<TModel>>;
 
-type RootRendererArgs<TModel = FieldValues> = {
-  formMethods: UseFormReturn;
+export type ExposedFormMethods<TModel extends FieldValues> = Pick<
+  UseFormReturn<TModel>,
+  | 'control'
+  | 'formState'
+  | 'clearErrors'
+  | 'setError'
+  | 'getFieldState'
+  | 'getValues'
+  | 'setFocus'
+  | 'setValue'
+  | 'trigger'
+  | 'reset'
+  | 'resetField'
+>;
+
+export type RootRendererArgs<TModel extends FieldValues = FieldValues> = {
   children: ReactNode;
   onSubmit: (e?: BaseSyntheticEvent) => Promise<void>;
   onError?: (errors: FieldErrors) => void;
-  submit: (raw: TModel) => void;
-};
+} & ExposedFormMethods<TModel>;
 
 /**
  * Custom root wrapper renderer. Useful for replacing the default <form> with any custom structure.
@@ -83,13 +96,13 @@ export type I18nResolvedConfig = {
 // Type hẹp cho setupForm level
 export type BaseFormOptions = Omit<
   UseFormProps,
-  | "resolver"
-  | "defaultValues"
-  | "context"
-  | "errors"
-  | "values"
-  | "resetOptions"
-  | "disabled"
+  | 'resolver'
+  | 'defaultValues'
+  | 'context'
+  | 'errors'
+  | 'values'
+  | 'resetOptions'
+  | 'disabled'
 >;
 
 export interface BlueFormBaseConfig<
@@ -121,10 +134,7 @@ export interface BlueFormBaseConfig<
 export interface BlueFormProps<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap,
->
-  extends
-    Omit<BlueFormBaseConfig<TComponentMap>, "formOptions">,
-    PropsWithChildren {
+> extends Omit<BlueFormBaseConfig<TComponentMap>, 'formOptions'> {
   /**
    * Form field configuration including field type, name, label,Ï props, etc.
    */
@@ -189,4 +199,11 @@ export interface BlueFormProps<
    * Set to 0 or leave undefined to disable debounce.
    */
   debounceMs?: number;
+
+  /**
+   * Custom content to render inside the form. Can be a React node or a render prop function.
+   */
+  children?:
+    | ReactNode
+    | ((formMethods: ExposedFormMethods<TModel>) => ReactNode);
 }

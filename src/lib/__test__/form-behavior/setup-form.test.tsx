@@ -398,3 +398,291 @@ describe("setupForm", () => {
     expect(screen.getByTestId("array")).toBeTruthy();
   });
 });
+
+describe("children as fn", () => {
+  it("renders ReactNode children như cũ (backward compat)", () => {
+    const [Form] = setupForm()
+
+    render(
+      <Form
+        renderRoot={({ children, onSubmit }) => (
+          <form onSubmit={onSubmit}>{children}</form>
+        )}
+        config={{}}
+      >
+        <button type="submit" data-testid="static-btn">Submit</button>
+      </Form>,
+    )
+
+    expect(screen.getByTestId("static-btn")).toBeTruthy()
+  })
+
+  it("children fn nhận đúng ExposedFormMethods và render output", () => {
+    const [Form] = setupForm()
+
+    render(
+      <Form
+        renderRoot={({ children, onSubmit }) => (
+          <form onSubmit={onSubmit}>{children}</form>
+        )}
+        config={{}}
+      >
+        {({ formState, setValue, getValues, trigger, reset, resetField, setError, clearErrors, setFocus, control }) => (
+          <div>
+            {/* verify các methods tồn tại */}
+            {typeof setValue === "function" && <span data-testid="has-setValue" />}
+            {typeof getValues === "function" && <span data-testid="has-getValues" />}
+            {typeof trigger === "function" && <span data-testid="has-trigger" />}
+            {typeof reset === "function" && <span data-testid="has-reset" />}
+            {typeof resetField === "function" && <span data-testid="has-resetField" />}
+            {typeof setError === "function" && <span data-testid="has-setError" />}
+            {typeof clearErrors === "function" && <span data-testid="has-clearErrors" />}
+            {typeof setFocus === "function" && <span data-testid="has-setFocus" />}
+            {control !== undefined && <span data-testid="has-control" />}
+            {formState !== undefined && <span data-testid="has-formState" />}
+            <button type="submit">Submit</button>
+          </div>
+        )}
+      </Form>,
+    )
+
+    expect(screen.getByTestId("has-setValue")).toBeTruthy()
+    expect(screen.getByTestId("has-getValues")).toBeTruthy()
+    expect(screen.getByTestId("has-trigger")).toBeTruthy()
+    expect(screen.getByTestId("has-reset")).toBeTruthy()
+    expect(screen.getByTestId("has-resetField")).toBeTruthy()
+    expect(screen.getByTestId("has-setError")).toBeTruthy()
+    expect(screen.getByTestId("has-clearErrors")).toBeTruthy()
+    expect(screen.getByTestId("has-setFocus")).toBeTruthy()
+    expect(screen.getByTestId("has-control")).toBeTruthy()
+    expect(screen.getByTestId("has-formState")).toBeTruthy()
+  })
+
+  it("children fn nhận formState.isDirty đúng khi form thay đổi", async () => {
+    const [Form] = setupForm()
+
+    render(
+      <Form
+        renderRoot={({ children, onSubmit }) => (
+          <form onSubmit={onSubmit}>{children}</form>
+        )}
+        defaultValues={{ name: "" }}
+        config={{
+          name: {
+            type: "inline",
+            render: ({ value, onChange }) => (
+              <input
+                data-testid="input"
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
+              />
+            ),
+          },
+        }}
+      >
+        {({ formState }) => (
+          <button
+            type="submit"
+            data-testid="submit-btn"
+            disabled={!formState.isDirty}
+          >
+            Submit
+          </button>
+        )}
+      </Form>,
+    )
+
+    // ban đầu chưa dirty → button disabled
+    expect(screen.getByTestId("submit-btn")).toHaveProperty("disabled", true)
+
+    // type vào → dirty → button enabled
+    fireEvent.change(screen.getByTestId("input"), {
+      target: { value: "Alice" },
+    })
+
+    await waitFor(() => {
+      expect(screen.getByTestId("submit-btn")).not.toHaveProperty("disabled", true)
+    })
+  })
+
+  it("children fn nhận formState.isSubmitting đúng", async () => {
+    const [Form] = setupForm()
+    let resolveSubmit!: () => void
+
+    // onSubmit async để giữ isSubmitting = true trong khi đang submit
+    const onSubmit = () =>
+      new Promise<void>((resolve) => {
+        resolveSubmit = resolve
+      })
+
+    render(
+      <Form
+        renderRoot={({ children, onSubmit: handleSubmit }) => (
+          <form onSubmit={handleSubmit}>{children}</form>
+        )}
+        onSubmit={onSubmit}
+        config={{}}
+      >
+        {({ formState }) => (
+          <button
+            type="submit"
+            data-testid="submit-btn"
+          >
+            {formState.isSubmitting ? "Submitting..." : "Submit"}
+          </button>
+        )}
+      </Form>,
+    )
+
+    expect(screen.getByTestId("submit-btn").textContent).toBe("Submit")
+
+    fireEvent.click(screen.getByTestId("submit-btn"))
+
+    await waitFor(() => {
+      expect(screen.getByTestId("submit-btn").textContent).toBe("Submitting...")
+    })
+
+    // resolve submit
+    resolveSubmit()
+
+    await waitFor(() => {
+      expect(screen.getByTestId("submit-btn").textContent).toBe("Submit")
+    })
+  })
+
+  it("children fn: không expose register, unregister, watch", () => {
+    const [Form] = setupForm()
+
+    render(
+      <Form
+        renderRoot={({ children, onSubmit }) => (
+          <form onSubmit={onSubmit}>{children}</form>
+        )}
+        config={{}}
+      >
+        {(methods) => (
+          <div>
+            {"register" in methods
+              ? <span data-testid="has-register" />
+              : <span data-testid="no-register" />
+            }
+            {"unregister" in methods
+              ? <span data-testid="has-unregister" />
+              : <span data-testid="no-unregister" />
+            }
+            {"watch" in methods
+              ? <span data-testid="has-watch" />
+              : <span data-testid="no-watch" />
+            }
+            <button type="submit">Submit</button>
+          </div>
+        )}
+      </Form>,
+    )
+
+    expect(screen.getByTestId("no-register")).toBeTruthy()
+    expect(screen.getByTestId("no-unregister")).toBeTruthy()
+    expect(screen.getByTestId("no-watch")).toBeTruthy()
+  })
+})
+
+describe("renderRoot — ExposedFormMethods spread trực tiếp", () => {
+  it("renderRoot nhận formState trực tiếp (không phải formMethods.formState)", () => {
+    const [Form] = setupForm()
+
+    render(
+      <Form
+        renderRoot={({ children, onSubmit, formState }) => (
+          <form onSubmit={onSubmit}>
+            {children}
+            <span data-testid="is-dirty">
+              {formState.isDirty ? "dirty" : "clean"}
+            </span>
+          </form>
+        )}
+        defaultValues={{ name: "" }}
+        config={{
+          name: {
+            type: "inline",
+            render: ({ value, onChange }) => (
+              <input
+                data-testid="input"
+                value={value ?? ""}
+                onChange={(e) => onChange?.(e.target.value)}
+              />
+            ),
+          },
+        }}
+      />,
+    )
+
+    expect(screen.getByTestId("is-dirty").textContent).toBe("clean")
+
+    fireEvent.change(screen.getByTestId("input"), {
+      target: { value: "Alice" },
+    })
+
+    waitFor(() => {
+      expect(screen.getByTestId("is-dirty").textContent).toBe("dirty")
+    })
+  })
+
+  it("renderRoot nhận setValue và gọi được", async () => {
+    const [Form] = setupForm()
+    let submitted: any = null
+
+    render(
+      <Form
+        renderRoot={({ children, onSubmit, setValue }) => (
+          <form onSubmit={onSubmit}>
+            {children}
+            <button
+              type="button"
+              data-testid="set-btn"
+              onClick={() => setValue("name", "Injected")}
+            >
+              Set
+            </button>
+            <button type="submit">Submit</button>
+          </form>
+        )}
+        onSubmit={(data) => { submitted = data }}
+        config={{
+          name: {
+            type: "inline",
+            render: ({ value }) => (
+              <span data-testid="value">{value ?? ""}</span>
+            ),
+          },
+        }}
+      />,
+    )
+
+    fireEvent.click(screen.getByTestId("set-btn"))
+
+    await waitFor(() => {
+      expect(screen.getByTestId("value").textContent).toBe("Injected")
+    })
+
+    fireEvent.click(screen.getByText("Submit"))
+
+    await waitFor(() => {
+      expect(submitted).toEqual({ name: "Injected" })
+    })
+  })
+
+  it("renderRoot không có formMethods nested (breaking change confirmed)", () => {
+    const [Form] = setupForm()
+
+    render(
+      <Form
+        renderRoot={(args) => {
+          // formMethods không còn tồn tại trong args
+          expect("formMethods" in args).toBe(false)
+          return <form onSubmit={args.onSubmit}>{args.children}</form>
+        }}
+        config={{}}
+      />,
+    )
+  })
+})

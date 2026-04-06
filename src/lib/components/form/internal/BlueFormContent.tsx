@@ -1,29 +1,28 @@
-import type { ComponentMap } from "@/types";
-import debounce from "just-debounce-it";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import type { ComponentMap } from '@/types';
+import { ExposedFormMethods, RootRendererArgs } from '@/types/form';
+import debounce from 'just-debounce-it';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   type FieldValues,
   type SubmitHandler,
   type WatchObserver,
   get as getProperty,
   useFormContext,
-} from "react-hook-form";
-import BlueFormEngine from "./BlueFormEngine";
-import { useBlueFormInternal } from "./BlueFormInternalProvider";
+} from 'react-hook-form';
+import BlueFormEngine from './BlueFormEngine';
+import { useBlueFormInternal } from './BlueFormInternalProvider';
 
 export function BlueFormContent<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap,
 >() {
+  const form = useFormContext<TModel>();
+  const { handleSubmit, watch } = form;
+
   const {
-    fieldMapping,
-    i18nConfig,
     renderRoot,
 
     config,
-    defaultValues = {},
-    formOptions: formProps = {},
-    readOnly: isFormReadOnly = false,
     debounceMs: changeDebounceDelay,
     children,
 
@@ -32,10 +31,7 @@ export function BlueFormContent<
     onFormChange,
     onSubmitSuccess,
     onSubmitError,
-    ...props
   } = useBlueFormInternal();
-  const form = useFormContext<TModel>();
-  const { watch, handleSubmit } = form;
 
   // Keep latest callbacks in a ref so the stable observer below
   // always calls the current version without being a dep itself.
@@ -79,23 +75,43 @@ export function BlueFormContent<
     await onSubmitSuccess?.(raw, form, e);
   }) as SubmitHandler<TModel>;
 
+  const exposedForm = {
+    // advanced / 3rd party integration
+    control: form.control,
+
+    // read
+    formState: form.formState,
+    getFieldState: form.getFieldState,
+    getValues: form.getValues,
+
+    // write
+    resetField: form.resetField,
+    reset: form.reset,
+    clearErrors: form.clearErrors,
+    setError: form.setError,
+    setValue: form.setValue,
+
+    // trigger
+    trigger: form.trigger,
+    setFocus: form.setFocus,
+  } as ExposedFormMethods<any>;
+
+  const resolvedChildren =
+    typeof children === 'function' ? children(exposedForm) : children;
+
   const formBody = (
     <>
       <BlueFormEngine config={config} />
-      {children}
+      {resolvedChildren}
     </>
   );
 
   const submitHandler = handleSubmit(submit, onSubmitError);
-
   const formRendererArgs = {
-    formMethods: form,
     children: formBody,
     onSubmit: submitHandler,
-    submit,
-    ...props,
-  } as const;
+    ...exposedForm,
+  } as RootRendererArgs<any>;
 
-  // @ts-expect-error expect error
   return renderRoot?.(formRendererArgs);
 }

@@ -6,7 +6,7 @@ import SelectField from "./fields/SelectField";
 import TextAreaField from "./fields/TextAreaField";
 
 const [Form] = setupForm({
-  renderRoot: ({ children, onSubmit, formMethods: { control } }) => (
+  renderRoot: ({ children, onSubmit, control }) => (
     <div style={{ position: "relative" }}>
       <div className="blueform-example">
         <form onSubmit={onSubmit}>{children}</form>
