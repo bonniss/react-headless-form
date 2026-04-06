@@ -4,6 +4,8 @@ title: Conditional Fields
 
 Demonstrates `visible` and `disabled` as functions — fields that appear or become interactive based on other field values, with no manual `useWatch` or conditional rendering in component code.
 
+For the full runtime semantics of hidden-from-start fields, `defaultValue`, and `shouldUnregister`, see the dedicated guide on [conditional rendering](/guide/core/conditional-rendering.html).
+
 ## Preview & Code
 
 import { Tab, Tabs } from '@rspress/core/theme';
@@ -29,7 +31,7 @@ email: {
 }
 ```
 
-**`defaultValue` on select fields** — without a `defaultValue`, the select value starts as `undefined`, so `visible` conditions that depend on it won't evaluate correctly on first render. Always set a `defaultValue` that matches one of the options:
+**`defaultValue` on controlling fields** — without a `defaultValue`, the select value starts as `undefined`, so `visible` conditions that depend on it won't evaluate correctly on first render. Always set a `defaultValue` that matches one of the options:
 
 ```ts
 contact_method: {

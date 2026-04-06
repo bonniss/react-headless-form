@@ -31,6 +31,6 @@ The full list of returned props:
 | `required` | Whether field is required | Derived from `rules.required` — do not infer this yourself |
 | `disabled` | Whether field is disabled | Resolved from field config and form state — excluded from submit payload |
 | `readOnly` | Whether field is read-only | Resolved from field-level and form-level `readOnly` — still included in submit payload |
-| `visible` | Whether field should render | Resolved from `visible` in field config — affects rendering only, value stays in form state |
+| `visible` | Whether field should render | Resolved from `visible` in field config — when `false`, the field unmounts; see [conditional rendering](../conditional-rendering.mdx) |
 | `controller` | Raw return value of RHF's `useController` | Advanced integrations only |
 | `config` | Original field config object | Meta-driven or dynamic fields only |

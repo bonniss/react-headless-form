@@ -1,0 +1,89 @@
+---
+title: Conditional rendering
+---
+
+`visible` and `disabled` are the two built-in runtime switches for conditional form behavior.
+
+- `visible` controls whether a field is rendered at all.
+- `disabled` keeps the field rendered, but marks it disabled in React Hook Form.
+
+Both options accept either a boolean or a function:
+
+```tsx
+nickname: {
+  type: "text",
+  visible: true,
+},
+internalNote: {
+  type: "text",
+  disabled: (values) => !values.isAdmin,
+},
+```
+
+When a function is provided, BlueForm evaluates it reactively from the current form values. No manual `useWatch` is needed in field components.
+
+## `visible`
+
+When `visible` resolves to `false`, BlueForm does not render that field node. The field is not registered through RHF at that moment.
+
+If a field was visible first, then later becomes hidden, it gets unmounted. From that point, RHF behavior depends on `shouldUnregister`:
+
+- `shouldUnregister: false` keeps the last value in form state.
+- `shouldUnregister: true` removes the value from form state.
+
+If a field is `visible: false` on the first render, it never mounts, so field-level `defaultValue` is never registered.
+
+That means this config:
+
+```tsx
+secret: {
+  type: "text",
+  visible: false,
+  defaultValue: "preset",
+}
+```
+
+does **not** put `secret` into the submitted payload by itself.
+
+If you need an initial value to exist regardless of visibility, define it at the form level instead:
+
+```tsx
+<Form
+  defaultValues={{ secret: "preset" }}
+  config={{
+    secret: {
+      type: "text",
+      visible: false,
+    },
+  }}
+/>
+```
+
+`visible` also does not automatically make a field irrelevant to validation. If a hidden field was already registered and still exists in form state, a rule like `required` can still block submission. For conditional requirements, prefer `validate` and short-circuit when the field is inactive:
+
+```tsx
+email: {
+  type: "text",
+  visible: (values) => values.contactMethod === "email",
+  rules: {
+    validate: (value, values) =>
+      values.contactMethod !== "email" ||
+      Boolean(value) ||
+      "Email is required",
+  },
+}
+```
+
+## `disabled`
+
+`disabled` does not unmount the field. The field stays registered and rendered, but RHF treats it as disabled.
+
+In practice:
+
+- the component still receives field props through `useField`
+- the input should render as disabled in the UI
+- disabled fields are excluded from the submit payload by RHF
+
+Use `disabled` when the user should still see the field, but cannot interact with it yet.
+
+Use `visible` when the field should disappear entirely from the current UI.
