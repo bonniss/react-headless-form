@@ -69,11 +69,13 @@ config={{
 
 ### `config`
 
-The field configuration object. Each key maps to a field in the form. See [Field config](#field-config) below.
+The field configuration object that defines the structure of the form. Each key maps to one field entry, including its type, label, rules, render behavior, and any extra props.
+
+See [Field config](#field-config) below.
 
 ### `onSubmit`
 
-Called when the form is submitted and passes validation. Receives the typed form data and the RHF form methods:
+Called when the form is submitted and passes validation. Receives the typed form data, the full [React Hook Form methods](https://react-hook-form.com/docs/useform), and the optional submit event:
 
 ```tsx
 onSubmit={(data, formMethods, event) => {
@@ -81,55 +83,130 @@ onSubmit={(data, formMethods, event) => {
 }}
 ```
 
+Use this for submit-time effects such as API calls, persistence, navigation, or analytics. If you need to derive field values while the user is typing, use `onFieldChange` instead.
+
 ### `onSubmitSuccess`
 
-Called after `onSubmit` resolves. Receives the same arguments. Useful for side effects like resetting the form or showing a success message.
+Called after `onSubmit` resolves successfully. Receives the same arguments as `onSubmit`.
+
+This is a good place for post-submit side effects such as `reset()`, toast notifications, or closing a dialog after a successful save.
 
 ### `onSubmitError`
 
-Called when submission fails due to validation errors. Receives the RHF errors object.
+Called when submission fails due to validation errors. Receives the [RHF errors object](https://react-hook-form.com/docs/useform/formstate#errors).
+
+Use this when you need to react to invalid submission attempts, for example by scrolling to the first error or showing a summary banner.
 
 ### `defaultValues`
 
-Initial values for the form. Merged into RHF's `useForm` and always takes precedence over `formOptions.defaultValues`.
+Initial values for the form. These are passed into [RHF `useForm`](https://react-hook-form.com/docs/useform) and always take precedence over `formOptions.defaultValues`.
 
 ```tsx
 <Form defaultValues={{ username: "alice" }} ... />
 ```
 
+Use this for initial edit-state data, server-provided defaults, or sensible empty-state values.
+
 ### `formOptions`
 
-Options passed to RHF's `useForm` for this specific form instance. Merges over `formOptions` defined in `setupForm` — per-form values always win.
+Options passed to [RHF `useForm`](https://react-hook-form.com/docs/useform) for this specific form instance. These merge over `formOptions` defined in `setupForm` and per-form values always win.
 
 ```tsx
 <Form formOptions={{ resolver: zodResolver(schema) }} ... />
 ```
 
-Common use cases: `resolver` for schema validation, `mode` to override the default validation trigger.
+Common use cases:
+
+- `resolver` for schema validation
+- `mode` to override the default validation trigger
+- `shouldUnregister` to control hidden or unmounted field retention
+
+Use `formOptions` when you want BlueForm to keep handling rendering and field wiring, but still need lower-level RHF behavior control.
 
 ### `readOnly`
 
-When `true`, all fields in the form receive `readOnly: true`. Individual field components are responsible for rendering in read-only mode.
+When `true`, all fields in the form receive `readOnly: true`.
+
+This is a form-level hint for your field components. BlueForm passes the flag down, but each renderer is still responsible for deciding how read-only mode should look and behave.
 
 ### `onFormChange`
 
-Called whenever any field value changes. Receives the full form values and RHF form methods.
+Called whenever any field value changes. Receives the current full form values and the full [RHF form methods](https://react-hook-form.com/docs/useform).
+
+This is most useful for autosave, external state sync, analytics, or debugging. Because it fires on every change, consider combining it with `debounceMs` for anything non-trivial.
 
 ### `onFieldChange`
 
-Called when a single field value changes. Receives the field name, new value, and RHF form methods.
+Called when a single field value changes. Receives a typed context object plus the full [RHF form methods](https://react-hook-form.com/docs/useform):
+
+```tsx
+onFieldChange={({ name, value, values, setValue, trigger, formState }, form) => {
+  if (name === "title") {
+    setValue("slug", value?.toLowerCase().replace(/\s+/g, "-") ?? "")
+  }
+}}
+```
+
+The first argument contains:
+
+| Field | Description |
+|---|---|
+| `name` | The path of the field that just changed |
+| `value` | The new value of that field |
+| `values` | Current snapshot of the full form values |
+| `setValue` | [RHF `setValue`](https://react-hook-form.com/docs/useform/setvalue) helper for writing derived values |
+| `trigger` | [RHF `trigger`](https://react-hook-form.com/docs/useform/trigger) helper for revalidation flows |
+| `formState` | Current [RHF `formState`](https://react-hook-form.com/docs/useform/formstate) snapshot |
+
+Derived fields and side effects like `title -> slug` can be handled with this API, but use it carefully once many fields start depending on each other - update loops can shoot you in the foot.
 
 ### `debounceMs`
 
-Delay in milliseconds before `onFormChange` and `onFieldChange` fire. Useful for debouncing side effects. Set to `0` or omit to disable.
+Delay in milliseconds before `onFormChange` and `onFieldChange` fire. Useful for debouncing side effects such as autosave, remote lookups, or expensive synchronization work. Set to `0` or omit to disable.
 
-### `renderRoot` / `i18nConfig`
+This affects the change hooks only. It does not change how [RHF validation](https://react-hook-form.com/docs/useform) itself works.
 
-Can be provided per-form to override the values set in `setupForm`. The only option that **cannot** be overridden is `fieldMapping` — it is fixed at setup time to preserve compile-time type safety.
+### `renderRoot`
 
-:::danger
-`renderRoot` must be defined either in `setupForm` or on the `<Form />` instance. If neither is provided, the form will throw at render time.
+Controls the outer form shell, usually the `<form>` element and any wrappers around it.
+
+Can be provided per-form to override the value set in `setupForm`.
+
+:::danger Important
+If neither `setupForm` nor the `<Form />` instance provides `renderRoot`, an error will be thrown at run time.
 :::
+
+### `i18nConfig`
+
+Controls how labels, descriptions, and validation messages are translated.
+
+Can be provided per-form to override the value set in `setupForm`.
+
+:::info
+The only option that **cannot** be overridden is `fieldMapping` - it is fixed at setup time to preserve compile-time type safety.
+:::
+
+## `Form` accepts `children`
+
+`children` accepts either a `ReactNode` or a render function that receives form methods - useful when rendering dynamic UI that depends on form state. It is rendered after the config-driven content, so it usually appears at the end of the form. Both the generated fields and this `children` content are passed together as the `children` of `renderRoot`.`
+
+~~~tsx
+// ReactNode - static
+<Form config={config}>
+  <button type="submit">Submit</button>
+</Form>
+
+// Render function - reactive, accesses form state
+<Form config={config}>
+  {({ formState, setValue }) => (
+    <button type="submit" disabled={!formState.isDirty}>
+      Submit
+    </button>
+  )}
+</Form>
+~~~
+
+The render function receives the same curated set of form methods as `renderRoot` - see [renderRoot](#renderroot) for the full list.
 
 ## Field config
 
@@ -137,20 +214,18 @@ Each entry in `config` describes a single field. All fields share a common set o
 
 | Option | Type | Description |
 |---|---|---|
-| `type` | `string` | Field type — must match a key in `fieldMapping` or a built-in type |
+| `type` | `string` | Field type - must match a key in `fieldMapping` or a built-in type |
 | `label` | `string \| TranslatableText` | Field label, passed through i18n pipeline |
 | `description` | `string \| TranslatableText` | Helper text, passed through i18n pipeline |
 | `defaultValue` | `any` | Initial value for the field |
-| `rules` | `ValidationRules` | RHF validation rules — disabled when `formOptions.resolver` is provided |
-| `props` | `ComponentProps<...>` | Extra props passed to the field component — typed against the component's prop interface |
-| `render` | `RenderFn` | Per-field render override — see [render prop](../field-authoring/render.mdx) |
-| `visible` | `boolean \| (values) => boolean` | Controls field visibility — hidden fields unmount, so state retention depends on whether the field ever mounted and on RHF `shouldUnregister` |
-| `disabled` | `boolean \| (values) => boolean` | Controls disabled state — disabled fields are excluded from the submit payload |
-| `readOnly` | `boolean` | Field-level read-only state — merged with form-level `readOnly` |
+| `rules` | `ValidationRules` | RHF validation rules - disabled when `formOptions.resolver` is provided |
+| `props` | `ComponentProps<...>` | Extra props passed to the field component - typed against the component's prop interface |
+| `render` | `RenderFn` | Per-field render override - see [render prop](../field-authoring/render.mdx) |
+| `visible` | `boolean \| (values) => boolean` | Controls field visibility - hidden fields unmount, so state retention depends on whether the field ever mounted and on RHF `shouldUnregister` |
+| `disabled` | `boolean \| (values) => boolean` | Controls disabled state - disabled fields are excluded from the submit payload |
+| `readOnly` | `boolean` | Field-level read-only state - merged with form-level `readOnly` |
 
-### `visible` and `disabled` as functions
-
-Both `visible` and `disabled` accept a function that receives the current form values and returns a boolean. The engine evaluates them reactively on every value change — no `useWatch` needed:
+`visible` and `disabled` can also be functions. In that case they receive the current form values and are evaluated reactively on every change:
 
 ```tsx
 email: {
@@ -163,11 +238,9 @@ confirm: {
 },
 ```
 
-For the full runtime behavior — including hidden-from-start fields, `defaultValue`, and `shouldUnregister` — see [conditional rendering](../conditional-rendering.mdx).
+For the full runtime behavior - including hidden-from-start fields, `defaultValue`, and `shouldUnregister` - see [conditional rendering](../conditional-rendering.mdx).
 
-### `rules`
-
-Standard RHF validation rules. Automatically disabled when `formOptions.resolver` is provided — define all validation in the schema instead.
+`rules` uses standard [React Hook Form validation rules](https://react-hook-form.com/docs/useform/register). These are automatically disabled when `formOptions.resolver` is provided, so schema-driven forms should keep validation in the resolver instead.
 
 ```tsx
 username: {
@@ -178,27 +251,3 @@ username: {
   },
 }
 ```
-
-## `Form` accepts `children`
-
-`children` accepts either a `ReactNode` or a render function that receives
-form methods — useful when rendering dynamic UI that depends on form state:
-
-~~~tsx
-// ReactNode — static
-<Form config={config}>
-  <button type="submit">Submit</button>
-</Form>
-
-// Render function — reactive, accesses form state
-<Form config={config}>
-  {({ formState, setValue }) => (
-    <button type="submit" disabled={!formState.isDirty}>
-      Submit
-    </button>
-  )}
-</Form>
-~~~
-
-The render function receives the same curated set of form methods
-as `renderRoot` — see [renderRoot](#renderroot) for the full list.

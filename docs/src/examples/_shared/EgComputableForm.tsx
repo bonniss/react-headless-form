@@ -14,18 +14,18 @@ type ProfileData = {
 export default function EgComputableForm() {
   return (
     <Form<ProfileData>
-      onFieldChange={(name, value, { setValue, getValues }) => {
+      onFieldChange={({ name, value, values, setValue }) => {
         if (name === "title") {
-          setValue("slug", value?.toLowerCase().replace(/\s+/g, "-") ?? "")
+          setValue("slug", (value as string)?.toLowerCase().replace(/\s+/g, "-") ?? "")
         }
 
         if (name === "firstName" || name === "lastName") {
-          const { firstName, lastName } = getValues()
+          const { firstName, lastName } = values
           setValue("fullName", [firstName, lastName].filter(Boolean).join(" "))
         }
 
         if (name === "weight" || name === "height") {
-          const { weight, height } = getValues()
+          const { weight, height } = values
           if (weight && height) {
             const h = height / 100
             setValue("bmi", Math.round((weight / (h * h)) * 10) / 10)

@@ -2,7 +2,7 @@
 title: Computed Fields
 ---
 
-A computed field derives its value from other fields. Since BlueForm exposes `onFieldChange` with full access to `setValue` and `getValues`, computed fields require no special API — just a callback.
+A computed field derives its value from other fields. Since BlueForm exposes `onFieldChange` with direct access to `values` and `setValue`, computed fields require no special API - just a callback.
 
 ## Preview & Code
 
@@ -22,25 +22,25 @@ import EgComputableForm from '../_shared/EgComputableForm';
 ## How it works
 
 ```ts
-onFieldChange={(name, value, { setValue, getValues }) => {
+onFieldChange={({ name, value, setValue }) => {
   if (name === "title") {
     setValue("slug", value?.toLowerCase().replace(/\s+/g, "-") ?? "")
   }
 }}
 ```
 
-`onFieldChange` fires whenever a field value changes. Use `setValue` to write back to any field — including ones the user never touches directly. Mark computed fields `readOnly: true` to signal they are derived.
+`onFieldChange` fires whenever a field value changes. Use `setValue` to write back to any field - including ones the user never touches directly. Mark computed fields `readOnly: true` to signal they are derived.
 
-**Single-source** — one field drives one computed field (`title` → `slug`). Trigger on the source field name.
+**Single-source** - one field drives one computed field (`title` -> `slug`). Trigger on the source field name.
 
-**Multi-source** — multiple fields drive one computed field (`weight` + `height` → `bmi`). Use `getValues()` to read all dependencies at once instead of relying on the incoming `value`, which only reflects the field that just changed.
+**Multi-source** - multiple fields drive one computed field (`weight` + `height` -> `bmi`). Use `values` to read all dependencies at once instead of relying on the incoming `value`, which only reflects the field that just changed.
 
-**Chained** — a computed field drives another computed field. Avoid this — `onFieldChange` does not fire for `setValue` calls, so chains must be resolved in a single callback:
+**Chained** - a computed field drives another computed field. Avoid this - `onFieldChange` does not fire for `setValue` calls, so chains must be resolved in a single callback:
 
 ```ts
-onFieldChange={(name, value, { setValue, getValues }) => {
+onFieldChange={({ name, values, setValue }) => {
   if (name === "firstName" || name === "lastName") {
-    const { firstName, lastName } = getValues()
+    const { firstName, lastName } = values
     const full = [firstName, lastName].filter(Boolean).join(" ")
     setValue("fullName", full)
     setValue("initials", full.split(" ").map(n => n[0]).join("").toUpperCase())
@@ -49,5 +49,5 @@ onFieldChange={(name, value, { setValue, getValues }) => {
 ```
 
 :::tip
-Computed fields participate in the submit payload like any other field. If you want to exclude a computed field from submission, use `type: "hidden"` with `visible: false` — or strip it in `onSubmit`.
+Computed fields participate in the submit payload like any other field. If you want to exclude a computed field from submission, use `type: "hidden"` with `visible: false` - or strip it in `onSubmit`.
 :::
