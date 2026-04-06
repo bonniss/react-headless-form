@@ -181,10 +181,24 @@ username: {
 
 ## `Form` accepts `children`
 
-Any children passed to `Form` are rendered inside the root container. Typically used for submit buttons or additional UI:
+`children` accepts either a `ReactNode` or a render function that receives
+form methods — useful when rendering dynamic UI that depends on form state:
 
-```tsx
-<Form config={config} onSubmit={handleSubmit}>
+~~~tsx
+// ReactNode — static
+<Form config={config}>
   <button type="submit">Submit</button>
 </Form>
-```
+
+// Render function — reactive, accesses form state
+<Form config={config}>
+  {({ formState, setValue }) => (
+    <button type="submit" disabled={!formState.isDirty}>
+      Submit
+    </button>
+  )}
+</Form>
+~~~
+
+The render function receives the same curated set of form methods
+as `renderRoot` — see [renderRoot](#renderroot) for the full list.

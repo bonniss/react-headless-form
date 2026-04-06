@@ -41,25 +41,49 @@ export const [Form, defineConfig, Section] = setupForm({
 ## `renderRoot`
 
 Controls how the root form element is rendered. This keeps BlueForm layout-agnostic and platform-independent.
-```tsx
-renderRoot: ({ children, onSubmit }) => (
-  <form onSubmit={onSubmit}>
-    {children}
-  </form>
-)
-```
 
-`renderRoot` receives `children`, `onSubmit`, `formMethods` (the full RHF `useForm` return), and any extra props passed through. This makes it easy to inject DevTools, form attributes, or custom wrappers:
-```tsx
-renderRoot: ({ children, onSubmit, formMethods: { control } }) => (
+`renderRoot` receives `children`, `onSubmit`, and a curated set of form methods
+spread directly onto the args — `formState`, `setValue`, `reset`, `trigger`,
+`control`, and others. See the full list below.
+
+| Arg | Description |
+|---|---|
+| `children` | Rendered form content |
+| `onSubmit` | Submit handler, bind to form element's `onSubmit` |
+| `formState` | [RHF](https://react-hook-form.com/docs/useform/formstate) — `isDirty`, `isValid`, `isSubmitting`, `errors`, ... |
+| `control` | [RHF](https://react-hook-form.com/docs/useform) — for DevTools and third-party integrations |
+| `setValue` | [RHF](https://react-hook-form.com/docs/useform/setvalue) |
+| `getValues` | [RHF](https://react-hook-form.com/docs/useform/getvalues) |
+| `getFieldState` | [RHF](https://react-hook-form.com/docs/useform/getfieldstate) |
+| `reset` | [RHF](https://react-hook-form.com/docs/useform/reset) |
+| `resetField` | [RHF](https://react-hook-form.com/docs/useform/resetfield) |
+| `setError` | [RHF](https://react-hook-form.com/docs/useform/seterror) |
+| `clearErrors` | [RHF](https://react-hook-form.com/docs/useform/clearerrors) |
+| `trigger` | [RHF](https://react-hook-form.com/docs/useform/trigger) |
+| `setFocus` | [RHF](https://react-hook-form.com/docs/useform/setfocus) |
+
+~~~tsx
+renderRoot: ({ children, onSubmit, control, formState }) => (
   <>
-    <form onSubmit={onSubmit}>{children}</form>
+    <form onSubmit={onSubmit}>
+      {children}
+      <button
+        type="submit"
+        disabled={!formState.isDirty || formState.isSubmitting}
+      >
+        {formState.isSubmitting ? "Submitting..." : "Submit"}
+      </button>
+    </form>
     <DevTool control={control} />
   </>
 )
-```
+~~~
 
-`renderRoot` can be overridden per `<Form />` instance. If neither `setupForm` nor the `<Form />` instance provides it, the form will throw at render time.
+`renderRoot` can be overridden per `<Form />` instance.
+
+:::danger Important
+If neither `setupForm` nor the `<Form />` instance provides `renderRoot`, an error will be thrown at run time.
+:::
 
 ## `fieldMapping`
 
