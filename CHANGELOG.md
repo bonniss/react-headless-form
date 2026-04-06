@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/bonniss/react-headless-form/compare/v0.11.2...v0.12.0) (2026-04-06)
+
+
+### Features
+
+* **engine:** support children as render function ([bc9aee0](https://github.com/bonniss/react-headless-form/commit/bc9aee042269ddd0329431e04fa57a5c0833e347))
+
 ## [0.11.2](https://github.com/bonniss/react-headless-form/compare/v0.11.1...v0.11.2) (2026-04-06)
 
 
