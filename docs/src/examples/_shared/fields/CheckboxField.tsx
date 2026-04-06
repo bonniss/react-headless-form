@@ -13,11 +13,8 @@ const CheckboxField: FunctionComponent<CheckboxFieldProps> = (props) => {
     errorMessage,
     disabled,
     readOnly,
-    visible,
     ref,
   } = useField();
-
-  if (!visible) return null;
 
   return (
     <div id={id}>

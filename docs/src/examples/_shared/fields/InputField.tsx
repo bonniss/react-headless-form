@@ -15,11 +15,8 @@ const InputField: FunctionComponent<InputFieldProps> = (props) => {
     required,
     disabled,
     readOnly,
-    visible,
     ref,
   } = useField();
-
-  if (!visible) return null;
 
   return (
     <div id={id}>

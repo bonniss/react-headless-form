@@ -9,9 +9,7 @@ const SelectField: FunctionComponent<SelectFieldProps> = ({
   options,
   ...props
 }) => {
-  const { id, value, onChange, label, disabled, visible, ref } = useField();
-
-  if (!visible) return null;
+  const { id, value, onChange, label, disabled, ref } = useField();
 
   return (
     <div id={id}>
