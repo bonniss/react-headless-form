@@ -76,13 +76,15 @@ email: {
 
 ## `disabled`
 
-`disabled` does not unmount the field. The field stays registered and rendered, but RHF treats it as disabled.
+`disabled` does not unmount the field. The field stays registered and rendered, but RHF treats controller-based fields as disabled.
 
 In practice:
 
 - the component still receives field props through `useField`
 - the input should render as disabled in the UI
-- disabled fields are excluded from the submit payload by RHF
+- fields wired through `useField` are excluded from the submit payload by RHF
+
+This payload exclusion is a React Hook Form controller behavior. It applies to regular fields backed by `useController`. Array fields expose `disabled` for UI logic through `useArrayField`, but `useFieldArray` itself does not provide the same payload exclusion behavior.
 
 Use `disabled` when the user should still see the field, but cannot interact with it yet.
 

@@ -504,4 +504,66 @@ describe("FieldProvider — disabled field", () => {
       expect(submitted).toEqual({ name: "Bob" });
     });
   });
+
+  it("dynamic disabled toggles field inclusion in submit payload", async () => {
+    let submitted: any = null;
+
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        onSubmit={(v) => (submitted = v)}
+        config={{
+          locked: {
+            type: "inline",
+            defaultValue: false,
+            render: ({ value, onChange }) => (
+              <input
+                data-testid="locked"
+                type="checkbox"
+                checked={Boolean(value)}
+                onChange={(e) => onChange?.(e.target.checked)}
+              />
+            ),
+          },
+          secret: {
+            type: "inline",
+            defaultValue: "classified",
+            disabled: (values: any) => Boolean(values.locked),
+            render: () => null,
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(submitted).toEqual({
+        locked: false,
+        secret: "classified",
+      });
+    });
+
+    submitted = null;
+    fireEvent.click(screen.getByTestId("locked"));
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(submitted).toEqual({
+        locked: true,
+      });
+      expect(submitted.secret).toBeUndefined();
+    });
+
+    submitted = null;
+    fireEvent.click(screen.getByTestId("locked"));
+    fireEvent.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(submitted).toEqual({
+        locked: false,
+        secret: "classified",
+      });
+    });
+  });
 });

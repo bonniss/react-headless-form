@@ -18,7 +18,7 @@ The same field props as `useField` are available directly, scoped to the array f
 | `description` | Translated helper text | Resolved from field config through i18n pipeline |
 | `errorMessage` | Array-level validation error | e.g. from `rules.minLength` or `rules.required` — not item errors |
 | `required` | Whether the array is required | Derived from `rules.required` |
-| `disabled` | Whether the array is disabled | Disabled arrays are excluded from submit payload by RHF |
+| `disabled` | Whether the array is disabled | Resolved for UI logic; does not by itself remove the array from submit payload |
 | `visible` | Whether the array should render | When `false`, the array field unmounts; see [conditional rendering](../conditional-rendering.mdx) |
 
 ## Array state
