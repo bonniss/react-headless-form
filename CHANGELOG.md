@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.13.0](https://github.com/bonniss/react-headless-form/compare/v0.12.0...v0.13.0) (2026-04-06)
+
+
+### Features
+
+* redesign onFieldChange callback context ([d65eccc](https://github.com/bonniss/react-headless-form/commit/d65eccc73f29b6482c40a24714af475bc611d751))
+
+
+### Bug Fixes
+
+* **engine:** type safer `name` for `onFieldChange` ([dc9cbf7](https://github.com/bonniss/react-headless-form/commit/dc9cbf773dec77fc2517e974198724eedfd4f8b7))
+
 ## [0.12.0](https://github.com/bonniss/react-headless-form/compare/v0.11.2...v0.12.0) (2026-04-06)
 
 
