@@ -32,7 +32,7 @@ export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
 
     if (!renderRoot) {
       throw new Error(
-        "No `renderRoot` was provided. A `renderRoot` is required to control how the form is rendered.",
+        "[react-headless-form] No `renderRoot` was provided. A `renderRoot` is required to control how the form is rendered.",
       );
     }
 

@@ -1,4 +1,5 @@
 // setupForm.test.tsx
+import { useArrayField } from "@/components/form/provider";
 import { useField } from "@/components/form/provider/FieldProvider";
 import {
   BASE_MAPPING,
@@ -14,6 +15,28 @@ interface TestModel {
 }
 
 describe("setupForm", () => {
+  it("throws a clear error when useField() is called outside FieldProvider", () => {
+    const BrokenField = () => {
+      useField();
+      return null;
+    };
+
+    expect(() => render(<BrokenField />)).toThrow(
+      /useContextValue must be used within FieldProvider/i,
+    );
+  });
+
+  it("throws a clear error when useArrayField() is called outside FieldArrayProvider", () => {
+    const BrokenArrayField = () => {
+      useArrayField();
+      return null;
+    };
+
+    expect(() => render(<BrokenArrayField />)).toThrow(
+      /useContextValue must be used within FieldArrayProvider/i,
+    );
+  });
+
   it("works without passing any base config", async () => {
     const [Form, defineConfig] = setupForm();
 
