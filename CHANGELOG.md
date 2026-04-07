@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.1](https://github.com/bonniss/react-headless-form/compare/v0.13.0...v0.13.1) (2026-04-07)
+
+
+### Bug Fixes
+
+* **engine:** better error messages ([3819a6b](https://github.com/bonniss/react-headless-form/commit/3819a6b56bc960a07b2ea86a2ad86943c0b49232))
+
 ## [0.13.0](https://github.com/bonniss/react-headless-form/compare/v0.12.1...v0.13.0) (2026-04-07)
 
 
