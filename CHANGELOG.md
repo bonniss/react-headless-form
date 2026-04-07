@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://github.com/bonniss/react-headless-form/compare/v0.12.1...v0.13.0) (2026-04-07)
+
+
+### Features
+
+* **docs:** enable llm friendly outputs ([650b6bd](https://github.com/bonniss/react-headless-form/commit/650b6bd982d754faac046e6f528fecb4a2be7064))
+
 ## [0.13.0](https://github.com/bonniss/react-headless-form/compare/v0.12.0...v0.13.0) (2026-04-06)
 
 
