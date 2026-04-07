@@ -4,10 +4,8 @@ import { FunctionComponent } from "react";
 interface CheckboxFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 const CheckboxField: FunctionComponent<CheckboxFieldProps> = (props) => {
-  const { id, value, onChange, label, disabled, readOnly, visible } =
+  const { id, value, onChange, label, disabled, readOnly } =
     useField();
-
-  if (!visible) return null;
 
   return (
     <label id={id}>

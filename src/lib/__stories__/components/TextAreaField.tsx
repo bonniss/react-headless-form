@@ -14,10 +14,7 @@ const TextAreaField: FunctionComponent<TextAreaFieldProps> = (props) => {
     required,
     disabled,
     readOnly,
-    visible,
   } = useField();
-
-  if (!visible) return null;
 
   return (
     <div id={id}>

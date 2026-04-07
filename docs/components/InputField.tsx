@@ -1,5 +1,5 @@
 import { useField } from "react-headless-form";
-import { FunctionComponent } from "react";
+import type { FunctionComponent } from "react";
 
 interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
@@ -15,11 +15,8 @@ const InputField: FunctionComponent<InputFieldProps> = (props) => {
     required,
     disabled,
     readOnly,
-    visible,
     ref,
   } = useField();
-
-  if (!visible) return null;
 
   return (
     <div id={id}>
