@@ -1,11 +1,12 @@
-import type { ComponentMap } from '@/types';
-import {
+import type { ComponentMap } from "@/types"
+import type {
   ExposedFormMethods,
   FieldChangeContext,
   RootRendererArgs,
-} from '@/types/form';
-import debounce from 'just-debounce-it';
-import { useCallback, useEffect, useMemo } from 'react';
+} from "@/types/form"
+
+import debounce from "just-debounce-it"
+import { useCallback, useEffect, useMemo } from "react"
 import {
   type Path,
   type FieldValues,
@@ -13,16 +14,16 @@ import {
   type WatchObserver,
   get as getProperty,
   useFormContext,
-} from 'react-hook-form';
-import BlueFormEngine from './BlueFormEngine';
-import { useBlueFormInternal } from './BlueFormInternalProvider';
+} from "react-hook-form"
+import BlueFormEngine from "./BlueFormEngine"
+import { useBlueFormInternal } from "./BlueFormInternalProvider"
 
 export function BlueFormContent<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap,
 >() {
-  const form = useFormContext<TModel>();
-  const { handleSubmit, watch } = form;
+  const form = useFormContext<TModel>()
+  const { handleSubmit, watch } = form
 
   const {
     renderRoot,
@@ -36,28 +37,28 @@ export function BlueFormContent<
     onFormChange,
     onSubmitSuccess,
     onSubmitError,
-  } = useBlueFormInternal();
+  } = useBlueFormInternal()
 
   const observer = useCallback<WatchObserver<TModel>>(
     (value, { name }) => {
       if (name && onFieldChange) {
-        const next = getProperty(value, name);
+        const next = getProperty(value, name)
         const context = {
           name: name as Path<TModel>,
-          value: next as FieldChangeContext<TModel>['value'],
+          value: next as FieldChangeContext<TModel>["value"],
           values: value as TModel,
           setValue: form.setValue,
           trigger: form.trigger,
           formState: form.formState,
-        } as FieldChangeContext<TModel>;
+        } as FieldChangeContext<TModel>
 
-        onFieldChange(context, form);
+        onFieldChange(context, form)
       }
-      onFormChange?.(value as TModel, form);
+      onFormChange?.(value as TModel, form)
     },
     // form is stable for the lifetime of the component
     [form],
-  );
+  )
 
   // Stable debounced observer — only recreated when delay changes.
   // Keeping it in useMemo (not useCallback) because debounce() returns
@@ -66,20 +67,20 @@ export function BlueFormContent<
     () =>
       changeDebounceDelay ? debounce(observer, changeDebounceDelay) : observer,
     [observer, changeDebounceDelay],
-  );
+  )
 
   useEffect(
     function watchFormChanges() {
-      const sub = watch(debouncedObserver);
-      return () => sub.unsubscribe();
+      const sub = watch(debouncedObserver)
+      return () => sub.unsubscribe()
     },
     [watch, debouncedObserver],
-  );
+  )
 
   const submit = (async (raw: TModel, e) => {
-    await onSubmit?.(raw, form, e);
-    await onSubmitSuccess?.(raw, form, e);
-  }) as SubmitHandler<TModel>;
+    await onSubmit?.(raw, form, e)
+    await onSubmitSuccess?.(raw, form, e)
+  }) as SubmitHandler<TModel>
 
   const exposedForm = {
     // advanced / 3rd party integration
@@ -100,24 +101,24 @@ export function BlueFormContent<
     // trigger
     trigger: form.trigger,
     setFocus: form.setFocus,
-  } as ExposedFormMethods<any>;
+  } as ExposedFormMethods<any>
 
   const resolvedChildren =
-    typeof children === 'function' ? children(exposedForm) : children;
+    typeof children === "function" ? children(exposedForm) : children
 
   const formBody = (
     <>
       <BlueFormEngine config={config} />
       {resolvedChildren}
     </>
-  );
+  )
 
-  const submitHandler = handleSubmit(submit, onSubmitError);
+  const submitHandler = handleSubmit(submit, onSubmitError)
   const formRendererArgs = {
     children: formBody,
     onSubmit: submitHandler,
     ...exposedForm,
-  } as RootRendererArgs<any>;
+  } as RootRendererArgs<any>
 
-  return renderRoot?.(formRendererArgs);
+  return renderRoot?.(formRendererArgs)
 }
