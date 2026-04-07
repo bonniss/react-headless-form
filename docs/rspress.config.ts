@@ -1,44 +1,41 @@
-import * as path from "node:path";
-import { defineConfig } from "@rspress/core";
-import { pluginPreview } from "@rspress/plugin-preview";
-import {
-  transformerNotationHighlight,
-  transformerNotationFocus,
-} from "@shikijs/transformers";
+import * as path from 'node:path'
+import { defineConfig } from '@rspress/core'
+import { pluginPreview } from '@rspress/plugin-preview'
+import { transformerNotationFocus, transformerNotationHighlight } from '@shikijs/transformers'
 
-const base = "/react-headless-form/";
-const description =
-  "Form as configuration. Great DX. Bring your own UI, entirely. Built on React Hook Form.";
+const base = '/react-headless-form/'
+const description = 'Form as configuration. Great DX. Bring your own UI, entirely. Built on React Hook Form.'
 
 export default defineConfig({
   base,
-  root: path.join(__dirname, "src"),
-  title: "React headless form",
-  icon: "/icon.png",
+  llms: true,
+  root: path.join(__dirname, 'src'),
+  title: 'React headless form',
+  icon: '/icon.png',
   logo: {
-    light: "/light-logo.png",
-    dark: "/dark-logo.png",
+    light: '/light-logo.png',
+    dark: '/dark-logo.png',
   },
   head: [
-    ["meta", { name: "author", content: "bonniss" }],
+    ['meta', { name: 'author', content: 'bonniss' }],
     [
-      "meta",
+      'meta',
       {
-        property: "og:image",
+        property: 'og:image',
         content: `https://bonniss.github.io${base}light-logo.png`,
       },
     ],
     [
-      "meta",
+      'meta',
       {
-        property: "og:description",
+        property: 'og:description',
         content: description,
       },
     ],
     [
-      "meta",
+      'meta',
       {
-        name: "description",
+        name: 'description',
         content: description,
       },
     ],
@@ -46,9 +43,9 @@ export default defineConfig({
   themeConfig: {
     socialLinks: [
       {
-        icon: "github",
-        mode: "link",
-        content: "https://github.com/bonniss/react-headless-form",
+        icon: 'github',
+        mode: 'link',
+        content: 'https://github.com/bonniss/react-headless-form',
       },
     ],
   },
@@ -56,14 +53,11 @@ export default defineConfig({
     defaultWrapCode: true,
     shiki: {
       themes: {
-        light: "one-light",
-        dark: "horizon",
+        light: 'one-light',
+        dark: 'horizon',
       },
-      transformers: [
-        transformerNotationHighlight(),
-        transformerNotationFocus(),
-      ],
+      transformers: [transformerNotationHighlight(), transformerNotationFocus()],
     },
   },
   plugins: [pluginPreview()],
-});
+})
