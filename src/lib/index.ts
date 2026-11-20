@@ -35,3 +35,4 @@ export {
 } from 'react-hook-form'
 
 export * from './components'
+export type * from './types'

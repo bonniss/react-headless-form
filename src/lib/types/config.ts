@@ -119,6 +119,15 @@ export type FormFieldConfig<
   disabled?: boolean | ((values: Partial<TModel>) => boolean);
 
   /**
+   * Marks the field as required in the UI (`useField().required`, e.g. to show "*").
+   * Accepts a function of the current form values for conditionally required fields.
+   *
+   * This only affects the resolved `required` flag; enforce the rule itself with
+   * `rules.validate` or your schema. When omitted, it is inferred from `rules.required`.
+   */
+  required?: boolean | ((values: Partial<TModel>) => boolean);
+
+  /**
    * Optional render override for the field.
    *
    * When provided, the entire rendering of this field is delegated to this function.

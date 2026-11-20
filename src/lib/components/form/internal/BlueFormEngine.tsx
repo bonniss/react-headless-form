@@ -29,7 +29,7 @@ interface BlueFormEngineProps<
 
 /**
  * Checks whether a config object (at this engine level only) contains any field
- * that uses `visible` or `disabled` as a function.
+ * that uses `visible`, `disabled` or `required` as a function.
  *
  * Used to decide whether this BlueFormEngine instance needs to subscribe to form
  * values via watch(). If no field uses conditional logic, the subscription is
@@ -42,7 +42,8 @@ function hasConditionalFields(config: Record<string, any>): boolean {
   return Object.values(config).some(
     (field) =>
       typeof field?.visible === "function" ||
-      typeof field?.disabled === "function",
+      typeof field?.disabled === "function" ||
+      typeof field?.required === "function",
   )
 }
 
@@ -94,6 +95,7 @@ function BlueFormEngine<
           rules = {},
           description,
           readOnly: isFieldReadOnly,
+          required,
         } = field
 
         const path = (namespace ? `${namespace}.${key}` : key) as string
@@ -111,7 +113,13 @@ function BlueFormEngine<
         const isDisabled =
           typeof disabled === "function" ? disabled(values) : !!disabled
         const isReadonly = Boolean(isFormReadOnly ?? isFieldReadOnly)
-        const isRequired = Boolean(rules?.required)
+        // `required` only drives the UI flag (e.g. "*"); validation stays in `rules`.
+        const isRequired =
+          required === undefined
+            ? Boolean(rules?.required)
+            : typeof required === "function"
+              ? required(values)
+              : required
         const resolvedRules = resolveRules(
           rules,
           validationResolver,
