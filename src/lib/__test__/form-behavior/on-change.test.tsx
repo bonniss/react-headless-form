@@ -364,7 +364,7 @@ describe("BlueForm – change behavior", () => {
     vi.useRealTimers();
   });
 
-  it("keeps the pending debounced callback when onFormChange reference changes between renders", async () => {
+  it("delivers the pending debounced change to the latest onFormChange without resetting the timer", async () => {
     vi.useFakeTimers();
     const calls: { version: number; values: any }[] = [];
 
@@ -416,9 +416,9 @@ describe("BlueForm – change behavior", () => {
       vi.advanceTimersByTime(150);
     });
 
-    // emit đúng 1 lần với callback đã schedule trước đó
+    // emit đúng 1 lần, timer không reset, nhưng dùng callback mới nhất
     expect(calls).toHaveLength(1);
-    expect(calls[0].version).toBe(1);
+    expect(calls[0].version).toBe(2);
     expect(calls[0].values).toEqual({ name: "A" });
 
     vi.useRealTimers();

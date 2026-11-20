@@ -5,8 +5,15 @@ import type {
   RootRendererArgs,
 } from "@/types/form"
 
+import { useLatestRef } from "@/components/helper/use-latest-ref"
 import debounce from "just-debounce-it"
-import { useCallback, useEffect, useMemo } from "react"
+import {
+  type BaseSyntheticEvent,
+  type MutableRefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react"
 import {
   type Path,
   type FieldValues,
@@ -21,7 +28,7 @@ import { useBlueFormInternal } from "./BlueFormInternalProvider"
 export function BlueFormContent<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap,
->() {
+>({ flushRef }: { flushRef?: MutableRefObject<() => void> } = {}) {
   const form = useFormContext<TModel>()
   const { handleSubmit, watch } = form
 
@@ -37,10 +44,17 @@ export function BlueFormContent<
     onFormChange,
     onSubmitSuccess,
     onSubmitError,
+    onInvalid,
+    onSubmitFailure,
   } = useBlueFormInternal()
+
+  // Always call the latest callbacks without recreating the subscription or
+  // resetting a pending debounce timer when parent passes inline functions.
+  const callbacksRef = useLatestRef({ onFieldChange, onFormChange })
 
   const observer = useCallback<WatchObserver<TModel>>(
     (value, { name }) => {
+      const { onFieldChange, onFormChange } = callbacksRef.current
       if (name && onFieldChange) {
         const next = getProperty(value, name)
         const context = {
@@ -56,8 +70,8 @@ export function BlueFormContent<
       }
       onFormChange?.(value as TModel, form)
     },
-    // form is stable for the lifetime of the component
-    [form],
+    // form and callbacksRef are stable for the lifetime of the component
+    [form, callbacksRef],
   )
 
   // Stable debounced observer — only recreated when delay changes.
@@ -65,14 +79,28 @@ export function BlueFormContent<
   // a plain function, not a React callback.
   const debouncedObserver = useMemo(
     () =>
-      changeDebounceDelay ? debounce(observer, changeDebounceDelay) : observer,
+      changeDebounceDelay
+        ? debounce(observer, changeDebounceDelay)
+        : Object.assign(((value, info) => observer(value, info)) as typeof observer, {
+            flush: () => {},
+            cancel: () => {},
+          }),
     [observer, changeDebounceDelay],
   )
+
+  useEffect(() => {
+    if (flushRef) flushRef.current = debouncedObserver.flush
+  }, [flushRef, debouncedObserver])
 
   useEffect(
     function watchFormChanges() {
       const sub = watch(debouncedObserver)
-      return () => sub.unsubscribe()
+      return () => {
+        sub.unsubscribe()
+        // Deliver the pending change instead of dropping it on unmount
+        // (or when the debounce delay changes).
+        debouncedObserver.flush()
+      }
     },
     [watch, debouncedObserver],
   )
@@ -81,6 +109,8 @@ export function BlueFormContent<
     await onSubmit?.(raw, form, e)
     await onSubmitSuccess?.(raw, form, e)
   }) as SubmitHandler<TModel>
+
+  const handleInvalid = onInvalid ?? onSubmitError
 
   const exposedForm = {
     // advanced / 3rd party integration
@@ -113,7 +143,18 @@ export function BlueFormContent<
     </>
   )
 
-  const submitHandler = handleSubmit(submit, onSubmitError)
+  // Errors thrown by onSubmit/onSubmitSuccess are caught *outside*
+  // handleSubmit so RHF still marks the submission as unsuccessful.
+  const submitHandler = (e?: BaseSyntheticEvent) =>
+    handleSubmit(
+      submit,
+      handleInvalid,
+    )(e).catch((error: unknown) => {
+      if (onSubmitFailure) {
+        return onSubmitFailure(error, form.getValues(), form)
+      }
+      console.error("[react-headless-form] Unhandled error in onSubmit:", error)
+    })
   const formRendererArgs = {
     children: formBody,
     onSubmit: submitHandler,

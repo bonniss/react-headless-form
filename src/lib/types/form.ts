@@ -51,7 +51,11 @@ export type RootRendererArgs<TModel extends FieldValues = FieldValues> = {
 } & ExposedFormMethods<TModel>;
 
 /**
- * Custom root wrapper renderer. Useful for replacing the default <form> with any custom structure.
+ * Renders the form root. **Required** — there is no default `<form>`; provide it
+ * via `setupForm({ renderRoot })`, `<BlueFormProvider renderRoot>` or `<Form renderRoot>`.
+ *
+ * @example
+ * renderRoot: ({ children, onSubmit }) => <form onSubmit={onSubmit}>{children}</form>
  */
 export type RootRenderer<TModel extends FieldValues = FieldValues> = (
   args: RootRendererArgs<TModel>,
@@ -71,11 +75,23 @@ export type OnFieldChange<TModel extends FieldValues> = (
   form: UseFormReturn<TModel>,
 ) => void;
 
-export type BlueFormRef<TModel = FieldValues> = UseFormReturn<
-  any,
-  any,
-  TModel
-> | null;
+export type BlueFormRefValue<TModel extends FieldValues = FieldValues> =
+  UseFormReturn<TModel> & {
+    /**
+     * Immediately delivers a pending debounced `onFieldChange` / `onFormChange`
+     * call (see `debounceMs`). No-op when nothing is pending.
+     */
+    flushChanges: () => void;
+  };
+
+export type BlueFormRef<TModel extends FieldValues = FieldValues> =
+  BlueFormRefValue<TModel> | null;
+
+export type OnSubmitFailure<TModel extends FieldValues> = (
+  error: unknown,
+  values: TModel,
+  form: UseFormReturn<TModel>,
+) => unknown;
 
 export type I18nConfig = {
   /**
@@ -168,17 +184,35 @@ export interface BlueFormProps<
   formOptions?: UseFormProps<TModel>;
 
   /**
-   * Called when the form is submitted successfully and passes validation.
+   * Called with the form values once validation passes.
+   * May be async. If it throws/rejects, `onSubmitFailure` is called and
+   * `onSubmitSuccess` is skipped.
    */
   onSubmit?: SubmitHandlerWithFormMethods<TModel>;
 
   /**
-   * Called after a successful form submission.
+   * Called after `onSubmit` resolved without throwing.
    */
   onSubmitSuccess?: SubmitHandlerWithFormMethods<TModel>;
 
   /**
-   * Called when form submission fails due to validation errors.
+   * Called when `onSubmit` (or `onSubmitSuccess`) throws or rejects, e.g. an API error.
+   * `formState.isSubmitSuccessful` stays `false`.
+   * When omitted, the error is logged with `console.error` instead of becoming
+   * an unhandled promise rejection.
+   */
+  onSubmitFailure?: OnSubmitFailure<TModel>;
+
+  /**
+   * Called when submission is blocked because validation failed.
+   * `onSubmit` is not called in this case.
+   */
+  onInvalid?: SubmitErrorHandler<TModel>;
+
+  /**
+   * @deprecated Renamed to `onInvalid` (it only fires on validation errors,
+   * never for errors thrown by `onSubmit` — use `onSubmitFailure` for those).
+   * Ignored when `onInvalid` is provided. Will be removed in 1.0.
    */
   onSubmitError?: SubmitErrorHandler<TModel>;
 
@@ -207,8 +241,11 @@ export interface BlueFormProps<
    * Useful for debouncing side effects such as conditional logic,
    * dynamic field updates, or remote data fetching based on form state.
    *
-   * Example: changeDebounceDelay = 300 → triggers logic only after 300ms
+   * Example: debounceMs = 300 → triggers logic only after 300ms
    * of no further changes.
+   *
+   * A pending call is flushed (not dropped) when the form unmounts; call
+   * `ref.current.flushChanges()` to deliver it earlier, e.g. before navigating.
    *
    * Set to 0 or leave undefined to disable debounce.
    */
