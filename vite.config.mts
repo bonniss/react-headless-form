@@ -29,7 +29,8 @@ const app = async (): Promise<UserConfigExport> => {
         entry: path.resolve(__dirname, "src/lib/index.ts"),
         name: formattedName,
         formats: ["es", "umd"],
-        fileName: (format) => `${formattedName}.${format}.js`,
+        fileName: (format) =>
+          format === "es" ? `${formattedName}.mjs` : `${formattedName}.${format}.cjs`,
       },
       rollupOptions: {
         external: ["react", "react/jsx-runtime", "react-dom", "react-hook-form"],

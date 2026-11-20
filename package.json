@@ -8,15 +8,16 @@
     "type": "git",
     "url": "https://github.com/bonniss/react-headless-form"
   },
-  "main": "./dist/react-headless-form.umd.js",
-  "module": "./dist/react-headless-form.es.js",
+  "main": "./dist/react-headless-form.umd.cjs",
+  "module": "./dist/react-headless-form.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/react-headless-form.es.js",
-      "require": "./dist/react-headless-form.umd.js"
-    }
+      "import": "./dist/react-headless-form.mjs",
+      "require": "./dist/react-headless-form.umd.cjs"
+    },
+    "./package.json": "./package.json"
   },
   "engines": {
     "node": ">=18"
