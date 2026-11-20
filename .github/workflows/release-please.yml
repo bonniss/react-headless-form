@@ -19,6 +19,8 @@ jobs:
         with:
           release-type: node
           default-branch: main
+          # While < 1.0.0, breaking changes bump minor (0.13 -> 0.14) instead of major
+          bump-minor-pre-major: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout
