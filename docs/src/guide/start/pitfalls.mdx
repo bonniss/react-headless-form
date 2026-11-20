@@ -1,0 +1,50 @@
+---
+title: Common pitfalls
+description: Short checklist of the mistakes people (and LLMs) most often make with BlueForm — required renderRoot, peer dependency, rules vs resolver, submit errors, undefined initial values, i18n of props, and re-render cost of conditional fields.
+---
+
+A checklist of behaviors that are easy to get wrong. Each item links to the full explanation.
+
+## Setup
+
+**1. `renderRoot` is required.** There is no default `<form>`. Provide it once in `setupForm` (or per `<Form>` / `BlueFormProvider`), otherwise rendering throws.
+
+```tsx
+const [Form] = setupForm({
+  renderRoot: ({ children, onSubmit }) => <form onSubmit={onSubmit}>{children}</form>,
+})
+```
+
+**2. Install `react-hook-form` yourself.** Since v0.14 it is a peer dependency: `pnpm add react-headless-form react-hook-form`. Hooks such as `useFormContext` / `useWatch` can then be imported from either package — they share the same context.
+
+:::warning Before v0.14
+`react-hook-form` was bundled inside the package. Importing `useFormContext` from `react-hook-form` inside `<Form>` returned `null`. On older versions, always import RHF hooks from `react-headless-form`.
+:::
+
+**3. `fieldMapping` is fixed at setup time.** It cannot be overridden per `<Form>`, so that field types and their `props` stay type-checked. Other `setupForm` options (`renderRoot`, `i18nConfig`, `formOptions`) can be overridden per form. A schema `resolver` goes in the per-form `formOptions` prop (it is not accepted by `setupForm`, and the prop is not called `formProps`).
+
+## Values and validation
+
+**4. Values start as `undefined`.** Unless you pass `defaultValues` (form) or `defaultValue` (field), a field's `value` is `undefined`. Controlled inputs should render `value ?? ""` to avoid React's uncontrolled→controlled warning.
+
+**5. `rules` are ignored when a resolver is set.** With `formOptions.resolver`, every field-level `rules` entry is disabled (a console warning is logged). Pick one: rules or schema. See [Schema validation](../core/schema-validation.mdx).
+
+**6. Hidden is not the same as not validated.** A field hidden via `visible` keeps its registered value and rules unless it never mounted or `shouldUnregister` is on. For conditional requirements use `rules.validate` and a `required` function for the `*` marker. See [Conditional rendering](../core/conditional-rendering.mdx).
+
+**7. A field hidden from the first render never registers its `defaultValue`.** Put initial values that must always be submitted in the form-level `defaultValues`.
+
+## Submit and change hooks
+
+**8. `onSubmit` errors go to `onSubmitFailure`, validation errors to `onInvalid`.** The old `onSubmitError` only ever fired on validation errors (it is now a deprecated alias of `onInvalid`). Errors thrown by `onSubmit` are passed to `onSubmitFailure` — or logged — and never become unhandled rejections. See [Form props](../core/setup-form/form.mdx#submit-lifecycle).
+
+**9. Debounced changes are flushed on unmount.** With `debounceMs`, the last pending `onFieldChange` / `onFormChange` call runs when the form unmounts; call `ref.current.flushChanges()` to run it earlier. Use `useFormRef<TModel>()` for a typed ref.
+
+## i18n
+
+**10. Only `label`, `description` and validation messages are translated.** Field `props` such as `placeholder` are passed through untouched unless listed in `i18nConfig.translateProps`.
+
+**11. Every string label is treated as a translation key.** Wrap text that is not a key (e.g. from a database) as `{ text: "..." }` so `t` is skipped. See [i18n](../core/i18n.mdx).
+
+## Performance
+
+**12. A function `visible` / `disabled` / `required` re-renders its config level on every change.** That's fine for typical forms. For large ones, add `deps: ["path"]` to each conditional field so only changes to those paths re-render. See [Conditional rendering → deps](../core/conditional-rendering.mdx#performance-deps).

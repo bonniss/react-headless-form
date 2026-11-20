@@ -18,12 +18,16 @@
 ## Installation
 
 ```sh
-npm install react-headless-form
+npm install react-headless-form react-hook-form
 # or
-pnpm add react-headless-form
+pnpm add react-headless-form react-hook-form
 # or
-yarn add react-headless-form
+yarn add react-headless-form react-hook-form
 ```
+
+`react-hook-form` is a peer dependency (since v0.14).
+
+📖 **Documentation:** https://bonniss.github.io/react-headless-form/ · for LLMs: [`llms.txt`](https://bonniss.github.io/react-headless-form/llms.txt) / [`llms-full.txt`](https://bonniss.github.io/react-headless-form/llms-full.txt)
 
 ## What is it?
 

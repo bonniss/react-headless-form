@@ -1,9 +1,38 @@
 ---
 title: Yup
+description: Validate a BlueForm with a Yup schema via @hookform/resolvers/yup.
 outline: false
 ---
 
 This recipe demonstrates how to use [Yup](https://github.com/jquense/yup) with BlueForm.
+
+```sh
+pnpm add yup @hookform/resolvers
+```
+
+Pass the resolver through `formOptions`. Field-level `rules` are disabled while a resolver is set, so keep all validation in the schema — see [Schema validation](../../../guide/core/schema-validation.mdx).
+
+```tsx
+import * as yup from "yup"
+import { yupResolver } from "@hookform/resolvers/yup"
+
+const schema = yup.object({
+  name: yup.string().required("Name is required"),
+  email: yup.string().email("Invalid email").required(),
+})
+type FormData = yup.InferType<typeof schema>
+
+<Form<FormData>
+  formOptions={{ resolver: yupResolver(schema) }}
+  config={{
+    name: { type: "text", label: "Name" },
+    email: { type: "text", label: "Email" },
+  }}
+  onSubmit={(data) => save(data)}
+/>
+```
+
+## Full example
 
 <iframe
   src="https://stackblitz.com/edit/vitejs-vite-tanasmff?ctl=1&embed=1&file=index.html&hideNavigation=1&view=preview"

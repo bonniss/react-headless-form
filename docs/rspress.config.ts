@@ -6,9 +6,14 @@ import { transformerNotationFocus, transformerNotationHighlight } from '@shikijs
 const base = '/react-headless-form/'
 const description = 'Form as configuration. Great DX. Bring your own UI, entirely. Built on React Hook Form.'
 
+// Summary used as the `>` blockquote of llms.txt
+const llmsSummary =
+  'react-headless-form (BlueForm) is a config-driven, headless form engine for React built on React Hook Form (peer dependency). Call setupForm({ fieldMapping, renderRoot }) once to get a typed [Form, defineConfig, Section]; describe each form as a config object; field components read value/onChange/label/errorMessage from useField(). renderRoot is required. Read "Common pitfalls" first.'
+
 export default defineConfig({
   base,
   llms: true,
+  description: llmsSummary,
   root: path.join(__dirname, 'src'),
   title: 'React headless form',
   icon: '/icon.png',

@@ -1,9 +1,54 @@
 ---
 title: PrimeReact
+description: Wire PrimeReact inputs (InputText, Dropdown, Checkbox…) to BlueForm field types with useField.
 outline: false
 ---
 
 This recipe demonstrates how to wire [PrimeReact](https://primereact.org/) components with BlueForm.
+
+Each field type is a small component that reads everything from `useField()` and forwards it to the library's input. The form config, `setupForm` and submit logic are the same as in every other recipe — see [Integrations](./index.mdx) for the shared sample form and the event-signature notes.
+
+## Text field adapter
+
+```tsx
+import { InputText, type InputTextProps } from "primereact/inputtext"
+import { useField } from "react-headless-form"
+
+export function TextField(props: InputTextProps) {
+  const { id, value, onChange, onBlur, label, errorMessage, required, disabled, readOnly } = useField()
+  return (
+    <div className="flex flex-column gap-2">
+      <label htmlFor={id}>
+        {label} {required && "*"}
+      </label>
+      <InputText
+        {...props}
+        id={id}
+        disabled={disabled}
+        readOnly={readOnly}
+        invalid={Boolean(errorMessage)}
+        value={value ?? ""}
+        onChange={(e) => onChange?.(e.target.value)}
+        onBlur={onBlur}
+      />
+      {errorMessage && <small className="p-error">{errorMessage}</small>}
+    </div>
+  )
+}
+```
+
+Register it in `setupForm`:
+
+```tsx
+export const [Form, defineConfig] = setupForm({
+  fieldMapping: defineMapping({ text: TextField }),
+  renderRoot: ({ children, onSubmit }) => <form onSubmit={onSubmit}>{children}</form>,
+})
+```
+
+## Full example
+
+The live demo below contains the complete set of fields (`text`, `longText`, `select`, `checkbox`), a nested section and an array field.
 
 <iframe
   src="https://stackblitz.com/edit/vitejs-vite-bbjm4u1k?ctl=1&embed=1&file=index.html&hideNavigation=1&view=preview"

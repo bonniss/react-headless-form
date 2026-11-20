@@ -1,5 +1,6 @@
 ---
 title: defineConfig
+description: Type a config fragment against a model for nested sections and reuse, and build configs at runtime from data with defineDynamicConfig.
 ---
 
 `defineConfig` is the second item in the array returned by `setupForm`.
@@ -109,3 +110,31 @@ import { loginFormConfig } from "./login.form";
   <button type="submit">Login</button>
 </Form>;
 ```
+
+## `defineDynamicConfig` for configs built from data
+
+_Added in v0.14._
+
+A config is plain data except for functions (`visible`, `validate`, …), so it can be generated at runtime — for instance from field metadata stored in a database. Such configs can't satisfy the compile-time checks of `defineConfig` (the `type` is just a `string`, `props` are unknown). Use `defineDynamicConfig` instead: it accepts a loosely typed object and returns a config `<Form>` accepts.
+
+```tsx
+import { defineDynamicConfig } from "react-headless-form"
+
+// rows: { key: string; kind: string; label: string; pattern?: string }[]
+const config = defineDynamicConfig(
+  Object.fromEntries(
+    rows.map((row) => [
+      row.key,
+      {
+        type: row.kind,                       // must exist in fieldMapping
+        label: { text: row.label },           // literal, not an i18n key
+        rules: row.pattern ? { pattern: { value: row.pattern, message: "Invalid" } } : {},
+      },
+    ]),
+  ),
+)
+
+<Form config={config} />
+```
+
+`rules.pattern` accepts a string (`"^\\d+$"` or `"/^abc$/i"`), so validation can be stored as data too. Unknown `type`s are not caught at compile time; they throw at render time like any unmapped type.

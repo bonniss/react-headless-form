@@ -1,9 +1,10 @@
 ---
 title: Schema validation
+description: "Validate with Zod, Yup or any RHF resolver via formOptions.resolver; field-level rules are disabled when a resolver is set."
 ---
 
 
-BlueForm supports schema-based validation via `formProps.resolver`, which accepts any resolver compatible with React Hook Form — including [Zod](https://zod.dev), [Yup](https://github.com/jquense/yup), and [others](https://react-hook-form.com/docs/useform#resolver).
+BlueForm supports schema-based validation via `formOptions.resolver`, which accepts any resolver compatible with React Hook Form — including [Zod](https://zod.dev), [Yup](https://github.com/jquense/yup), and [others](https://react-hook-form.com/docs/useform#resolver).
 
 ### Setup
 
@@ -17,7 +18,7 @@ pnpm add zod @hookform/resolvers
 pnpm add yup @hookform/resolvers
 ```
 
-Pass the resolver via `formProps`:
+Pass the resolver via `formOptions`:
 
 ```tsx
 import { z } from "zod";
@@ -31,7 +32,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 <Form<FormData>
-  formProps={{ resolver: zodResolver(schema) }}
+  formOptions={{ resolver: zodResolver(schema) }}
   config={{
     name: { type: "text", label: "Name" },
     email: { type: "text", label: "Email" },
@@ -42,13 +43,13 @@ type FormData = z.infer<typeof schema>;
 
 ### Resolver vs field-level `rules`
 
-When `formProps.resolver` is provided, **field-level `rules` are automatically disabled**. BlueForm detects the conflict and strips `rules` from `useController` to prevent both running simultaneously and producing unpredictable error messages.
+When `formOptions.resolver` is provided, **field-level `rules` are automatically disabled**. BlueForm detects the conflict and strips `rules` from `useController` to prevent both running simultaneously and producing unpredictable error messages.
 
 A dev-mode warning will appear if both are present:
 
 ```
 [react-headless-form] `rules` defined in field config are automatically disabled
-when `formProps.resolver` is provided. Define all validation in your schema instead.
+when `formOptions.resolver` is provided. Define all validation in your schema instead.
 ```
 
 **Bottom line: pick one approach and stick with it.**
@@ -84,7 +85,7 @@ Alternatively, set `defaultValues` at the form level:
 ```tsx
 <Form
   defaultValues={{ name: "", email: "", age: 0 }}
-  formProps={{ resolver: zodResolver(schema) }}
+  formOptions={{ resolver: zodResolver(schema) }}
   ...
 />
 ```
@@ -112,7 +113,7 @@ Yup's `.required()` correctly handles empty strings out of the box. Setting `def
 Yup defaults to `abortEarly: true`, which stops at the first error. To show all errors simultaneously (recommended for form UX), pass `{ abortEarly: false }`:
 
 ```tsx
-formProps={{ resolver: yupResolver(schema, { abortEarly: false }) }}
+formOptions={{ resolver: yupResolver(schema, { abortEarly: false }) }}
 ```
 
 ### Example: Zod
@@ -130,7 +131,7 @@ type LoginData = z.infer<typeof schema>;
 
 <Form<LoginData>
   defaultValues={{ username: "", password: "" }}
-  formProps={{ resolver: zodResolver(schema) }}
+  formOptions={{ resolver: zodResolver(schema) }}
   config={{
     username: { type: "text", label: "Username" },
     password: { type: "text", label: "Password", props: { type: "password" } },
@@ -159,7 +160,7 @@ type LoginData = yup.InferType<typeof schema>;
 
 <Form<LoginData>
   defaultValues={{ username: "", password: "" }}
-  formProps={{ resolver: yupResolver(schema, { abortEarly: false }) }}
+  formOptions={{ resolver: yupResolver(schema, { abortEarly: false }) }}
   config={{
     username: { type: "text", label: "Username" },
     password: { type: "text", label: "Password", props: { type: "password" } },

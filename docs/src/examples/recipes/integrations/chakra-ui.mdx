@@ -1,9 +1,53 @@
 ---
 title: Chakra UI
+description: Wire Chakra UI inputs to BlueForm field types with useField.
 outline: false
 ---
 
 This recipe demonstrates how to wire [Chakra UI](https://chakra-ui.com/) components with BlueForm.
+
+Each field type is a small component that reads everything from `useField()` and forwards it to the library's input. The form config, `setupForm` and submit logic are the same as in every other recipe — see [Integrations](./index.mdx) for the shared sample form and the event-signature notes.
+
+## Text field adapter
+
+```tsx
+// Chakra UI v3 (Field namespace). For v2, use FormControl / FormLabel / FormErrorMessage.
+import { Field, Input } from "@chakra-ui/react"
+import { useField } from "react-headless-form"
+
+export function TextField(props: React.ComponentProps<typeof Input>) {
+  const { value, onChange, onBlur, ref, label, description, errorMessage, required, disabled, readOnly } = useField()
+  return (
+    <Field.Root invalid={Boolean(errorMessage)} required={required} disabled={disabled} readOnly={readOnly}>
+      <Field.Label>
+        {label} <Field.RequiredIndicator />
+      </Field.Label>
+      <Input
+        {...props}
+        ref={ref}
+        value={value ?? ""}
+        onChange={(e) => onChange?.(e.target.value)}
+        onBlur={onBlur}
+      />
+      {description && <Field.HelperText>{description}</Field.HelperText>}
+      <Field.ErrorText>{errorMessage}</Field.ErrorText>
+    </Field.Root>
+  )
+}
+```
+
+Register it in `setupForm`:
+
+```tsx
+export const [Form, defineConfig] = setupForm({
+  fieldMapping: defineMapping({ text: TextField }),
+  renderRoot: ({ children, onSubmit }) => <form onSubmit={onSubmit}>{children}</form>,
+})
+```
+
+## Full example
+
+The live demo below contains the complete set of fields (`text`, `longText`, `select`, `checkbox`), a nested section and an array field.
 
 <iframe
   src="https://stackblitz.com/edit/chakra-ui-v3-cyehl6ee?ctl=1&embed=1&file=index.html&hideNavigation=1&view=preview"

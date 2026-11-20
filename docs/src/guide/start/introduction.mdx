@@ -1,12 +1,13 @@
 ---
 title: Introduction
+description: "What react-headless-form (BlueForm) is: a config-driven, headless form engine on top of React Hook Form, and why it exists."
 ---
 
 import logo from '../../../logo.png'
 
 <img src={logo} width="360" style={{ margin: 'auto' }} />
 
-:::info{title="A naming note"}
+:::info A naming note
 This package was originally named `blueform`, but npm rejected the publication because the name was deemed too similar to an existing package. We then switched to **`react-headless-form`** — a clear and descriptive name, though somewhat verbose. Unfortunately, abbreviating it as “RHF” isn’t practical, as that acronym is almost universally associated with **React Hook Form** (for the skeptics — just try googling “RHF”).
 
 For brevity, this documentation refers to the package simply as **BlueForm**, while **RHF** always refers to **React Hook Form**.
@@ -32,10 +33,6 @@ Input wiring should not be the dominant concern in a form system. It should fade
 
 With **BlueForm**, building a form becomes a clear process:
 
-import { Steps } from '@rspress/core/theme';
-
-<Steps>
-
 ### 1. Define your fields (optional, incremental)
 
 Register reusable building blocks through `fieldMapping`, which maps a type name to a React component. The mapping is entirely yours. This step is optional, as **BlueForm** includes built-in primitives that are sufficient for many use cases, allowing you to start immediately and extend incrementally as your design system grows.
@@ -52,7 +49,6 @@ Compose your form using your own fields, validation rules, layout-related proper
 
 Handle submission, side effects, conditional visibility, and integrations—without coupling them to layout.
 
-</Steps>
 
 And that's it — you now have a working form.
 

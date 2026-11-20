@@ -1,9 +1,53 @@
 ---
 title: React Native Web
+description: Use BlueForm with React Native primitives: field components built on TextInput and a View-based renderRoot.
 outline: false
 ---
 
 This recipe demonstrates how to wire [React Native Web](https://necolas.github.io/react-native-web/) components with BlueForm.
+
+Each field type is a small component that reads everything from `useField()` and forwards it to the library's input. The form config, `setupForm` and submit logic are the same as in every other recipe — see [Integrations](./index.mdx) for the shared sample form and the event-signature notes.
+
+## Text field adapter
+
+```tsx
+import { Button, Text, TextInput, View } from "react-native"
+import { defineMapping, setupForm, useField } from "react-headless-form"
+
+export function TextField(props: React.ComponentProps<typeof TextInput>) {
+  const { value, onChange, onBlur, label, errorMessage, required, disabled, readOnly } = useField()
+  return (
+    <View>
+      <Text>
+        {label} {required && "*"}
+      </Text>
+      <TextInput
+        {...props}
+        editable={!disabled && !readOnly}
+        value={value ?? ""}
+        onChangeText={(text) => onChange?.(text)}
+        onBlur={onBlur}
+      />
+      {errorMessage && <Text style={{ color: "red" }}>{errorMessage}</Text>}
+    </View>
+  )
+}
+
+// There is no <form> in React Native: render a View and trigger onSubmit yourself
+export const [Form] = setupForm({
+  fieldMapping: defineMapping({ text: TextField }),
+  renderRoot: ({ children, onSubmit }) => (
+    <View>
+      {children}
+      <Button title="Submit" onPress={() => onSubmit()} />
+    </View>
+  ),
+})
+```
+
+## Full example
+
+The live demo below contains the complete set of fields (`text`, `longText`, `select`, `checkbox`), a nested section and an array field.
 
 <iframe
   src="https://stackblitz.com/edit/vitejs-vite-fksk1yxs?ctl=1&embed=1&file=index.html&hideNavigation=1&view=preview"

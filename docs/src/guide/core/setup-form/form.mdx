@@ -1,5 +1,6 @@
 ---
 title: \<Form /\>
+description: Props of the typed Form component returned by setupForm — submit lifecycle (onSubmit, onSubmitSuccess, onSubmitFailure, onInvalid), change hooks with debounce, ref, and the full field config reference.
 ---
 
 `Form` is the first item in the array returned by `setupForm`.
@@ -73,9 +74,17 @@ The field configuration object that defines the structure of the form. Each key 
 
 See [Field config](#field-config) below.
 
+### Submit lifecycle
+
+```text
+submit ─┬─ validation fails ──────────────► onInvalid(errors)
+        └─ validation passes ─► onSubmit ─┬─ resolves ─► onSubmitSuccess
+                                          └─ throws ───► onSubmitFailure(error)
+```
+
 ### `onSubmit`
 
-Called when the form is submitted and passes validation. Receives the typed form data, the full [React Hook Form methods](https://react-hook-form.com/docs/useform), and the optional submit event:
+Called when the form is submitted and passes validation. Receives the typed form data, the full [React Hook Form methods](https://react-hook-form.com/docs/useform), and the optional submit event. It may be async:
 
 ```tsx
 onSubmit={(data, formMethods, event) => {
@@ -87,15 +96,40 @@ Use this for submit-time effects such as API calls, persistence, navigation, or 
 
 ### `onSubmitSuccess`
 
-Called after `onSubmit` resolves successfully. Receives the same arguments as `onSubmit`.
+Called after `onSubmit` resolves without throwing. Receives the same arguments as `onSubmit`.
 
 This is a good place for post-submit side effects such as `reset()`, toast notifications, or closing a dialog after a successful save.
 
+### `onSubmitFailure`
+
+_Added in v0.14._
+
+Called when `onSubmit` (or `onSubmitSuccess`) throws or rejects — typically a failed API call. Receives the error, the submitted values and the form methods:
+
+```tsx
+onSubmit={async (data) => {
+  await api.save(data) // may throw
+}}
+onSubmitFailure={(error, values, form) => {
+  form.setError("root.server", { message: getMessage(error) })
+}}
+```
+
+`onSubmitSuccess` is skipped and `formState.isSubmitSuccessful` stays `false`. When `onSubmitFailure` is omitted the error is logged with `console.error` — it never becomes an unhandled promise rejection, so you don't need to wrap every `onSubmit` in `try/catch`.
+
+### `onInvalid`
+
+_Added in v0.14._
+
+Called when submission is blocked because validation failed; `onSubmit` is not called. Receives the [RHF errors object](https://react-hook-form.com/docs/useform/formstate#errors).
+
+Use this to react to invalid submission attempts, for example by scrolling to the first error or showing a summary banner.
+
 ### `onSubmitError`
 
-Called when submission fails due to validation errors. Receives the [RHF errors object](https://react-hook-form.com/docs/useform/formstate#errors).
-
-Use this when you need to react to invalid submission attempts, for example by scrolling to the first error or showing a summary banner.
+:::warning Deprecated
+Renamed to [`onInvalid`](#oninvalid) because the old name suggested it also handled errors thrown by `onSubmit` — it never did (use [`onSubmitFailure`](#onsubmitfailure) for those). It still works and is ignored when `onInvalid` is set. It will be removed in 1.0.
+:::
 
 ### `defaultValues`
 
@@ -166,6 +200,8 @@ Delay in milliseconds before `onFormChange` and `onFieldChange` fire. Useful for
 
 This affects the change hooks only. It does not change how [RHF validation](https://react-hook-form.com/docs/useform) itself works.
 
+The change hooks always call the **latest** callback you pass, so inline functions that close over component state are safe. A change still waiting for its debounce delay is **flushed when the form unmounts** (e.g. the user switches tab right after typing), so autosave never loses the last edit. To deliver it earlier — before navigating away, for instance — call [`ref.current.flushChanges()`](#ref).
+
 ### `renderRoot`
 
 Controls the outer form shell, usually the `<form>` element and any wrappers around it.
@@ -175,6 +211,21 @@ Can be provided per-form to override the value set in `setupForm`.
 :::danger Important
 If neither `setupForm` nor the `<Form />` instance provides `renderRoot`, an error will be thrown at run time.
 :::
+
+### `ref`
+
+The ref exposes the full [RHF `useForm` return](https://react-hook-form.com/docs/useform) (`reset`, `setValue`, `getValues`, …) plus `flushChanges()`. Use `useFormRef` for a correctly typed ref:
+
+```tsx
+import { useFormRef } from "react-headless-form"
+
+const formRef = useFormRef<LoginData>()
+
+<Form<LoginData> ref={formRef} config={config} />
+
+formRef.current?.reset()
+formRef.current?.flushChanges() // deliver a pending debounced change now
+```
 
 ### `i18nConfig`
 
@@ -224,6 +275,9 @@ Each entry in `config` describes a single field. All fields share a common set o
 | `visible` | `boolean \| (values) => boolean` | Controls field visibility - hidden fields unmount, so state retention depends on whether the field ever mounted and on RHF `shouldUnregister` |
 | `disabled` | `boolean \| (values) => boolean` | Controls disabled state - disabled fields are excluded from the submit payload |
 | `readOnly` | `boolean` | Field-level read-only state - merged with form-level `readOnly` |
+| `required` | `boolean \| (values) => boolean` | UI-only `required` flag (e.g. to show `*`). Defaults to `Boolean(rules.required)`. Does not add validation |
+| `deps` | `Path[]` | Paths that the `visible` / `disabled` / `required` functions read - lets BlueForm re-render only when they change. See [conditional rendering](../conditional-rendering.mdx#performance-deps) |
+| `slots` | `{ before?, after? }` | Extra UI rendered right before / after the field, inside its field context. See [slots](#slots) |
 
 `visible` and `disabled` can also be functions. In that case they receive the current form values and are evaluated reactively on every change:
 
@@ -240,7 +294,7 @@ confirm: {
 
 For the full runtime behavior - including hidden-from-start fields, `defaultValue`, and `shouldUnregister` - see [conditional rendering](../conditional-rendering.mdx).
 
-`rules` uses standard [React Hook Form validation rules](https://react-hook-form.com/docs/useform/register). These are automatically disabled when `formOptions.resolver` is provided, so schema-driven forms should keep validation in the resolver instead.
+`rules` uses standard [React Hook Form validation rules](https://react-hook-form.com/docs/useform/register). `pattern` additionally accepts a string — `"^\\d+$"` or `"/^abc$/i"` — so configs can be stored as plain data. These are automatically disabled when `formOptions.resolver` is provided, so schema-driven forms should keep validation in the resolver instead.
 
 ```tsx
 username: {
@@ -251,3 +305,22 @@ username: {
   },
 }
 ```
+
+### Slots
+
+_Added in v0.14._
+
+`slots` renders extra UI next to one specific field without replacing it via `render`. Slot content is rendered inside the field's context, so a slot component can call `useField()`, and a function slot receives the live field props (including `value`):
+
+```tsx
+note: {
+  type: "textarea",
+  label: "Note",
+  slots: {
+    before: <Hint>Visible to the student</Hint>,
+    after: ({ value }) => <ToneChecker text={value} />,
+  },
+},
+```
+
+For one-off markup between fields, prefer a `section` or an `inline` field; use `slots` when the extra UI belongs to a field (and needs its value).
