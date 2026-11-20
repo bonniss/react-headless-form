@@ -5,8 +5,10 @@ import {
   useForm,
 } from "react-hook-form";
 
-import type { BlueFormRef } from "@/types/form";
-import { forwardRef, useImperativeHandle } from "react";
+import type { BlueFormRef, BlueFormRefValue } from "@/types/form";
+import { forwardRef, useImperativeHandle, useRef } from "react";
+
+const noop = () => {};
 import type { BlueFormProps, ComponentMap } from "../../types";
 import { BlueFormContent } from "./internal/BlueFormContent";
 import { BlueFormInternalProvider } from "./internal/BlueFormInternalProvider";
@@ -35,14 +37,23 @@ export function BlueFormInner<
     ...formOptions,
     defaultValues,
   } as UseFormProps<TModel>);
-  useImperativeHandle(ref, () => form, [form]);
+  const flushRef = useRef<() => void>(noop);
+  useImperativeHandle(
+    ref,
+    () =>
+      ({
+        ...form,
+        flushChanges: () => flushRef.current(),
+      }) as BlueFormRefValue<TModel>,
+    [form],
+  );
 
   if (
     formOptions?.resolver &&
     hasRulesInConfig(config as Record<string, any>)
   ) {
     console.warn(
-      "[react-headless-form] `rules` defined in field config are automatically disabled when `formProps.resolver` is provided. " +
+      "[react-headless-form] `rules` defined in field config are automatically disabled when `formOptions.resolver` is provided. " +
         "Define all validation in your schema instead.",
     );
   }
@@ -50,7 +61,7 @@ export function BlueFormInner<
   return (
     <FormProvider {...form}>
       <BlueFormInternalProvider defaultValue={blueFormProps}>
-        <BlueFormContent<TModel, TComponentMap> />
+        <BlueFormContent<TModel, TComponentMap> flushRef={flushRef} />
       </BlueFormInternalProvider>
     </FormProvider>
   );

@@ -1,23 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Fragment, useMemo } from "react"
-import { type FieldValues, useFormContext } from "react-hook-form"
+import { type FieldValues, useFormContext, useWatch } from "react-hook-form"
 
 import type {
   BlueFormProps,
   ComponentMap,
   CoreFieldType,
   FieldResolvedProps,
+  FieldSlotContent,
   FormFieldConfig,
   FormSectionProps,
 } from "@/types"
 
 import { resolveRules } from "@/components/helper/resolve-rules"
+import type { TranslatableText, TranslationResolver } from "@/components/i18n"
 import type { RenderFn } from "@/types/render"
 import { ArrayRenderSlot } from "../field"
 import HiddenField from "../field/HiddenField"
 import InlineField from "../field/InlineField"
 import { FieldArrayProvider } from "../provider"
-import { FieldProvider } from "../provider/FieldProvider"
+import { FieldProvider, useField } from "../provider/FieldProvider"
 import { useBlueFormInternal } from "./BlueFormInternalProvider"
 
 interface BlueFormEngineProps<
@@ -29,7 +31,7 @@ interface BlueFormEngineProps<
 
 /**
  * Checks whether a config object (at this engine level only) contains any field
- * that uses `visible` or `disabled` as a function.
+ * that uses `visible`, `disabled` or `required` as a function.
  *
  * Used to decide whether this BlueFormEngine instance needs to subscribe to form
  * values via watch(). If no field uses conditional logic, the subscription is
@@ -38,12 +40,81 @@ interface BlueFormEngineProps<
  * Scans only the direct fields of the given config. Nested section configs are
  * handled by their own child BlueFormEngine instance, which runs its own scan.
  */
-function hasConditionalFields(config: Record<string, any>): boolean {
-  return Object.values(config).some(
-    (field) =>
-      typeof field?.visible === "function" ||
-      typeof field?.disabled === "function",
+function isConditionalField(field: any): boolean {
+  return (
+    typeof field?.visible === "function" ||
+    typeof field?.disabled === "function" ||
+    typeof field?.required === "function"
   )
+}
+
+type ValuesSubscription =
+  | { mode: "none" }
+  | { mode: "all" }
+  | { mode: "deps"; deps: string[] }
+
+/**
+ * Decides how this engine level subscribes to form values:
+ * - `none`: no conditional fields → no subscription
+ * - `deps`: every conditional field declares `deps` → watch only those paths
+ * - `all`:  otherwise → watch the whole form (previous behavior)
+ */
+function getValuesSubscription(
+  config: Record<string, any>,
+): ValuesSubscription {
+  const conditional = Object.values(config).filter(isConditionalField)
+  if (!conditional.length) return { mode: "none" }
+  if (!conditional.every((field) => Array.isArray(field.deps))) {
+    return { mode: "all" }
+  }
+  const deps = [...new Set(conditional.flatMap((field) => field.deps))]
+  return { mode: "deps", deps }
+}
+
+/**
+ * Renders a `slots.before` / `slots.after` entry. Function slots receive the
+ * live field context from the enclosing `FieldProvider`.
+ */
+function FieldSlot({ slot }: { slot: FieldSlotContent }) {
+  const field = useField()
+  return <>{typeof slot === "function" ? slot(field) : slot}</>
+}
+
+function renderStaticSlot(
+  slot: FieldSlotContent | undefined,
+  ctx: FieldResolvedProps,
+) {
+  if (slot === undefined) return null
+  return typeof slot === "function" ? slot(ctx) : slot
+}
+
+function isTranslatable(value: unknown): value is TranslatableText {
+  return (
+    typeof value === "string" ||
+    (typeof value === "object" &&
+      value !== null &&
+      ("message" in value || "text" in value))
+  )
+}
+
+/**
+ * Translates the props listed in `i18nConfig.translateProps`.
+ * Returns the original object when nothing needs translating.
+ */
+function translateComponentProps<T>(
+  props: T,
+  translateProps: string[],
+  t: TranslationResolver,
+): T {
+  if (!props || !translateProps.length) return props
+  let result: Record<string, unknown> | undefined
+  for (const name of translateProps) {
+    const value = (props as Record<string, unknown>)[name]
+    if (!isTranslatable(value)) continue
+    result ??= { ...(props as Record<string, unknown>) }
+    result[name] = t(value)
+  }
+  return (result ?? props) as T
 }
 
 function BlueFormEngine<
@@ -51,32 +122,35 @@ function BlueFormEngine<
   TComponentMap extends ComponentMap,
 >({ config, namespace }: BlueFormEngineProps<TModel, TComponentMap>) {
   const {
-    i18nConfig: { t, validationResolver },
+    i18nConfig: { t, validationResolver, translateProps },
     fieldMapping,
     readOnly: isFormReadOnly,
   } = useBlueFormInternal()
-  const { watch } = useFormContext()
+  const { watch, getValues, control } = useFormContext()
 
-  // Determine whether any field at this config level uses conditional logic.
+  // Determine how this config level needs form values for conditional logic.
   // Memoized because config is typically a stable object reference (defined
   // outside the component tree), and the scan itself is cheap O(n).
-  // Even when config is unstable, this avoids the watch() subscription cost
-  // for the common case where no conditional fields exist.
-  const needsValues = useMemo(() => hasConditionalFields(config), [config])
+  const subscription = useMemo(() => getValuesSubscription(config), [config])
 
-  // Only call watch() — and therefore only subscribe to form state changes —
-  // when at least one field at this level needs it.
-  //
-  // When needsValues is false:
-  //   - watch() is never called on this render
-  //   - This engine instance won't re-render on form value changes
-  //   - Only re-renders when its own props/context change (e.g. config swap)
-  //
-  // When needsValues is true:
-  //   - Behavior is identical to before: full form subscription
-  //   - Future optimization: scope to specific field paths via useWatch({ name: deps })
-  //     once visibleDeps/disabledDeps API is added (roadmap P1 #5)
-  const values = (needsValues ? watch() : {}) as Partial<TModel>
+  // `deps` mode: re-render only when the declared paths change.
+  // useWatch is always called (rules of hooks) and disabled otherwise.
+  useWatch({
+    control,
+    name: subscription.mode === "deps" ? subscription.deps : [],
+    disabled: subscription.mode !== "deps" || !subscription.deps.length,
+  })
+
+  // - none: watch() is never called → no re-render on value changes
+  // - deps: read a snapshot with getValues() (no global subscription)
+  // - all:  watch() subscribes to every change (fields without `deps`)
+  const values = (
+    subscription.mode === "none"
+      ? {}
+      : subscription.mode === "deps"
+        ? getValues()
+        : watch()
+  ) as Partial<TModel>
 
   const body = (
     <>
@@ -85,7 +159,7 @@ function BlueFormEngine<
         const field = fieldConfig as FormFieldConfig<TModel, TComponentMap>
         const type = field.type as string
         const {
-          props: componentProps,
+          props: rawComponentProps,
           render,
           visible = true,
           disabled = false,
@@ -94,9 +168,17 @@ function BlueFormEngine<
           rules = {},
           description,
           readOnly: isFieldReadOnly,
+          required,
+          slots,
         } = field
 
         const path = (namespace ? `${namespace}.${key}` : key) as string
+
+        const componentProps = translateComponentProps(
+          rawComponentProps,
+          translateProps,
+          t,
+        )
 
         const translatedLabel = t(label)
         const translatedDescription = t(description)
@@ -111,7 +193,13 @@ function BlueFormEngine<
         const isDisabled =
           typeof disabled === "function" ? disabled(values) : !!disabled
         const isReadonly = Boolean(isFormReadOnly ?? isFieldReadOnly)
-        const isRequired = Boolean(rules?.required)
+        // `required` only drives the UI flag (e.g. "*"); validation stays in `rules`.
+        const isRequired =
+          required === undefined
+            ? Boolean(rules?.required)
+            : typeof required === "function"
+              ? required(values)
+              : required
         const resolvedRules = resolveRules(
           rules,
           validationResolver,
@@ -147,11 +235,13 @@ function BlueFormEngine<
               <FieldArrayProvider
                 defaultValue={{ resolved: resolvedProps, config: field }}
               >
+                {renderStaticSlot(slots?.before, resolvedProps)}
                 {ArrayField ? (
                   <ArrayField {...componentProps} />
                 ) : (
                   <ArrayRenderSlot render={render as RenderFn<"array">} />
                 )}
+                {renderStaticSlot(slots?.after, resolvedProps)}
               </FieldArrayProvider>
             )
 
@@ -202,7 +292,9 @@ function BlueFormEngine<
               <FieldProvider
                 defaultValue={{ resolved: sectionResolvedProps, config: field }}
               >
+                {slots?.before !== undefined && <FieldSlot slot={slots.before} />}
                 {node}
+                {slots?.after !== undefined && <FieldSlot slot={slots.after} />}
               </FieldProvider>
             )
 
@@ -237,7 +329,9 @@ function BlueFormEngine<
               <FieldProvider
                 defaultValue={{ resolved: resolvedProps, config: field }}
               >
+                {slots?.before !== undefined && <FieldSlot slot={slots.before} />}
                 {node}
+                {slots?.after !== undefined && <FieldSlot slot={slots.after} />}
               </FieldProvider>
             )
             break

@@ -1,9 +1,378 @@
 ---
 title: Mantine
+description: Wire Mantine inputs (TextInput, Textarea, Select, Checkbox, Fieldset) to BlueForm field types with useField, including a nested section and an array field.
 outline: false
 ---
 
-This recipe demonstrates how to wire [Mantine](https://mantine.dev/) components with BlueForm.
+This recipe wires [Mantine](https://mantine.dev/) components to BlueForm. Each field type is a small component that reads everything from `useField()` and forwards it to the Mantine input. The form config is the shared [sample form](./index.mdx).
+
+```sh
+pnpm add react-headless-form react-hook-form @mantine/core @mantine/hooks
+```
+
+## Setup
+
+```tsx title="form.setup.tsx"
+import { defineMapping, setupForm } from 'react-headless-form';
+import InputField from './InputField';
+import TextAreaField from './TextAreaField';
+import CheckboxField from './CheckboxField';
+import SelectField from './SelectField';
+
+export type UserProfile = {
+  id: string;
+  name: string;
+  password?: string;
+  email: string;
+  role: 'user' | 'admin';
+  bio?: string;
+  active: boolean;
+  settings: {
+    newsletter: boolean;
+    theme: 'light' | 'dark';
+  };
+  addresses: {
+    street: string;
+    city: string;
+  }[];
+};
+
+export const [Form, defineConfig] = setupForm({
+  fieldMapping: defineMapping({
+    text: InputField,
+    longText: TextAreaField,
+    checkbox: CheckboxField,
+    select: SelectField,
+  }),
+});
+```
+
+Mantine needs `MantineProvider` and its stylesheet at the app root (`import '@mantine/core/styles.css'`). `renderRoot` is passed per form below; it could equally be set once in `setupForm`.
+
+## Field components
+
+Text inputs pass the event value; `Select` passes the value directly; `Checkbox` reads `checked`.
+
+```tsx title="InputField.tsx"
+import { useField } from 'react-headless-form';
+import { type FunctionComponent } from 'react';
+import { TextInput, type TextInputProps } from '@mantine/core';
+
+interface InputFieldProps extends TextInputProps {}
+
+const InputField: FunctionComponent<InputFieldProps> = (props) => {
+  const {
+    id,
+    value,
+    onChange,
+    errorMessage,
+    label,
+    description,
+    required,
+    disabled,
+    readOnly,
+    visible,
+    ref,
+  } = useField();
+
+  if (!visible) return null;
+
+  return (
+    <TextInput
+      {...props}
+      ref={ref}
+      id={id}
+      label={label}
+      description={description}
+      error={errorMessage}
+      withAsterisk={required}
+      value={value ?? ''}
+      onChange={(e) => onChange?.(e.target.value)}
+      disabled={disabled}
+      readOnly={readOnly}
+      placeholder={props.placeholder ?? label}
+      aria-required={required}
+      aria-invalid={Boolean(errorMessage)}
+    />
+  );
+};
+
+export default InputField;
+```
+
+```tsx title="TextAreaField.tsx"
+import { useField } from 'react-headless-form';
+import { Textarea, type TextareaProps } from '@mantine/core';
+import { type FunctionComponent } from 'react';
+
+interface TextAreaFieldProps extends TextareaProps {}
+
+const TextAreaField: FunctionComponent<TextAreaFieldProps> = (props) => {
+  const {
+    id,
+    value,
+    onChange,
+    errorMessage,
+    label,
+    description,
+    required,
+    disabled,
+    readOnly,
+    visible,
+    ref,
+  } = useField();
+
+  if (!visible) return null;
+
+  return (
+    <Textarea
+      {...props}
+      ref={ref}
+      id={id}
+      label={label}
+      description={description}
+      error={errorMessage}
+      withAsterisk={required}
+      value={value ?? ''}
+      onChange={(e) => onChange?.(e.target.value)}
+      disabled={disabled}
+      readOnly={readOnly}
+      placeholder={props.placeholder ?? label}
+      aria-required={required}
+      aria-invalid={Boolean(errorMessage)}
+    />
+  );
+};
+
+export default TextAreaField;
+```
+
+```tsx title="SelectField.tsx"
+import { useField } from 'react-headless-form';
+import { Select, type SelectProps } from '@mantine/core';
+import { type FunctionComponent } from 'react';
+
+interface SelectFieldProps extends SelectProps {
+  data: { value: string; label: string }[];
+  clearable?: boolean;
+}
+
+const SelectField: FunctionComponent<SelectFieldProps> = ({
+  data,
+  clearable = false,
+}) => {
+  const {
+    id,
+    value,
+    onChange,
+    label,
+    description,
+    errorMessage,
+    disabled,
+    readOnly,
+    visible,
+    ref,
+    config: { props },
+  } = useField();
+
+  if (!visible) return null;
+
+  return (
+    <Select
+      {...props}
+      ref={ref}
+      id={id}
+      data={data}
+      value={value ?? null}
+      onChange={(val) => onChange?.(val)}
+      label={label}
+      description={description}
+      error={errorMessage}
+      disabled={disabled}
+      readOnly={readOnly}
+      clearable={clearable}
+    />
+  );
+};
+
+export default SelectField;
+```
+
+```tsx title="CheckboxField.tsx"
+import { useField } from 'react-headless-form';
+import { Checkbox, type CheckboxProps } from '@mantine/core';
+import { type FunctionComponent } from 'react';
+
+interface CheckboxFieldProps extends CheckboxProps {
+  labelPosition?: 'left' | 'right';
+}
+
+const CheckboxField: FunctionComponent<CheckboxFieldProps> = ({
+  labelPosition = 'right',
+}) => {
+  const {
+    id,
+    value,
+    onChange,
+    label,
+    description,
+    errorMessage,
+    disabled,
+    readOnly,
+    visible,
+    ref,
+    config: { props },
+  } = useField();
+
+  if (!visible) return null;
+
+  return (
+    <Checkbox
+      {...props}
+      ref={ref}
+      id={id}
+      checked={Boolean(value)}
+      onChange={(e) => onChange?.(e.currentTarget.checked)}
+      label={label}
+      description={description}
+      error={errorMessage}
+      disabled={disabled}
+      readOnly={readOnly}
+      labelPosition={labelPosition}
+    />
+  );
+};
+
+export default CheckboxField;
+```
+
+## Form with section and array
+
+`section` is wrapped in a Mantine `Fieldset` via `render`; the array field uses `useArrayField` to render, add and remove items.
+
+```tsx title="App.tsx"
+import { Button, Fieldset } from '@mantine/core';
+import { useArrayField } from 'react-headless-form';
+import { useState } from 'react';
+import { Form, defineConfig, type UserProfile } from './components/form.setup';
+
+function AddressArrayField() {
+  const { label, items, renderItem, append, remove } = useArrayField();
+  return (
+    <Fieldset legend={label}>
+      {items.map((field, index) => (
+        <Fieldset
+          key={field.id}
+          legend={`Address #${index + 1}`}
+          styles={{ root: { marginBottom: 12 } }}
+        >
+          {renderItem(field, index)}
+          <Button
+            type="button"
+            variant="subtle"
+            color="red"
+            size="xs"
+            mt={8}
+            onClick={() => remove(index)}
+          >
+            Remove
+          </Button>
+        </Fieldset>
+      ))}
+      <Button type="button" variant="light" mt={8} onClick={() => append({})}>
+        + Add address
+      </Button>
+    </Fieldset>
+  );
+}
+
+function App() {
+  const [formData, setFormData] = useState<UserProfile>();
+
+  return (
+    <main>
+      <Form<UserProfile>
+        onFormChange={setFormData}
+        onSubmit={(fd) => alert(JSON.stringify(fd, null, 2))}
+        renderRoot={({ children, onSubmit }) => (
+          <form onSubmit={onSubmit}>{children}</form>
+        )}
+        config={{
+          name: {
+            type: 'text',
+            label: 'Name',
+            rules: { required: 'Name is required' },
+          },
+          password: {
+            type: 'text',
+            label: 'Password',
+            props: { type: 'password' },
+          },
+          bio: {
+            type: 'longText',
+            label: 'Bio',
+          },
+          role: {
+            type: 'select',
+            label: 'Role',
+            props: {
+              data: [
+                { value: 'admin', label: 'Admin' },
+                { value: 'user', label: 'User' },
+              ],
+            },
+          },
+          settings: {
+            type: 'section',
+            label: 'Settings',
+            render: ({ children, label }) => (
+              <Fieldset legend={label}>{children}</Fieldset>
+            ),
+            props: {
+              nested: true,
+              config: defineConfig<UserProfile['settings']>({
+                newsletter: {
+                  type: 'checkbox',
+                  label: 'Newsletter',
+                },
+                theme: {
+                  type: 'select',
+                  label: 'Theme',
+                  props: {
+                    data: [
+                      { value: 'light', label: 'Light' },
+                      { value: 'dark', label: 'Dark' },
+                    ],
+                  },
+                },
+              }),
+            },
+          },
+          addresses: {
+            type: 'array',
+            label: 'Address book',
+            render: () => <AddressArrayField />,
+            props: {
+              config: defineConfig<UserProfile['addresses'][number]>({
+                street: { type: 'text', label: 'Street' },
+                city: { type: 'text', label: 'City' },
+              }),
+            },
+          },
+        }}
+      >
+        <Button type="submit">Submit</Button>
+      </Form>
+
+      <pre>{JSON.stringify(formData, null, 2)}</pre>
+    </main>
+  );
+}
+
+export default App;
+```
+
+## Live demo
 
 <iframe
   src="https://stackblitz.com/edit/vitejs-vite-xvon6m4y?ctl=1&embed=1&file=index.html&hideNavigation=1&view=preview"

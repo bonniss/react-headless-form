@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { TranslatableText } from "@/components/i18n";
-import type { ComponentProps, ComponentType } from "react";
+import type { ComponentProps, ComponentType, ReactNode } from "react";
+import type { FieldResolvedProps } from "./input";
 import type { FieldValues, Path } from "react-hook-form";
 import { RenderFn } from "./render";
 import type { ValidationRules } from "./rule";
@@ -41,6 +42,13 @@ export type CoreFieldType = "section" | "array" | "hidden" | "inline";
  * to use `K extends string ? K : never` at the call site (see `FieldConfigUnion`).
  */
 export type ComponentMap = WithKnownKeys<CoreFieldType, ComponentType<any>>;
+
+/**
+ * Content of a field slot: a node, or a function of the field's resolved props.
+ */
+export type FieldSlotContent =
+  | ReactNode
+  | ((field: FieldResolvedProps) => ReactNode);
 
 /**
  * Configuration for a single form field.
@@ -117,6 +125,37 @@ export type FormFieldConfig<
    * based on the current form values.
    */
   disabled?: boolean | ((values: Partial<TModel>) => boolean);
+
+  /**
+   * Marks the field as required in the UI (`useField().required`, e.g. to show "*").
+   * Accepts a function of the current form values for conditionally required fields.
+   *
+   * This only affects the resolved `required` flag; enforce the rule itself with
+   * `rules.validate` or your schema. When omitted, it is inferred from `rules.required`.
+   */
+  required?: boolean | ((values: Partial<TModel>) => boolean);
+
+  /**
+   * Form paths that `visible` / `disabled` / `required` functions depend on.
+   *
+   * When **every** conditional field at a config level declares `deps`, that
+   * level only re-renders when those paths change, instead of on every change
+   * anywhere in the form. Paths are absolute (e.g. `"profile.role"`).
+   */
+  deps?: Path<TModel>[];
+
+  /**
+   * Extra UI rendered right before / after this field, inside the field context
+   * (so components in a slot can call `useField()`). A function receives the
+   * resolved field props, including the current `value`.
+   *
+   * @example
+   * slots: { after: ({ value }) => <AiReview text={value} /> }
+   */
+  slots?: {
+    before?: FieldSlotContent;
+    after?: FieldSlotContent;
+  };
 
   /**
    * Optional render override for the field.

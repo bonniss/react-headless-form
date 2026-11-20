@@ -1,7 +1,7 @@
 ---
 title: Internationalization (i18n)
+description: Translate labels, descriptions, validation messages and selected props with any i18n library; literal text, translatable props, and type-checked i18n keys.
 ---
-
 
 BlueForm handles i18n at the **form orchestration level**, not inside field components. Labels, descriptions, and validation messages are translated **before** they reach fields.
 Field components always receive ready-to-render strings.
@@ -68,3 +68,69 @@ const [Form] = setupForm({
   },
 }
 ```
+
+### Text forms
+
+`label` and `description` accept a `TranslatableText`:
+
+| Form | Example | Result |
+|---|---|---|
+| key | `"form.username"` | `t("form.username")` |
+| key + params | `{ message: "form.max", params: { n: 5 }, fallback: "Max" }` | `t("form.max", { n: 5 })`, then `fallback`, then `message` |
+| literal | `{ text: "Họ và tên" }` | shown as-is, `t` is **not** called (v0.14+) |
+
+Use the literal form for text that is not a translation key — e.g. labels loaded from a database — so your i18n library doesn't warn about missing keys:
+
+```ts
+label: row.isKey ? row.label : { text: row.label },
+```
+
+### Translating props
+
+_Added in v0.14._
+
+By default only `label`, `description` and validation messages are translated; field `props` are passed through untouched. List the props that should also go through `t` — string values and `TranslatableText` objects are translated, anything else is left as-is:
+
+```ts
+const [Form] = setupForm({
+  i18nConfig: {
+    t: (key, params) => i18next.t(key, params),
+    translateProps: ["placeholder", "title"],
+  },
+});
+
+// config
+email: {
+  type: "text",
+  props: { placeholder: "form.email.placeholder" }, // translated
+},
+```
+
+Only top-level props are translated (not nested objects such as select options).
+
+### Type-checked keys
+
+_Added in v0.14._
+
+Register your key union once with module augmentation, and `label` / `description` (including `{ message }`) only accept known keys — typos fail at compile time. `{ text }` still accepts any string.
+
+```ts
+// i18n.d.ts
+import type { I18nKey as AppKey } from "./i18n/keys"; // e.g. derived from your JSON
+
+declare module "react-headless-form" {
+  interface Register {
+    i18nKey: AppKey;
+  }
+}
+```
+
+```ts
+username: { type: "text", label: "form.username" }, // ✅
+email:    { type: "text", label: "form.emial" },    // ❌ compile-time error
+note:     { type: "text", label: { text: "Raw" } }, // ✅ literal
+```
+
+### When i18n is disabled
+
+With `enabled: false`, `t` is not called: keys are shown as-is, `{ message }` shows its `message`, and `{ text }` its text.

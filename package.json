@@ -8,16 +8,16 @@
     "type": "git",
     "url": "https://github.com/bonniss/react-headless-form"
   },
-  "main": "./dist/react-headless-form.umd.js",
-  "module": "./dist/react-headless-form.es.js",
+  "main": "./dist/react-headless-form.umd.cjs",
+  "module": "./dist/react-headless-form.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/react-headless-form.es.js",
-      "require": "./dist/react-headless-form.umd.js"
+      "import": "./dist/react-headless-form.mjs",
+      "require": "./dist/react-headless-form.umd.cjs"
     },
-    "./styles.css": "./dist/react-headless-form.css"
+    "./package.json": "./package.json"
   },
   "engines": {
     "node": ">=18"
@@ -54,6 +54,7 @@
     "prism-react-renderer": "^2.4.1",
     "react": "^18",
     "react-dom": "^18",
+    "react-hook-form": "^7.62.0",
     "typescript": "5.8.3",
     "vite": "6.3.5",
     "vite-plugin-dts": "4.5.4",
@@ -64,7 +65,8 @@
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17 || ^18 || ^19",
-    "react-dom": "^16.8.0 || ^17 || ^18 || ^19"
+    "react-dom": "^16.8.0 || ^17 || ^18 || ^19",
+    "react-hook-form": "^7.55.0"
   },
   "files": [
     "dist"
@@ -79,7 +81,6 @@
   },
   "dependencies": {
     "just-debounce-it": "^3.2.0",
-    "react-easy-provider": "^0.2.1",
-    "react-hook-form": "^7.62.0"
+    "react-easy-provider": "^0.2.1"
   }
 }

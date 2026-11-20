@@ -1,8 +1,9 @@
 ---
 title: Conditional rendering
+description: Show, hide, disable or mark fields required based on other values with visible / disabled / required functions, and limit re-renders with deps.
 ---
 
-`visible` and `disabled` are the two built-in runtime switches for conditional form behavior.
+`visible` and `disabled` are the two built-in runtime switches for conditional form behavior. `required` (UI flag) can be conditional too.
 
 - `visible` controls whether a field is rendered at all.
 - `disabled` keeps the field rendered, but marks it disabled in React Hook Form.
@@ -59,12 +60,13 @@ If you need an initial value to exist regardless of visibility, define it at the
 />
 ```
 
-`visible` also does not automatically make a field irrelevant to validation. If a hidden field was already registered and still exists in form state, a rule like `required` can still block submission. For conditional requirements, prefer `validate` and short-circuit when the field is inactive:
+`visible` also does not automatically make a field irrelevant to validation. If a hidden field was already registered and still exists in form state, a rule like `required` can still block submission. For conditional requirements, prefer `validate` and short-circuit when the field is inactive, and use a `required` function so the field still shows its required marker (`*`) when it applies:
 
 ```tsx
 email: {
   type: "text",
   visible: (values) => values.contactMethod === "email",
+  required: (values) => values.contactMethod === "email", // UI flag only (v0.14+)
   rules: {
     validate: (value, values) =>
       values.contactMethod !== "email" ||
@@ -73,6 +75,8 @@ email: {
   },
 }
 ```
+
+`required` only drives the `required` value that `useField()` returns; it never adds validation. Without it, `required` is inferred from `rules.required`, so `validate`-based rules would show no marker.
 
 ## `disabled`
 
@@ -89,3 +93,20 @@ This payload exclusion is a React Hook Form controller behavior. It applies to r
 Use `disabled` when the user should still see the field, but cannot interact with it yet.
 
 Use `visible` when the field should disappear entirely from the current UI.
+
+## Performance: `deps`
+
+_Added in v0.14._
+
+When any field at a config level uses a function for `visible`, `disabled` or `required`, BlueForm needs the form values to evaluate it. By default it subscribes to **every** change in the form, so that level re-renders on each keystroke anywhere. This is fine for most forms; for large ones, declare which paths the functions read:
+
+```tsx
+studentId: {
+  type: "text",
+  visible: (values) => values.role === "student",
+  required: (values) => values.role === "student",
+  deps: ["role"],
+},
+```
+
+When **every** conditional field at that level declares `deps`, BlueForm watches only those paths (via `useWatch`) and skips re-rendering for unrelated changes. If even one conditional field omits `deps`, the level falls back to watching everything. Paths are absolute (`"profile.role"`), and a function must not read values outside its `deps` — they would be stale.

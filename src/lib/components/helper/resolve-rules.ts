@@ -11,11 +11,38 @@ import { typedKeys } from './typed-keys';
  *   - React StrictMode double-invoke producing corrupted rule objects
  *   - Shared config (e.g. array item config reused across instances) cross-contaminating
  */
-export function resolveRules(
+const REGEX_LITERAL = /^\/(.+)\/([dgimsuvy]*)$/;
+
+function toRegExp(source: string): RegExp {
+  const literal = REGEX_LITERAL.exec(source);
+  return literal ? new RegExp(literal[1], literal[2]) : new RegExp(source);
+}
+
+/**
+ * Converts a string `pattern` (or `{ value: string }`) into a RegExp so
+ * data-only configs work with React Hook Form. Returns the input untouched
+ * when nothing needs converting.
+ */
+export function normalizePatternRule(
   rules: Record<string, any>,
+): Record<string, any> {
+  const pattern = rules.pattern;
+  if (typeof pattern === 'string') {
+    return { ...rules, pattern: toRegExp(pattern) };
+  }
+  if (pattern && typeof pattern === 'object' && typeof pattern.value === 'string') {
+    return { ...rules, pattern: { ...pattern, value: toRegExp(pattern.value) } };
+  }
+  return rules;
+}
+
+export function resolveRules(
+  rawRules: Record<string, any>,
   validationResolver: Record<string, any>,
   translatedLabel: string | null | undefined,
 ): Record<string, any> {
+  const rules = normalizePatternRule(rawRules);
+
   // Fast path: nothing to resolve
   if (!Object.keys(rules).length || !Object.keys(validationResolver).length) {
     return rules;

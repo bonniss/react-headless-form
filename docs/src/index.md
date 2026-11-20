@@ -52,4 +52,5 @@ features:
     details: Extensively covered across field types, validation modes, conditional logic, and edge cases — ship with confidence.
     icon: 🛡️
     link: /guide/start/introduction
+description: "React headless form (BlueForm): form as configuration, bring your own UI, built on React Hook Form."
 ---

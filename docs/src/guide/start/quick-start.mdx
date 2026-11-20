@@ -1,5 +1,6 @@
 ---
 title: Quick start
+description: Install react-headless-form with react-hook-form, define a field component with useField, set up the form engine with setupForm, and render a typed login form.
 ---
 
 ## Installation
@@ -7,6 +8,8 @@ title: Quick start
 import PackageInstall from '../../../components/PackageInstall'
 
 <PackageInstall />
+
+`react-hook-form` is a peer dependency (v0.14+), so install it alongside BlueForm.
 
 ## Basic usage
 
@@ -127,10 +130,15 @@ const BasicForm = () => {
 
 import FirstForm from '../../../components/FirstForm'
 
-:::info{title="Preview"}
+:::info Preview
 <FirstForm />
 :::
 
 :::note
 The form above is unstyled intentionally. BlueForm is headless. Styling is entirely up to you.
 :::
+
+## Next steps
+
+- Read [Common pitfalls](./pitfalls.mdx) — a two-minute checklist of things that trip people up.
+- Learn the [`<Form />` props](../core/setup-form/form.mdx) and the full field config.
