@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.14.0](https://github.com/bonniss/react-headless-form/compare/v0.13.1...v0.14.0) (2026-11-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* **build:** react-hook-form (^7.55.0) must be installed alongside react-headless-form.
+
+### Features
+
+* **form:** conditional required flag, useFormRef and public types ([6b73ca0](https://github.com/bonniss/react-headless-form/commit/6b73ca04776fc5a25d080dbb466db52e094b0072))
+* **form:** deps-scoped conditions, field slots and dynamic configs ([d59438c](https://github.com/bonniss/react-headless-form/commit/d59438ccd2c978ce6a5452da27810a8f0b9ca5fa))
+* **i18n:** literal text, translatable props and typed i18n keys ([ff95c9b](https://github.com/bonniss/react-headless-form/commit/ff95c9bcb1b051bf117f623083485fa0e6627011))
+
+
+### Bug Fixes
+
+* **build:** emit .mjs/.cjs bundles so Node resolves module format ([62b1682](https://github.com/bonniss/react-headless-form/commit/62b1682d9e1fe5576cc5fe4192007035f63c3728))
+* **build:** externalize react-hook-form and drop missing css export ([b899253](https://github.com/bonniss/react-headless-form/commit/b899253f249777d5f9d408f32bcccf19ed6dae3f))
+* **form:** reliable change callbacks and submit error handling ([805457f](https://github.com/bonniss/react-headless-form/commit/805457f3d53ad32873627f79c2608eaad3d0cf12))
+
 ## [0.13.1](https://github.com/bonniss/react-headless-form/compare/v0.13.0...v0.13.1) (2026-04-07)
 
 
