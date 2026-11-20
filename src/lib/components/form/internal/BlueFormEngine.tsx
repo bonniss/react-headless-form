@@ -12,6 +12,7 @@ import type {
 } from "@/types"
 
 import { resolveRules } from "@/components/helper/resolve-rules"
+import type { TranslatableText, TranslationResolver } from "@/components/i18n"
 import type { RenderFn } from "@/types/render"
 import { ArrayRenderSlot } from "../field"
 import HiddenField from "../field/HiddenField"
@@ -47,12 +48,41 @@ function hasConditionalFields(config: Record<string, any>): boolean {
   )
 }
 
+function isTranslatable(value: unknown): value is TranslatableText {
+  return (
+    typeof value === "string" ||
+    (typeof value === "object" &&
+      value !== null &&
+      ("message" in value || "text" in value))
+  )
+}
+
+/**
+ * Translates the props listed in `i18nConfig.translateProps`.
+ * Returns the original object when nothing needs translating.
+ */
+function translateComponentProps<T>(
+  props: T,
+  translateProps: string[],
+  t: TranslationResolver,
+): T {
+  if (!props || !translateProps.length) return props
+  let result: Record<string, unknown> | undefined
+  for (const name of translateProps) {
+    const value = (props as Record<string, unknown>)[name]
+    if (!isTranslatable(value)) continue
+    result ??= { ...(props as Record<string, unknown>) }
+    result[name] = t(value)
+  }
+  return (result ?? props) as T
+}
+
 function BlueFormEngine<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap,
 >({ config, namespace }: BlueFormEngineProps<TModel, TComponentMap>) {
   const {
-    i18nConfig: { t, validationResolver },
+    i18nConfig: { t, validationResolver, translateProps },
     fieldMapping,
     readOnly: isFormReadOnly,
   } = useBlueFormInternal()
@@ -86,7 +116,7 @@ function BlueFormEngine<
         const field = fieldConfig as FormFieldConfig<TModel, TComponentMap>
         const type = field.type as string
         const {
-          props: componentProps,
+          props: rawComponentProps,
           render,
           visible = true,
           disabled = false,
@@ -99,6 +129,12 @@ function BlueFormEngine<
         } = field
 
         const path = (namespace ? `${namespace}.${key}` : key) as string
+
+        const componentProps = translateComponentProps(
+          rawComponentProps,
+          translateProps,
+          t,
+        )
 
         const translatedLabel = t(label)
         const translatedDescription = t(description)

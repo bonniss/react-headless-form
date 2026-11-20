@@ -6,17 +6,23 @@ import { TranslatableText, TranslateFn } from '.';
  * The returned function is still called `t`, but now accepts both:
  * - string (shorthand translation key)
  * - TranslatableText object (message, params, fallback)
+ * - literal `{ text }` object, returned as-is
  *
  * The input `t` can come from any i18n solution or custom implementation.
  */
 export const normalizeTranslator =
   (t: TranslateFn) =>
-  (input: TranslatableText | undefined): string | undefined => {
+  (input: TranslatableText<string> | undefined): string | undefined => {
     if (!input) return undefined;
 
     // shorthand: string is treated as translation key
     if (typeof input === 'string') {
       return t?.(input);
+    }
+
+    // literal text: never translated
+    if ('text' in input) {
+      return input.text;
     }
 
     const translated = t?.(input.message, input.params);

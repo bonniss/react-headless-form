@@ -36,10 +36,11 @@ export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
       );
     }
 
-    const t =
-      i18nConfig?.enabled === false
-        ? identity
-        : normalizeTranslator(i18nConfig?.t ?? identity);
+    // Always normalize so object forms ({ message } / { text }) resolve to
+    // strings even when i18n is disabled.
+    const t = normalizeTranslator(
+      i18nConfig?.enabled === false ? identity : (i18nConfig?.t ?? identity),
+    );
     const resolver: ValidationResolver = {};
 
     if (
@@ -82,13 +83,14 @@ export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
 
               return {
                 value,
-                message: t({
-                  message: messageKey,
-                  params: {
-                    field,
-                    [validationType]: value,
-                  },
-                }),
+                message:
+                  t({
+                    message: messageKey,
+                    params: {
+                      field,
+                      [validationType]: value,
+                    },
+                  }) ?? messageKey,
               };
             };
             break;
@@ -103,10 +105,11 @@ export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
 
               return {
                 value,
-                message: t({
-                  message: messageKey,
-                  params: { field },
-                }),
+                message:
+                  t({
+                    message: messageKey,
+                    params: { field },
+                  }) ?? messageKey,
               };
             };
             break;
@@ -123,6 +126,7 @@ export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
       i18nConfig: {
         t,
         validationResolver: resolver,
+        translateProps: i18nConfig?.translateProps ?? [],
       } as I18nResolvedConfig,
       fieldMapping,
       hasResolver: Boolean(props.formOptions?.resolver),

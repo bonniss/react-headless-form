@@ -111,9 +111,22 @@ export type I18nConfig = {
    * Allows overriding or extending default error message generation logic.
    */
   validationTranslation?: ValidationTranslationMap;
+
+  /**
+   * Names of field `props` whose values should also be translated with `t`,
+   * e.g. `['placeholder', 'title']`. Only top-level props whose value is a
+   * string or a `TranslatableText` object are translated.
+   * Defaults to `[]` (props are passed through untouched).
+   */
+  translateProps?: string[];
 };
 
 export type I18nResolvedConfig = {
+  /**
+   * Prop names translated before being passed to field components.
+   */
+  translateProps: string[];
+
   /**
    * Translation function used to resolve localized message strings.
    * If not provided, defaults to an identity function: (key) => key
