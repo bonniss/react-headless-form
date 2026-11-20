@@ -21,8 +21,11 @@ importers:
         specifier: ^25.8.17
         version: 25.8.17
       react-headless-form:
-        specifier: ^0.13.0
-        version: 0.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^0.14.0
+        version: 0.14.0(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4)
+      react-hook-form:
+        specifier: ^7.71.2
+        version: 7.71.2(react@19.2.4)
       react-i18next:
         specifier: ^16.5.6
         version: 16.5.6(i18next@25.8.17)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -336,21 +339,25 @@ packages:
     resolution: {integrity: sha512-iFPj4TQZKewnqWPfTbyk3F8QCBI/Edv7TVSRIPBHRnCM0lvYZl/8IZlUzXSamLvrtDpouF0nUzht/fktoWOhAg==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rspack/binding-linux-arm64-musl@2.0.0-beta.3':
     resolution: {integrity: sha512-355mygfCNb0eF/y4HgtJcd0i9csNTG4Z15PCCplIkSAKJpFpkORM2xJb50BqsbhVafYl6AHoBlGWAo9iIzUb/w==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rspack/binding-linux-x64-gnu@2.0.0-beta.3':
     resolution: {integrity: sha512-U8a+bcP/tkMyiwiO9XfeRYYO20YPGiZNxWWt7FEsdmRuRAl6M+EmWaJllJFQtKH+GG8IN93pNoVPMvARjLoJOQ==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rspack/binding-linux-x64-musl@2.0.0-beta.3':
     resolution: {integrity: sha512-g81rqkaqDFRTID2VrHBYeM+xZe8yWov7IcryTrl9RGXXr61s+6Tu/mWyM378PuHOCyMNu7G3blVaSjLvKauG6Q==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rspack/binding-wasm32-wasi@2.0.0-beta.3':
     resolution: {integrity: sha512-tzGd8H2oj5F3oR/Hxp+J68zVU/nG+9ndH2KK3/RieVjNAiVNHCR0/ZU9D47s6fnmvWOqAQ1qO8gnVoVLopC4YA==}
@@ -1188,12 +1195,13 @@ packages:
       react: ^16.8.0 || ^17 || ^18 || ^19
       react-dom: ^16.8.0 || ^17 || ^18 || ^19
 
-  react-headless-form@0.13.0:
-    resolution: {integrity: sha512-DHj9D9rCvVAk4bR8/HARZ/IsQc31whcZHw6HakL13az/TnuQ73Y2Dr+W6s5nKE/7FOtAUNyc7xpBrygSqgeH6A==}
+  react-headless-form@0.14.0:
+    resolution: {integrity: sha512-3xiAmo1UcSCJoKUtY//+yL/PTAXtGguNf6N7Eg+z5Cref2fs3UaUb1KgEdsjH5IV5S/AbyV0HH2UKRTerZAcZw==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
       react-dom: ^16.8.0 || ^17 || ^18 || ^19
+      react-hook-form: ^7.55.0
 
   react-hook-form@7.71.2:
     resolution: {integrity: sha512-1CHvcDYzuRUNOflt4MOq3ZM46AronNJtQ1S7tnX6YN4y72qhgiUItpacZUAQ0TyWYci3yz1X+rXaSxiuEm86PA==}
@@ -3169,7 +3177,7 @@ snapshots:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
-  react-headless-form@0.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  react-headless-form@0.14.0(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4):
     dependencies:
       just-debounce-it: 3.2.0
       react: 19.2.4
