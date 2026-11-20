@@ -32,12 +32,13 @@ const app = async (): Promise<UserConfigExport> => {
         fileName: (format) => `${formattedName}.${format}.js`,
       },
       rollupOptions: {
-        external: ["react", "react/jsx-runtime", "react-dom"],
+        external: ["react", "react/jsx-runtime", "react-dom", "react-hook-form"],
         output: {
           globals: {
             react: "React",
             "react/jsx-runtime": "react/jsx-runtime",
             "react-dom": "ReactDOM",
+            "react-hook-form": "ReactHookForm",
           },
         },
       },
