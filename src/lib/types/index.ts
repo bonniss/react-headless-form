@@ -22,3 +22,7 @@ export type {
 export type * from './input';
 export type * from './mapping';
 export type * from './rule';
+export type {
+  DynamicFieldConfig,
+  DynamicFormConfig,
+} from '@/components/form/define-dynamic-config';

@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createProvider } from "react-easy-provider"
-import { useController, useFormContext } from "react-hook-form"
+import {
+  type UseControllerProps,
+  useController,
+  useFormContext,
+} from "react-hook-form"
 import type { FieldResolvedProps, FormFieldConfig } from "../../../types"
 import { useBlueFormInternal } from "../internal/BlueFormInternalProvider"
 
@@ -20,7 +24,8 @@ export const [useField, FieldProvider] = createProvider(
     const controller = useController({
       name: path,
       control,
-      rules: hasResolver ? undefined : rules,
+      // patterns are normalized to RegExp by resolveRules()
+      rules: hasResolver ? undefined : (rules as UseControllerProps["rules"]),
       defaultValue: fieldDefaultValue,
       disabled: resolved.disabled,
     })

@@ -100,8 +100,10 @@ export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
             resolver[validationType] = ({ field, rule }) => {
               if (!rule) return undefined;
 
-              const value =
-                typeof rule === "object" && "value" in rule ? rule.value : rule;
+              // String patterns are already converted by resolveRules()
+              const value = (
+                typeof rule === "object" && "value" in rule ? rule.value : rule
+              ) as RegExp;
 
               return {
                 value,
