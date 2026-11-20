@@ -2,19 +2,25 @@ on:
   push:
     branches:
       - main
+  # Manual run: publishes the version in package.json if it is not on npm yet
+  # (e.g. to retry a failed publish after the release was already created).
+  workflow_dispatch:
 
 permissions:
   contents: write
   pull-requests: write
+  id-token: write # npm Trusted Publishing (OIDC) + provenance
 
 name: release-please
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
     steps:
       - name: Release
         id: release
-        if: ${{ github.ref_name == 'main' }}
         uses: google-github-actions/release-please-action@v3
         with:
           release-type: node
@@ -23,35 +29,53 @@ jobs:
           bump-minor-pre-major: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
+  publish:
+    needs: release-please
+    # run after a release was created, or on manual dispatch from main
+    if: >-
+      ${{ always() && github.ref_name == 'main' && (
+        needs.release-please.outputs.releases_created == 'true' ||
+        github.event_name == 'workflow_dispatch'
+      ) }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Checkout
-        uses: actions/checkout@v3
-        if: ${{ steps.release.outputs.releases_created }}
+        uses: actions/checkout@v4
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        if: ${{ steps.release.outputs.releases_created }}
+        uses: pnpm/action-setup@v4
         with:
           version: 10
 
-      # Setup .npmrc file to publish to npm
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '22.x'
           registry-url: 'https://registry.npmjs.org'
           cache: 'pnpm'
-        if: ${{ steps.release.outputs.releases_created }}
+
+      # Trusted Publishing needs npm >= 11.5.1 (Node 22 ships npm 10)
+      - name: Update npm
+        run: npm install -g npm@latest
 
       - name: CI
         run: pnpm install --frozen-lockfile
-        if: ${{ steps.release.outputs.releases_created }}
 
       - name: Build
         run: pnpm build
-        if: ${{ steps.release.outputs.releases_created }}
 
+      - name: Check if version is already published
+        id: check
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "$NAME@$VERSION is already on npm, skipping publish"
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Authenticates via OIDC (Trusted Publisher configured on npmjs.com),
+      # no NPM_TOKEN needed. Provenance is attached automatically.
       - name: Publish
-        run: pnpm publish
-        if: ${{ steps.release.outputs.releases_created }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        if: ${{ steps.check.outputs.published != 'true' }}
+        run: npm publish --access public
