@@ -17,7 +17,7 @@ These are the promises the library makes to its users. Every pull request must k
 |---|---|---|
 | **G1** | **Headless.** The library renders no DOM and ships no CSS of its own; all markup comes from `renderRoot`, `fieldMapping`, `render` and slots. | `core-guarantees.test.tsx` → G1 (empty renderers ⇒ empty container) · `check-package.mjs` (no `.css` in `dist`) |
 | **G2** | **react-hook-form is a peer.** One shared RHF instance, so `useFormContext()` from `react-hook-form` works inside fields. RHF is never bundled. | `core-guarantees.test.tsx` → G2 · `check-package.mjs` (peerDependency, bundles import `react-hook-form`) |
-| **G3** | **Scoped re-renders.** Typing in one field re-renders only that field; with `deps`, conditional fields re-render only when their deps change; array operations do not remount other rows. | `core-guarantees.test.tsx` → G3 (300-field / 200-row forms with render and mount counters) |
+| **G3** | **Scoped re-renders.** Typing in one field re-renders only that field; conditional fields (`visible` / `disabled` / `required` functions, with or without `deps`) re-render only when their result changes; array operations do not re-render or remount other rows. | `core-guarantees.test.tsx` → G3 (300-field / 240-field / 200-row forms with render and mount counters) · `pnpm bench` prints render counts and timings (not run in CI) |
 | **G4** | **Clear errors.** Misuse throws a descriptive error prefixed with `[react-headless-form]`. | `core-guarantees.test.tsx` → G4 · `setup-form.test.tsx` |
 | **G5** | **End-to-end type safety.** Config keys are checked against the model, `type` against `fieldMapping`, `props` against the component, nested section/array configs against the mapping, `render` context by field type, i18n keys via `Register`. Verified from a consumer's point of view against the built `.d.ts`. | `test/types/**` (`pnpm check:types`, with `@ts-expect-error` for what must fail) · `pnpm typecheck` · `pnpm typecheck:test` |
 | **G6** | **Zero runtime dependencies, small bundle.** Only peers are imported (in JS and in `.d.ts`); ESM bundle ≤ 7 KB gzip. | `check-package.mjs` |
@@ -40,3 +40,4 @@ These are the promises the library makes to its users. Every pull request must k
 | `pnpm check:types` | Consumer type tests against `dist/` (needs `pnpm build`) |
 | `pnpm check:package` | Packaging guarantees, `publint`, `attw` |
 | `pnpm verify` | All of the above plus `vitest run` |
+| `pnpm bench` | 500-field benchmark against 0.14.0, plain RHF and Formisch (React production build, jsdom). Prints render counts and timings; not part of `verify` |

@@ -85,19 +85,37 @@ Khi KHÔNG nên dùng
 | Lỗi rõ ràng khi dùng `useField`/`useArrayField` ngoài form | 0.15 |
 | Bỏ hết dependency runtime (`react-easy-provider`, `just-debounce-it`); debounce ổn định, có `flush` | 0.15 |
 | Types: giữ field type có sẵn khi `fieldMapping` là object thường; kiểm tra config lồng trong section/array; ESM `node16` | 0.15 |
+| Re-render theo từng trường: `FieldNode`, tự suy deps, compile phase, benchmark (chi tiết bên dưới) | 0.16 |
 
-**Số liệu nền (G3):** khi không có `deps`, gõ 1 trường làm ~199/200 trường khác re-render. Đây là mục tiêu chính của 0.16.
+### ✅ 0.16 — Kiến trúc: core mỏng + re-render theo từng trường
 
-### 0.16 — Kiến trúc: core mỏng + re-render theo từng trường
+Đã bỏ hẳn `watch()` toàn form. Không đổi kiểu của API công khai; có một thay đổi hành vi (xem cuối mục).
 
-Mục tiêu: bỏ `watch()` toàn form trong `BlueFormEngine` (hiện vẫn dùng khi có trường điều kiện không khai báo `deps`). Không đổi API công khai.
+1. **Tách `BlueFormEngine.tsx`** (349 → ~40 dòng): `BlueFormEngine` chỉ còn dispatcher; `internal/FieldNode.tsx` (memo); renderer `field/ArrayField`, `field/SectionField`, `field/StandardField` (hidden/inline/mapped), `field/slots`. Renderer không dùng hook và được gọi như hàm thường để mỗi trường bớt một fiber.
+2. **`FieldNode` + `React.memo`:** mỗi trường tự tính `visible/disabled/required` (`internal/use-field-conditions.ts`). Không dùng `useWatch` mà dùng `subscribe()` của RHF (public từ 7.55): chạy lại hàm khi path liên quan đổi, **chỉ re-render khi kết quả đổi**. Đã bỏ ràng buộc "mọi trường điều kiện cùng cấp phải có `deps`".
+3. **Tự suy deps** (`helper/track-reads.ts`): Proxy ghi lại path đọc qua `values`, ghi lại sau mỗi lần chạy (đúng với `a && b`). Mảng / Date / `Object.keys` coi như đọc cả path; liệt kê root ⇒ chạy lại với mọi thay đổi. `deps` khai báo tay = override.
+4. **Compile phase** (`internal/compile-field.ts`): path, dịch label/description/props, `resolveRules` chạy trong `useMemo` theo `[config, i18nConfig, readOnly]`; `resolvedProps` giữ identity khi điều kiện không đổi.
+5. **Benchmark:** `pnpm bench` (`bench/form.bench.tsx`, `vitest.bench.config.ts`): 500 trường, React production, so với 0.14.0 (cài dạng alias), RHF `useController` / `register`, Formisch. In số lần render và thời gian, không chặn CI.
 
-1. **Tách `BlueFormEngine.tsx`** (349 dòng) thành dispatcher (duyệt config, chọn renderer) + renderer cho từng loại core (`ArrayField`, `SectionField`, `HiddenField`, `InlineField`) + `FieldNode`.
-2. **`FieldNode` + `React.memo`:** mỗi trường tự tính `visible/disabled/required` và tự `useWatch({ name: deps })`. Bỏ ràng buộc "mọi trường điều kiện cùng cấp phải có `deps`".
-   - *Xong khi:* G3 chặt hơn: không có `deps` vẫn chỉ trường liên quan re-render; số 199/200 về ~0.
-3. **Tự suy ra deps:** chạy `visible(values)`/`disabled(values)` qua Proxy ghi lại các path đã đọc. `deps` khai báo tay vẫn dùng được để override.
-4. **Precompile config** trong `useMemo`: resolve i18n label/description/message của rules một lần, tách compile phase khỏi render phase; giảm object churn (`resolvedProps` tạo mới mỗi render).
-5. **Benchmark** (`vitest bench`, form 500 trường): đo mount và mỗi keystroke, so trước/sau và so với Formisch. Chỉ in số, không chặn CI.
+**G3 đã siết** (`core-guarantees.test.tsx`): không có `deps` vẫn 0 trường khác re-render; gõ vào trường dep mà điều kiện không đổi → 0; append array 200 dòng → 0 dòng cũ re-render. Ba test này fail trên engine cũ.
+
+**Kết quả `pnpm bench`** (input re-render mỗi keystroke, form 500 trường, 49 trường điều kiện theo `f0`):
+
+| | Gõ trường không liên quan | Gõ `f0`, điều kiện không đổi | `f0` bật/tắt 49 trường |
+|---|---|---|---|
+| 0.16 (nhánh này) | **1** | **1** | 25.5 |
+| 0.14.0 | 500 | 500 | 475.5 |
+| 0.14.0 + `deps` | 1 | 500 | 475.5 |
+| RHF `useController` | 1 | 50 | 25.5 |
+| Formisch | 1 | 50 | 25.5 |
+
+Thời gian: ngang RHF `useController` ở cả ba kịch bản gõ phím, nhanh hơn 0.14 khoảng 2–10 lần; mount ngang 0.14. Formisch vẫn nhanh hơn ~2–3 lần khi mount và bật/tắt. Phần chênh này đến từ `useController` so với signal (RHF `register` gần bằng Formisch), là giới hạn của định vị "lớp trên RHF".
+
+**Thay đổi hành vi (ghi vào release note):** trước đây, khi có trường điều kiện không khai báo `deps`, mọi keystroke đều chạy lại mọi hàm điều kiện cùng cấp. Giờ hàm chỉ chạy lại khi path nó đọc qua `values` thay đổi, hoặc khi form render lại từ component cha. Hàm đọc `getValues()` từ closure hay store bên ngoài (không qua React state) sẽ không còn "tình cờ" được cập nhật. Docs: `conditional-rendering.mdx`, `pitfalls.mdx` #12. Ngoài ra, kết quả của `visible/disabled/required` dạng hàm giờ được ép về boolean (trước đây `(v) => v.locked` có thể làm `useArrayField().disabled` là `undefined`).
+
+**Khoảng trống API (chưa làm):** điều kiện theo từng dòng của array, kiểu "hiện `detail` khi `kind` *của dòng này* là `other`". `visible(values)` chỉ nhận toàn bộ form, không biết đang ở dòng nào. Gợi ý: thêm tham số thứ hai `{ path, namespace }` (ví dụ `(v, { namespace }) => get(v, namespace).kind === "other"`); tracker vẫn suy ra deps được.
+
+**Còn mở:** nếu `renderRoot` đọc `formState` (ví dụ `isDirty`), `BlueForm` re-render và `FormProvider` của RHF tạo context mới, nên mọi `useController` re-render. RHF thuần cũng như vậy; muốn tránh phải memo context của RHF, mà điều đó làm `useFormContext().formState` bị stale. Chưa làm.
 
 ### 0.17 — API cho form chạy bằng dữ liệu
 

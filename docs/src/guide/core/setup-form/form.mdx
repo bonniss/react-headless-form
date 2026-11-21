@@ -276,10 +276,10 @@ Each entry in `config` describes a single field. All fields share a common set o
 | `disabled` | `boolean \| (values) => boolean` | Controls disabled state - disabled fields are excluded from the submit payload |
 | `readOnly` | `boolean` | Field-level read-only state - merged with form-level `readOnly` |
 | `required` | `boolean \| (values) => boolean` | UI-only `required` flag (e.g. to show `*`). Defaults to `Boolean(rules.required)`. Does not add validation |
-| `deps` | `Path[]` | Paths that the `visible` / `disabled` / `required` functions read - lets BlueForm re-render only when they change. See [conditional rendering](../conditional-rendering.mdx#performance-deps) |
+| `deps` | `Path[]` | Optional (inferred since v0.16). Overrides which paths re-run the `visible` / `disabled` / `required` functions. See [conditional rendering](../conditional-rendering.mdx#performance-deps) |
 | `slots` | `{ before?, after? }` | Extra UI rendered right before / after the field, inside its field context. See [slots](#slots) |
 
-`visible` and `disabled` can also be functions. In that case they receive the current form values and are evaluated reactively on every change:
+`visible` and `disabled` can also be functions. In that case they receive the current form values and are re-evaluated when the values they read change:
 
 ```tsx
 email: {

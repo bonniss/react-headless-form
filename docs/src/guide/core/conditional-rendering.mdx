@@ -96,17 +96,25 @@ Use `visible` when the field should disappear entirely from the current UI.
 
 ## Performance: `deps`
 
-_Added in v0.14._
+_Added in v0.14. Since v0.16, deps are inferred and `deps` is optional._
 
-When any field at a config level uses a function for `visible`, `disabled` or `required`, BlueForm needs the form values to evaluate it. By default it subscribes to **every** change in the form, so that level re-renders on each keystroke anywhere. This is fine for most forms; for large ones, declare which paths the functions read:
+Each field evaluates its own `visible` / `disabled` / `required` functions. While a function runs, BlueForm records which values it reads from the `values` argument (`values.role`, `values.profile.city`, …). After that, the function runs again only when one of those paths changes, and the field re-renders only when the **result** changes. Typing anywhere else in the form does not touch the field.
+
+The recorded paths are refreshed on every run, so conditions that short-circuit work as expected: with `values.a === "x" && values.b === "y"`, `b` becomes a dependency once `a` is `"x"`.
+
+Some reads are coarser:
+
+- Reading an array (`values.rows.length`, `values.rows.some(...)`) depends on the whole array.
+- Enumerating an object (`Object.keys(values.profile)`, spread, `JSON.stringify`) depends on that whole object; enumerating `values` itself re-runs the function on every change.
+
+You can still declare `deps`. It overrides the inference: the functions then re-run only when one of these paths changes, even if they read other values.
 
 ```tsx
 studentId: {
   type: "text",
   visible: (values) => values.role === "student",
-  required: (values) => values.role === "student",
-  deps: ["role"],
+  deps: ["role"], // optional since v0.16
 },
 ```
 
-When **every** conditional field at that level declares `deps`, BlueForm watches only those paths (via `useWatch`) and skips re-rendering for unrelated changes. If even one conditional field omits `deps`, the level falls back to watching everything. Paths are absolute (`"profile.role"`), and a function must not read values outside its `deps` — they would be stale.
+Paths are absolute (`"profile.role"`). Only reads through the `values` argument are tracked. A function that reads state from outside the form, such as a React state variable in a closure, is re-evaluated when the form's parent re-renders, not when that state changes on its own.
