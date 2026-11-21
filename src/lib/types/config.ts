@@ -53,6 +53,29 @@ export type FieldSlotContent =
   | ((field: FieldResolvedProps) => ReactNode);
 
 /**
+ * Second argument of `visible` / `disabled` / `required` functions.
+ */
+export type ConditionContext = {
+  /** Full path of the field, e.g. `"rows.2.detail"`. */
+  path: string;
+  /** Config key of the field, e.g. `"detail"`. */
+  name: string;
+  /** Path of the enclosing array row or nested section, e.g. `"rows.2"`. */
+  namespace?: string;
+  /**
+   * Values at `namespace` (the current array row or nested section), or the
+   * whole form values at the top level. Reads are tracked like `values`.
+   */
+  scope: any;
+};
+
+/** A `visible` / `disabled` / `required` function. */
+export type ConditionFn<TModel extends FieldValues> = (
+  values: Partial<TModel>,
+  ctx: ConditionContext,
+) => boolean;
+
+/**
  * Configuration for a single form field.
  *
  * @template TModel       - The form's data model. Used to type `visible` and `disabled` callbacks.
@@ -125,15 +148,20 @@ export type FormFieldConfig<
 
   /**
    * Optional function to determine whether the field should be visible,
-   * based on the current form values.
+   * based on the current form values. The second argument gives the field's
+   * position and the values of its enclosing array row / nested section.
+   *
+   * @example
+   * // inside an array item config: show `detail` when this row's `kind` is "other"
+   * detail: { type: "text", visible: (_, { scope }) => scope?.kind === "other" }
    */
-  visible?: boolean | ((values: Partial<TModel>) => boolean);
+  visible?: boolean | ConditionFn<TModel>;
 
   /**
    * Optional function to determine whether the field should be disabled,
-   * based on the current form values.
+   * based on the current form values (same arguments as `visible`).
    */
-  disabled?: boolean | ((values: Partial<TModel>) => boolean);
+  disabled?: boolean | ConditionFn<TModel>;
 
   /**
    * Marks the field as required in the UI (`useField().required`, e.g. to show "*").
@@ -142,7 +170,7 @@ export type FormFieldConfig<
    * This only affects the resolved `required` flag; enforce the rule itself with
    * `rules.validate` or your schema. When omitted, it is inferred from `rules.required`.
    */
-  required?: boolean | ((values: Partial<TModel>) => boolean);
+  required?: boolean | ConditionFn<TModel>;
 
   /**
    * Form paths that `visible` / `disabled` / `required` functions depend on.

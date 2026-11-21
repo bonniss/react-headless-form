@@ -63,7 +63,7 @@ describe("deps – scoped conditional re-render", () => {
     expect(screen.getByTestId("studentId")).toBeTruthy();
   });
 
-  // Since 0.16 deps are inferred from the values visible() reads.
+  // Since 0.15 deps are inferred from the values visible() reads.
   it("without deps, only changes to the paths visible() reads re-evaluate it", () => {
     const visible = renderForm(false);
     const before = visible.mock.calls.length;

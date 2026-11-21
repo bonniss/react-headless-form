@@ -37,6 +37,23 @@ const config = defineConfig<User>({
   profile: { type: "section", props: { nested: true, config: { city: { type: "text" } } } },
 });
 
+// ---- condition context (second argument of visible / disabled / required)
+defineConfig<User>({
+  name: {
+    type: "text",
+    visible: (_, ctx) => {
+      assert<Eq<typeof ctx.path, string>>();
+      assert<Eq<typeof ctx.namespace, string | undefined>>();
+      return Boolean(ctx.scope);
+    },
+    disabled: (_, { name }) => name === "name",
+  },
+});
+defineConfig<User>({
+  // @ts-expect-error condition functions must return a boolean
+  name: { type: "text", visible: (_, ctx) => ctx.path },
+});
+
 defineConfig<User>({
   // @ts-expect-error unknown model key
   nmae: { type: "text" },

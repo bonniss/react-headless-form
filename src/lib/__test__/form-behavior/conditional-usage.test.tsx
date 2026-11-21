@@ -369,4 +369,78 @@ describe("visible / disabled — common usage", () => {
     click("locked");
     expect(screen.getByTestId("rows-flag").dataset.disabled).toBe("true");
   });
+
+  it("per-row condition via ctx.scope (this row's value)", () => {
+    const visible = vi.fn((_: any, { scope }: any) => scope?.kind === "other");
+    render(
+      <BlueForm
+        renderRoot={Root}
+        fieldMapping={mapping}
+        defaultValues={{ rows: [{ kind: "", detail: "" }, { kind: "", detail: "" }] }}
+        config={{
+          rows: {
+            type: "array",
+            props: { config: { kind: { type: "text" }, detail: { type: "text", visible } } },
+          },
+        }}
+      />,
+    );
+    type("rows.1.kind", "other");
+    expect(shown("rows.1.detail")).toBe(true);
+    expect(shown("rows.0.detail")).toBe(false);
+
+    // deps are precise per row: typing in row 0 does not re-run row 1's condition
+    visible.mockClear();
+    type("rows.0.kind", "x");
+    expect(visible.mock.calls.every(([, ctx]) => ctx.path === "rows.0.detail")).toBe(true);
+
+    // after removing row 0, the former row 1 (now row 0) keeps its own scope
+    act(() => {
+      fireEvent.click(screen.getByText("remove-first"));
+    });
+    expect(shown("rows.0.detail")).toBe(true);
+  });
+
+  it("ctx gives path / name / namespace, and scope of a nested section", () => {
+    const seen: any[] = [];
+    render(
+      <BlueForm
+        renderRoot={Root}
+        fieldMapping={mapping}
+        config={{
+          address: {
+            type: "section",
+            props: {
+              nested: true,
+              config: {
+                country: { type: "text" },
+                state: {
+                  type: "text",
+                  visible: (_: any, ctx: any) => {
+                    seen.push({ path: ctx.path, name: ctx.name, namespace: ctx.namespace });
+                    return ctx.scope?.country === "US";
+                  },
+                },
+              },
+            },
+          },
+        }}
+      />,
+    );
+    expect(seen[0]).toEqual({ path: "address.state", name: "state", namespace: "address" });
+    type("address.country", "US");
+    expect(shown("address.state")).toBe(true);
+  });
+
+  it("top-level ctx.scope is the whole form values", () => {
+    render(
+      <BlueForm
+        renderRoot={Root}
+        fieldMapping={mapping}
+        config={{ a: { type: "text" }, b: { type: "text", visible: (_: any, { scope }: any) => scope.a === "x" } }}
+      />,
+    );
+    type("a", "x");
+    expect(shown("b")).toBe(true);
+  });
 });

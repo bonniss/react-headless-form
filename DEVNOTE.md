@@ -113,7 +113,7 @@ Thời gian: ngang RHF `useController` ở cả ba kịch bản gõ phím, nhanh
 
 **Thay đổi hành vi (ghi vào release note):** trước đây, khi có trường điều kiện không khai báo `deps`, mọi keystroke đều chạy lại mọi hàm điều kiện cùng cấp. Giờ hàm chỉ chạy lại khi path nó đọc qua `values` thay đổi, hoặc khi form render lại từ component cha. Hàm đọc `getValues()` từ closure hay store bên ngoài (không qua React state) sẽ không còn "tình cờ" được cập nhật. Docs: `conditional-rendering.mdx`, `pitfalls.mdx` #12. Ngoài ra, kết quả của `visible/disabled/required` dạng hàm giờ được ép về boolean (trước đây `(v) => v.locked` có thể làm `useArrayField().disabled` là `undefined`).
 
-**Khoảng trống API (chưa làm):** điều kiện theo từng dòng của array, kiểu "hiện `detail` khi `kind` *của dòng này* là `other`". `visible(values)` chỉ nhận toàn bộ form, không biết đang ở dòng nào. Gợi ý: thêm tham số thứ hai `{ path, namespace }` (ví dụ `(v, { namespace }) => get(v, namespace).kind === "other"`); tracker vẫn suy ra deps được.
+**Điều kiện theo từng dòng array (đã làm):** hàm điều kiện nhận tham số thứ hai `{ path, name, namespace, scope }`; `scope` là giá trị của dòng / section lồng nhau, được theo dõi deps chính xác tới từng dòng (`rows.2.kind`). Type `ConditionContext`, `ConditionFn`.
 
 **Còn mở:** nếu `renderRoot` đọc `formState` (ví dụ `isDirty`), `BlueForm` re-render và `FormProvider` của RHF tạo context mới, nên mọi `useController` re-render. RHF thuần cũng như vậy; muốn tránh phải memo context của RHF, mà điều đó làm `useFormContext().formState` bị stale. Chưa làm.
 

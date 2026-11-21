@@ -3,7 +3,9 @@ import { useEffect, useReducer, useRef } from "react";
 import { useFormContext } from "react-hook-form";
 
 import { isRelatedPath, trackReads } from "@/components/helper/track-reads";
-import type { FormFieldConfig } from "@/types";
+import type { ConditionContext, FormFieldConfig } from "@/types";
+
+type FieldPosition = Omit<ConditionContext, "scope">;
 
 export type FieldConditions = {
   visible: boolean;
@@ -25,8 +27,16 @@ export function isConditionalField(field: any): boolean {
   );
 }
 
+function scopeOf(values: any, namespace?: string) {
+  if (!namespace) return values;
+  let target = values;
+  for (const key of namespace.split(".")) target = target?.[key];
+  return target;
+}
+
 function evaluate(
   field: FormFieldConfig<any, any>,
+  position: FieldPosition,
   getValues: () => any,
 ): Evaluation {
   const { visible = true, disabled = false, required, rules } = field;
@@ -35,17 +45,25 @@ function evaluate(
   // Static fields never read values (getValues() copies the form).
   const tracker = !conditional || declared ? undefined : trackReads(getValues() ?? {});
   const values = !conditional ? undefined : tracker ? tracker.proxy : getValues();
+  const ctx = conditional
+    ? ({
+        ...position,
+        scope: tracker
+          ? tracker.at(position.namespace ?? "")
+          : scopeOf(values, position.namespace),
+      } as ConditionContext)
+    : undefined;
 
   // Results are coerced to booleans: `(v) => v.locked` may return undefined.
   const result: FieldConditions = {
-    visible: typeof visible === "function" ? !!visible(values) : visible !== false,
-    disabled: typeof disabled === "function" ? !!disabled(values) : !!disabled,
+    visible: typeof visible === "function" ? !!visible(values, ctx!) : visible !== false,
+    disabled: typeof disabled === "function" ? !!disabled(values, ctx!) : !!disabled,
     // `required` only drives the UI flag (e.g. "*"); validation stays in `rules`.
     required:
       required === undefined
         ? Boolean(rules?.required)
         : typeof required === "function"
-          ? !!required(values)
+          ? !!required(values, ctx!)
           : !!required,
   };
 
@@ -70,17 +88,18 @@ const sameResult = (a: FieldConditions, b: FieldConditions) =>
  */
 export function useFieldConditions(
   field: FormFieldConfig<any, any>,
+  position: FieldPosition,
 ): FieldConditions {
   const { getValues, subscribe } = useFormContext();
   const [, rerender] = useReducer((n: number) => n + 1, 0);
   const conditional = isConditionalField(field);
 
-  const current = evaluate(field, getValues);
+  const current = evaluate(field, position, getValues);
   // Written during render (not in a layout effect) to keep mount cheap for
   // large forms; a discarded render only leaves slightly stale deps, and the
   // subscription always re-evaluates with fresh values.
-  const latest = useRef({ field, ...current });
-  latest.current = { field, ...current };
+  const latest = useRef({ field, position, ...current });
+  latest.current = { field, position, ...current };
 
   useEffect(() => {
     if (!conditional) return;
@@ -92,7 +111,7 @@ export function useFieldConditions(
       }
       let next: Evaluation;
       try {
-        next = evaluate(state.field, getValues);
+        next = evaluate(state.field, state.position, getValues);
       } catch {
         // Let the render surface the error.
         rerender();

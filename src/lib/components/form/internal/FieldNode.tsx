@@ -38,7 +38,11 @@ function FieldNode({ name, field, namespace }: FieldNodeProps) {
     [name, field, namespace, i18nConfig, formReadOnly],
   );
 
-  const { visible, disabled, required } = useFieldConditions(field);
+  const { visible, disabled, required } = useFieldConditions(field, {
+    path: compiled.path,
+    name,
+    namespace,
+  });
 
   const resolved = useMemo(() => {
     const { base } = compiled;

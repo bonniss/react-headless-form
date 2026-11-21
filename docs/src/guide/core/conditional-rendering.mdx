@@ -23,6 +23,39 @@ internalNote: {
 
 When a function is provided, BlueForm evaluates it reactively from the current form values. No manual `useWatch` is needed in field components.
 
+## Conditions inside array rows and sections
+
+_Added in v0.15._
+
+The functions receive a second argument with the field's position:
+
+| Property | Example | Description |
+|---|---|---|
+| `path` | `"rows.2.detail"` | Full path of the field |
+| `name` | `"detail"` | Config key of the field |
+| `namespace` | `"rows.2"` | Path of the enclosing array row or nested section (`undefined` at the top level) |
+| `scope` | `{ kind: "other", detail: "" }` | Values at `namespace`; the whole form values at the top level |
+
+Use `scope` for conditions that depend on the current array row:
+
+```tsx
+items: {
+  type: "array",
+  props: {
+    config: {
+      kind: { type: "select", props: { options } },
+      detail: {
+        type: "text",
+        // shown only in rows whose own `kind` is "other"
+        visible: (_, { scope }) => scope?.kind === "other",
+      },
+    },
+  },
+},
+```
+
+Reads through `scope` are tracked like reads through `values`. Typing in one row re-runs only that row's conditions.
+
 ## `visible`
 
 When `visible` resolves to `false`, BlueForm does not render that field node. The field is not registered through RHF at that moment.
@@ -96,7 +129,7 @@ Use `visible` when the field should disappear entirely from the current UI.
 
 ## Performance: `deps`
 
-_Added in v0.14. Since v0.16, deps are inferred and `deps` is optional._
+_Added in v0.14. Since v0.15, deps are inferred and `deps` is optional._
 
 Each field evaluates its own `visible` / `disabled` / `required` functions. While a function runs, BlueForm records which values it reads from the `values` argument (`values.role`, `values.profile.city`, …). After that, the function runs again only when one of those paths changes, and the field re-renders only when the **result** changes. Typing anywhere else in the form does not touch the field.
 
@@ -113,7 +146,7 @@ You can still declare `deps`. It overrides the inference: the functions then re-
 studentId: {
   type: "text",
   visible: (values) => values.role === "student",
-  deps: ["role"], // optional since v0.16
+  deps: ["role"], // optional since v0.15
 },
 ```
 

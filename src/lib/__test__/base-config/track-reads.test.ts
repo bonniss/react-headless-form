@@ -67,6 +67,31 @@ describe("trackReads", () => {
   });
 });
 
+describe("trackReads().at", () => {
+  const values = { rows: [{ kind: "a", n: { x: 1 } }, { kind: "b" }], sec: { c: 1 } };
+
+  it("reads below a row record precise paths", () => {
+    const { at, deps } = trackReads(values);
+    expect(at("rows.1").kind).toBe("b");
+    expect(at("rows.0").n.x).toBe(1);
+    expect(deps()?.sort()).toEqual(["rows.0.n.x", "rows.1.kind"]);
+  });
+
+  it("missing or non-plain values record the path itself", () => {
+    const { at, deps } = trackReads(values);
+    expect(at("rows.5")).toBeUndefined();
+    expect(at("rows")).toBe(values.rows);
+    // `rows.5` is covered by the whole-array read of `rows`
+    expect(deps()).toEqual(["rows"]);
+  });
+
+  it("empty path is the root proxy", () => {
+    const { at, deps } = trackReads(values);
+    expect(at("").sec.c).toBe(1);
+    expect(deps()).toEqual(["sec.c"]);
+  });
+});
+
 describe("isRelatedPath", () => {
   it("matches equal, ancestor and descendant paths only", () => {
     expect(isRelatedPath("a.b", "a.b")).toBe(true);

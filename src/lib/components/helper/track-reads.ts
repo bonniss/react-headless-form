@@ -69,6 +69,23 @@ export function trackReads<T extends object>(values: T) {
 
   const proxy = (isPlainObject(values) ? wrap(values, "") : values) as T;
 
+  /**
+   * Tracking view of the value at `path` (e.g. an array row `rows.2`), so that
+   * reads below it record precise paths (`rows.2.kind`) instead of the whole
+   * array. Locating the value itself records nothing; a missing or non-plain
+   * value is recorded as a read of `path`.
+   */
+  const at = (path: string): any => {
+    if (!path) return proxy;
+    let target: unknown = values;
+    for (const key of path.split(".")) {
+      target = target == null ? undefined : (target as any)[key];
+    }
+    if (isPlainObject(target)) return wrap(target, path);
+    reads.add(path);
+    return target;
+  };
+
   const deps = (): string[] | null => {
     if (all || !isPlainObject(values)) return null;
     const paths = [...reads, ...traversed];
@@ -85,7 +102,7 @@ export function trackReads<T extends object>(values: T) {
     );
   };
 
-  return { proxy, deps };
+  return { proxy, at, deps };
 }
 
 /** True when a change at `changed` can affect a value read at `dep` (or vice versa). */
