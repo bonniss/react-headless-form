@@ -23,6 +23,11 @@ export type * from './input';
 export type * from './mapping';
 export type * from './rule';
 export type {
+  InferSchemaInput,
+  InferSchemaOutput,
+  StandardSchemaV1,
+} from '@/components/helper/standard-schema';
+export type {
   DynamicFieldConfig,
   DynamicFormConfig,
 } from '@/components/form/define-dynamic-config';

@@ -31,7 +31,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "typecheck:test": "tsc",
+    "typecheck:test": "tsc -p tsconfig.test.json",
     "typecheck": "tsc -p tsconfig.build.json",
     "dev": "ladle serve",
     "build": "tsc -p tsconfig.build.json && vite build && node scripts/copy-dmts.mjs",

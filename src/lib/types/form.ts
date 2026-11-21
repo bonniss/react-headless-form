@@ -19,13 +19,19 @@ import type {
   UseFormTrigger,
   Path,
 } from 'react-hook-form';
+import type { StandardSchemaV1 } from '@/components/helper/standard-schema';
 import type { ComponentMap, FormConfig } from './config';
 
+/**
+ * `onSubmit` / `onSubmitSuccess`. `data` is the validated output: the schema
+ * output when `schema` is set (e.g. coerced numbers), otherwise the form values.
+ */
 export type SubmitHandlerWithFormMethods<
   TModel extends FieldValues = FieldValues,
+  TOutput = TModel,
 > = (
-  data: TModel,
-  formMethods: UseFormReturn<TModel>,
+  data: TOutput,
+  formMethods: UseFormReturn<TModel, any, TOutput>,
   event?: React.BaseSyntheticEvent,
 ) => ReturnType<SubmitHandler<TModel>>;
 
@@ -181,7 +187,19 @@ export interface BlueFormBaseConfig<
 export interface BlueFormProps<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap,
+  TOutput = TModel,
 > extends Omit<BlueFormBaseConfig<TComponentMap>, 'formOptions'> {
+  /**
+   * A Standard Schema (zod, valibot, arktype, ...) validating the whole form.
+   * Its input type types `config` / `defaultValues`, its output type is what
+   * `onSubmit` receives. Field `rules` are ignored when a schema is set.
+   * Cannot be combined with `formOptions.resolver`.
+   *
+   * @example
+   * <Form schema={z.object({ age: z.coerce.number() })} onSubmit={(d) => d.age.toFixed()} />
+   */
+  schema?: StandardSchemaV1<TModel, TOutput>;
+
   /**
    * Form field configuration including field type, name, label,Ï props, etc.
    */
@@ -194,19 +212,19 @@ export interface BlueFormProps<
    *
    * @see https://react-hook-form.com/docs/useform
    */
-  formOptions?: UseFormProps<TModel>;
+  formOptions?: UseFormProps<TModel, any, TOutput>;
 
   /**
    * Called with the form values once validation passes.
    * May be async. If it throws/rejects, `onSubmitFailure` is called and
    * `onSubmitSuccess` is skipped.
    */
-  onSubmit?: SubmitHandlerWithFormMethods<TModel>;
+  onSubmit?: SubmitHandlerWithFormMethods<TModel, TOutput>;
 
   /**
    * Called after `onSubmit` resolved without throwing.
    */
-  onSubmitSuccess?: SubmitHandlerWithFormMethods<TModel>;
+  onSubmitSuccess?: SubmitHandlerWithFormMethods<TModel, TOutput>;
 
   /**
    * Called when `onSubmit` (or `onSubmitSuccess`) throws or rejects, e.g. an API error.

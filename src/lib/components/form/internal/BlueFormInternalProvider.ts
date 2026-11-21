@@ -131,7 +131,7 @@ export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
         translateProps: i18nConfig?.translateProps ?? [],
       } as I18nResolvedConfig,
       fieldMapping,
-      hasResolver: Boolean(props.formOptions?.resolver),
+      hasResolver: Boolean(props.schema || props.formOptions?.resolver),
       ...props,
     };
   },

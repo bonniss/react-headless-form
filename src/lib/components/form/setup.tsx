@@ -8,7 +8,12 @@ import type {
 import type { BlueFormRef } from "@/types/form";
 import type { ComponentType, JSX } from "react";
 import { forwardRef } from "react";
-import type { FieldValues } from "react-hook-form";
+import type { FieldValues, UseFormProps } from "react-hook-form";
+import type {
+  InferSchemaInput,
+  InferSchemaOutput,
+  StandardSchemaV1,
+} from "@/components/helper/standard-schema";
 import BlueForm from "./BlueForm";
 import { useField } from "./provider";
 import BlueFormEngine from "./internal/BlueFormEngine";
@@ -72,9 +77,29 @@ export function defineMapping(userMapping?: ComponentMap) {
  * `ref` forwarding. At runtime, it is implemented by a single React component
  * created via `forwardRef`.
  */
-export type TypedFormComponent<TComponentMap extends ComponentMap> = <TModel extends FieldValues>(
-    props: Omit<BlueFormProps<TModel, TComponentMap>, "fieldMapping"> &
-      React.RefAttributes<BlueFormRef<TModel>>,) => JSX.Element;
+export type TypedFormComponent<TComponentMap extends ComponentMap> = {
+  /**
+   * With `schema`: config / defaultValues / ref are typed by the schema input,
+   * `onSubmit` by the schema output. `formOptions.resolver` is not allowed.
+   */
+  <TSchema extends StandardSchemaV1<FieldValues, any>>(
+    props: Omit<
+      BlueFormProps<InferSchemaInput<TSchema>, TComponentMap, InferSchemaOutput<TSchema>>,
+      "fieldMapping" | "schema" | "formOptions"
+    > & {
+      schema: TSchema;
+      formOptions?: Omit<
+        UseFormProps<InferSchemaInput<TSchema>, any, InferSchemaOutput<TSchema>>,
+        "resolver"
+      >;
+    } & React.RefAttributes<BlueFormRef<InferSchemaInput<TSchema>>>,
+  ): JSX.Element;
+  /** Without `schema`: the model comes from `<Form<Model>>`, `config` or `defaultValues`. */
+  <TModel extends FieldValues>(
+    props: Omit<BlueFormProps<TModel, TComponentMap>, "fieldMapping" | "schema"> &
+      React.RefAttributes<BlueFormRef<TModel>>,
+  ): JSX.Element;
+};
 
 /**
  * A typed `<Section />` component signature.

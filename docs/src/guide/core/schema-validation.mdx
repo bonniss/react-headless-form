@@ -1,10 +1,59 @@
 ---
 title: Schema validation
-description: "Validate with Zod, Yup or any RHF resolver via formOptions.resolver; field-level rules are disabled when a resolver is set."
+description: "Validate the whole form with any Standard Schema (Zod, Valibot, ArkType) through the schema prop, typed end to end; or with any RHF resolver via formOptions.resolver."
 ---
 
+## The `schema` prop
 
-BlueForm supports schema-based validation via `formOptions.resolver`, which accepts any resolver compatible with React Hook Form — including [Zod](https://zod.dev), [Yup](https://github.com/jquense/yup), and [others](https://react-hook-form.com/docs/useform#resolver).
+_Added in v0.17._
+
+Pass any [Standard Schema](https://standardschema.dev) (Zod 3.24+ / 4, Valibot 1, ArkType 2, …). No resolver package is needed:
+
+```tsx
+import { z } from "zod";
+
+const SignupSchema = z.object({
+  name: z.string().trim().min(1, "Name is required"),
+  age: z.coerce.number().int().min(18),
+});
+
+<Form
+  schema={SignupSchema}
+  config={{ name: { type: "text" }, age: { type: "text" } }}
+  onSubmit={(data) => {
+    data.age.toFixed(); // number: the schema output
+  }}
+/>;
+```
+
+The types follow the schema, the same way React Hook Form's `TTransformedValues` does:
+
+| Typed by the schema **input** | Typed by the schema **output** |
+|---|---|
+| `config` keys, `defaultValues`, `ref`, `onFormChange`, `onSubmitFailure` values, `form.getValues()` | `onSubmit` / `onSubmitSuccess` `data` |
+
+So a schema that trims, coerces or transforms gives `onSubmit` the parsed result, and type errors point at the right side. Mapping the output to an API payload belongs in `onSubmit`; there is no separate `transform` option.
+
+- Field-level `rules` are ignored when `schema` is set (a dev warning lists them).
+- `schema` and `formOptions.resolver` cannot be combined (type error; at runtime `schema` wins with a warning).
+- Issues map to field errors by path; an issue on an array itself goes to `<path>.root`, like `useFieldArray` rules.
+
+import { Tab, Tabs } from '@rspress/core/theme';
+import EgSchemaForm from '../../examples/_shared/EgSchemaForm';
+
+<Tabs>
+  <Tab label="Preview">
+    <EgSchemaForm />
+  </Tab>
+  <Tab label="Code">
+    ```tsx lineNumbers file="../../examples/_shared/EgSchemaForm.tsx"
+    ```
+  </Tab>
+</Tabs>
+
+## Any RHF resolver: `formOptions.resolver`
+
+For schema libraries without Standard Schema support (e.g. Yup) or custom resolvers, pass a resolver from `@hookform/resolvers`.
 
 ### Setup
 

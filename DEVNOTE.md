@@ -119,9 +119,9 @@ Thời gian: ngang RHF `useController` ở cả ba kịch bản gõ phím, nhanh
 
 ### 0.17 — API cho form chạy bằng dữ liệu
 
-6. **Suy ra `TModel` từ schema:** prop `schema` (Standard Schema: zod, valibot, arktype) tự cấp resolver và suy ra kiểu, không cần `<Form<User>>` hay `@hookform/resolvers`.
+6. ✅ **Suy ra `TModel` từ schema:** prop `schema` (Standard Schema; interface chép theo spec, không thêm dependency). Input của schema quy định type cho `config` / `defaultValues` / ref; output quy định type cho `onSubmit`, giống `TTransformedValues` của RHF. Có overload cho `<Form>`. Không kết hợp được với `formOptions.resolver`.
 7. **Điều kiện khai báo bằng JSON:** `visible: { when: "role", eq: "student" }` (`eq/in/notEmpty/and/or`), deps tự suy ra; lưu được vào DB, dùng cùng `defineDynamicConfig`.
-8. **`transform(values)` trước submit** (sanitize, đổi format), có thể ở cấp form và cấp trường.
+8. ~~`transform(values)` trước submit~~: bỏ, xem bảng "Không làm".
 9. **Trường computed:** `compute: (values) => ...` kèm deps.
 10. **Recipe wizard nhiều bước** dựa trên section + `trigger(paths)`; thêm recipe CRUD, bảng động.
 
@@ -146,3 +146,4 @@ Thời gian: ngang RHF `useController` ở cả ba kịch bản gõ phím, nhanh
 | Async / server-driven visibility | Làm được bằng cách cập nhật config (`defineDynamicConfig`); thêm async vào render làm phức tạp core |
 | Partial hydration / RSC | Form là client component; không có lợi rõ ràng |
 | Tách i18n thành plugin | ~200 dòng, gắn với message của rules; tách ra làm API phức tạp hơn |
+| `transform` trước submit (#8) | RHF cũng không có. Đổi shape thì đi qua output của `schema` (có type); chuyển thành payload thì viết trong `onSubmit`. Một `transform` tự do phải thêm generic mà không làm được gì hơn `onSubmit` |

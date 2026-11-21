@@ -1,0 +1,16 @@
+{
+  // Type-checks tests, stories and the docs examples. Docs examples import
+  // `react-headless-form`, React and RHF; map them to the repo copies (docs has
+  // its own node_modules with other versions). Not used by the build.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["src/lib/*"],
+      "react-headless-form": ["src/lib/index.ts"],
+      "react-hook-form": ["node_modules/react-hook-form"],
+      "react": ["node_modules/@types/react"],
+      "react/jsx-runtime": ["node_modules/@types/react/jsx-runtime"]
+    }
+  },
+  "include": ["src", ".ladle", "docs/src/examples"]
+}

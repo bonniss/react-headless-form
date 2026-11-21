@@ -6,7 +6,8 @@ import {
 } from "react-hook-form";
 
 import type { BlueFormRef, BlueFormRefValue } from "@/types/form";
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { forwardRef, useImperativeHandle, useMemo, useRef } from "react";
+import { standardSchemaResolver } from "@/components/helper/standard-schema";
 
 const noop = () => {};
 import type { BlueFormProps, ComponentMap } from "../../types";
@@ -30,11 +31,22 @@ export function BlueFormInner<
   blueFormProps: BlueFormProps<TModel, TComponentMap>,
   ref: React.Ref<BlueFormRef<TModel>>,
 ) {
-  const { defaultValues, formOptions, config } = blueFormProps;
+  const { defaultValues, formOptions, config, schema } = blueFormProps;
+  // The resolver is created once per schema instance.
+  const schemaResolver = useMemo(
+    () => (schema ? standardSchemaResolver(schema) : undefined),
+    [schema],
+  );
+  if (schema && formOptions?.resolver) {
+    console.warn(
+      "[react-headless-form] Both `schema` and `formOptions.resolver` are set; `schema` is used.",
+    );
+  }
   const form = useForm<TModel>({
     mode: "onTouched",
     reValidateMode: "onChange",
     ...formOptions,
+    ...(schemaResolver ? { resolver: schemaResolver } : {}),
     defaultValues,
   } as UseFormProps<TModel>);
   const flushRef = useRef<() => void>(noop);
@@ -49,11 +61,11 @@ export function BlueFormInner<
   );
 
   if (
-    formOptions?.resolver &&
+    (schemaResolver || formOptions?.resolver) &&
     hasRulesInConfig(config as Record<string, any>)
   ) {
     console.warn(
-      "[react-headless-form] `rules` defined in field config are automatically disabled when `formOptions.resolver` is provided. " +
+      "[react-headless-form] `rules` defined in field config are automatically disabled when `schema` or `formOptions.resolver` is provided. " +
         "Define all validation in your schema instead.",
     );
   }

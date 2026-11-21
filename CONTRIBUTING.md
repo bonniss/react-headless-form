@@ -35,7 +35,7 @@ These are the promises the library makes to its users. Every pull request must k
 | Script | What it does |
 |---|---|
 | `pnpm lint:ci` | Biome lint (no writes) |
-| `pnpm typecheck` / `pnpm typecheck:test` | Library sources / tests and stories |
+| `pnpm typecheck` / `pnpm typecheck:test` | Library sources / tests, stories and the docs examples (`tsconfig.test.json` maps them to the repo source) |
 | `pnpm build` | `dist/` (rolled-up `index.d.ts`, copied to `index.d.mts` for ESM) |
 | `pnpm check:types` | Consumer type tests against `dist/` (needs `pnpm build`) |
 | `pnpm check:package` | Packaging guarantees, `publint`, `attw` |

@@ -45,9 +45,17 @@ const app = async (): Promise<UserConfigExport> => {
         },
       },
     },
+    // Docs examples (docs/src/examples) are tested against the library source
+    // and must share one React / RHF instance with it (docs has its own node_modules).
+    resolve: {
+      dedupe: ["react", "react-dom", "react-hook-form"],
+    },
     test: {
       globals: true,
       environment: "jsdom",
+      alias: {
+        "react-headless-form": path.resolve(__dirname, "src/lib/index.ts"),
+      },
       coverage: {
         exclude: [
           ...(configDefaults.coverage.exclude ?? []),
