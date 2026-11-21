@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.16.0](https://github.com/bonniss/react-headless-form/compare/v0.14.0...v0.16.0) (2026-11-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* useField() and useArrayField() no longer accept the react-easy-provider options argument (standalone, shouldFailQuietly, fallback).
+
+### Features
+
+* **form:** pass field position and row scope to condition functions ([5cb402a](https://github.com/bonniss/react-headless-form/commit/5cb402af647de0a4d337957409098462aa25f7f7))
+* **form:** per-field re-renders with inferred condition deps ([b876197](https://github.com/bonniss/react-headless-form/commit/b8761976af1f5578bffd30eb03f3f51acb4a0b88))
+
+
+### Bug Fixes
+
+* **types:** keep built-in field types and check nested configs ([8dea8c2](https://github.com/bonniss/react-headless-form/commit/8dea8c247671ba205991410a818636fc786fc9de))
+
+
+### Miscellaneous Chores
+
+* release 0.16.0 ([27f0241](https://github.com/bonniss/react-headless-form/commit/27f0241811d9a9d6a6a0c68c42d3dd5d9cb81fca))
+
+
+### Code Refactoring
+
+* remove runtime dependencies and improve hook errors ([7e268aa](https://github.com/bonniss/react-headless-form/commit/7e268aa51a777f9defecf8d308f075811255d79e))
+
 ## [0.14.0](https://github.com/bonniss/react-headless-form/compare/v0.13.1...v0.14.0) (2026-11-20)
 
 
