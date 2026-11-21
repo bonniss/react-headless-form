@@ -22,7 +22,7 @@ describe("setupForm", () => {
     };
 
     expect(() => render(<BrokenField />)).toThrow(
-      /useContextValue must be used within FieldProvider/i,
+      /useField\(\) must be called inside a field rendered by <Form>/,
     );
   });
 
@@ -33,7 +33,7 @@ describe("setupForm", () => {
     };
 
     expect(() => render(<BrokenArrayField />)).toThrow(
-      /useContextValue must be used within FieldArrayProvider/i,
+      /useArrayField\(\) must be called inside an `array` field rendered by <Form>/,
     );
   });
 

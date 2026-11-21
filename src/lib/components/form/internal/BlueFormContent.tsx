@@ -6,7 +6,7 @@ import type {
 } from "@/types/form"
 
 import { useLatestRef } from "@/components/helper/use-latest-ref"
-import debounce from "just-debounce-it"
+import { debounce } from "@/components/helper/debounce"
 import {
   type BaseSyntheticEvent,
   type MutableRefObject,
@@ -74,17 +74,10 @@ export function BlueFormContent<
     [form, callbacksRef],
   )
 
-  // Stable debounced observer — only recreated when delay changes.
-  // Keeping it in useMemo (not useCallback) because debounce() returns
-  // a plain function, not a React callback.
+  // Stable debounced observer — only recreated when the delay changes.
+  // With no delay, it calls the observer synchronously.
   const debouncedObserver = useMemo(
-    () =>
-      changeDebounceDelay
-        ? debounce(observer, changeDebounceDelay)
-        : Object.assign(((value, info) => observer(value, info)) as typeof observer, {
-            flush: () => {},
-            cancel: () => {},
-          }),
+    () => debounce(observer, changeDebounceDelay ?? 0),
     [observer, changeDebounceDelay],
   )
 

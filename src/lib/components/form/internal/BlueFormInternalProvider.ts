@@ -1,4 +1,4 @@
-import { createProvider } from "react-easy-provider";
+import { createProvider } from "@/components/helper/create-provider";
 import { identity } from "@/components/helper/identity";
 import { typedKeys } from "@/components/helper/typed-keys";
 import type { ValidationResolver } from "@/components/i18n";
@@ -134,5 +134,10 @@ export const [useBlueFormInternal, BlueFormInternalProvider] = createProvider(
       hasResolver: Boolean(props.formOptions?.resolver),
       ...props,
     };
+  },
+  {
+    name: "BlueFormInternalProvider",
+    errorMessage:
+      "[react-headless-form] Internal form context is missing. Render fields through <Form> from setupForm().",
   },
 );
