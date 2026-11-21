@@ -11,7 +11,7 @@
  * - Layout and UI structure
  */
 import { defineMapping, setupForm } from "@/components/form/setup";
-import { Story, StoryDefault } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 
 export default {
   title: "Core",

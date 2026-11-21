@@ -1,5 +1,5 @@
 import { setupForm, defineMapping } from "@/components/form/setup";
-import { Story, StoryDefault } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import InputField from "../components/InputField";
 
 export default {

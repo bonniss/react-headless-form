@@ -1,5 +1,5 @@
 import { useField } from "@/components";
-import { FunctionComponent } from "react";
+import type { FunctionComponent } from "react";
 
 interface TextAreaFieldProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 

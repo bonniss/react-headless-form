@@ -1,4 +1,4 @@
-import { TranslatableText, TranslateFn } from '.';
+import type { TranslatableText, TranslateFn } from '.';
 
 /**
  * Normalizes a translation function so it can resolve TranslatableText.

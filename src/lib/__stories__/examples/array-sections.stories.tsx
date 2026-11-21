@@ -1,4 +1,4 @@
-import { Story, StoryDefault } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { setupForm, defineMapping } from "@/components/form/setup";
 import { useArrayField, useField } from "@/components";
 import InputField from "../components/InputField";

@@ -1,6 +1,10 @@
 {
   "files": {
-    "includes": ["**", "!./src/*.json", "!./.vscode/*.json"]
+    "includes": [
+      "**",
+      "!./src/*.json",
+      "!./.vscode/*.json"
+    ]
   },
   "linter": {
     "rules": {
@@ -12,7 +16,11 @@
   "formatter": {
     "lineWidth": 120,
     "lineEnding": "lf",
-    "includes": ["**", "!node_modules", "!.env.*"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.env.*"
+    ]
   },
   "json": {
     "parser": {
@@ -32,5 +40,23 @@
       "trailingCommas": "all",
       "indentStyle": "space"
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "src/lib/__test__/**"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noAssignInExpressions": "off",
+            "noArrayIndexKey": "off"
+          },
+          "a11y": {
+            "noLabelWithoutControl": "off"
+          }
+        }
+      }
+    }
+  ]
 }

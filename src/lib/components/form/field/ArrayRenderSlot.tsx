@@ -1,7 +1,7 @@
 import { FormFieldConfig } from "@/types";
-import { FunctionComponent } from "react";
+import type { FunctionComponent } from "react";
 import { useArrayField } from "../provider";
-import { RenderFn } from "@/types/render";
+import type { RenderFn } from "@/types/render";
 
 interface ArrayRenderSlotProps {
   render?: RenderFn<"array">;

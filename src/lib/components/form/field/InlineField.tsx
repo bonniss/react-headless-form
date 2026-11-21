@@ -1,8 +1,8 @@
-import { FunctionComponent } from "react";
+import type { FunctionComponent } from "react";
 import { useField } from "../provider";
-import { RenderFn } from "@/types/render";
+import type { RenderFn } from "@/types/render";
 
-interface InlineFieldProps {}
+type InlineFieldProps = {}
 
 const InlineField: FunctionComponent<InlineFieldProps> = () => {
   const { config, controller, ...fieldProps } = useField();

@@ -15,7 +15,7 @@ import InputField from "@/__stories__/components/InputField";
 import TextAreaField from "@/__stories__/components/TextAreaField";
 import { defineMapping, setupForm } from "@/components/form/setup";
 import { LooseShape } from "@/types/utils";
-import { Story, StoryDefault } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { useFormContext } from "react-hook-form";
 
 interface ProfileForm {

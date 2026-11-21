@@ -1,5 +1,5 @@
 import { useField } from "@/components";
-import { FunctionComponent } from "react";
+import type { FunctionComponent } from "react";
 
 interface SelectFieldProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   options: { label: string; value: string }[];

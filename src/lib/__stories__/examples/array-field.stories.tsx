@@ -5,7 +5,7 @@
 /** biome-ignore-all lint/correctness/useHookAtTopLevel: <explanation> */
 import { useArrayField } from "@/components";
 import { defineMapping, setupForm } from "@/components/form/setup";
-import { Story, StoryDefault } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import InputField from "../components/InputField";
 
 interface User {

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import { FunctionComponent } from "react"
+import type { FunctionComponent } from "react"
 
 import { useField } from "../provider"
 
-interface HiddenFieldProps {}
+type HiddenFieldProps = {}
 
 const HiddenField: FunctionComponent<HiddenFieldProps> = () => {
   useField()
