@@ -147,9 +147,11 @@ export type FormFieldConfig<
   /**
    * Form paths that `visible` / `disabled` / `required` functions depend on.
    *
-   * When **every** conditional field at a config level declares `deps`, that
-   * level only re-renders when those paths change, instead of on every change
-   * anywhere in the form. Paths are absolute (e.g. `"profile.role"`).
+   * Optional: by default the paths are inferred by recording which values the
+   * functions read (re-recorded on every evaluation), and the field re-renders
+   * only when the result of a function changes. Declaring `deps` overrides the
+   * inference: the functions are then re-evaluated only when one of these
+   * paths changes. Paths are absolute (e.g. `"profile.role"`).
    */
   deps?: Path<TModel>[];
 

@@ -102,6 +102,79 @@ describe("G3 scoped re-renders on large forms", () => {
     expect(screen.getByTestId("c0")).toBeTruthy();
   });
 
+  it("without `deps`, unrelated typing re-renders nothing else (deps are inferred)", () => {
+    const visible = vi.fn((v: any) => v.f0 === "show");
+    const config: Record<string, any> = Object.fromEntries(
+      Array.from({ length: 200 }, (_, i) => [`f${i}`, { type: "text" }]),
+    );
+    for (let i = 0; i < 40; i++) config[`c${i}`] = { type: "text", visible };
+    render(<Form<any> config={config} />);
+    reset();
+    visible.mockClear();
+
+    act(() => {
+      fireEvent.change(screen.getByTestId("f1"), { target: { value: "x" } });
+    });
+    expect(othersRerendered(["f1"])).toEqual([]);
+    expect(visible).not.toHaveBeenCalled();
+
+    act(() => {
+      fireEvent.change(screen.getByTestId("f0"), { target: { value: "show" } });
+    });
+    expect(screen.getByTestId("c39")).toBeTruthy();
+  });
+
+  it("typing in a dependency re-renders only fields whose condition result changes", () => {
+    const config: Record<string, any> = Object.fromEntries(
+      Array.from({ length: 200 }, (_, i) => [`f${i}`, { type: "text" }]),
+    );
+    for (let i = 0; i < 40; i++) {
+      config[`c${i}`] = { type: "text", visible: (v: any) => String(v.f0).startsWith("show") };
+    }
+    render(<Form<any> defaultValues={{ f0: "show" }} config={config} />);
+
+    // f0 changes, but every condition stays true → nothing else renders
+    reset();
+    act(() => {
+      fireEvent.change(screen.getByTestId("f0"), { target: { value: "show more" } });
+    });
+    expect(othersRerendered(["f0"])).toEqual([]);
+
+    // condition flips → only the 40 conditional fields are affected
+    reset();
+    act(() => {
+      fireEvent.change(screen.getByTestId("f0"), { target: { value: "hide" } });
+    });
+    expect(othersRerendered(["f0"])).toEqual([]);
+    expect(screen.queryByTestId("c0")).toBeNull();
+  });
+
+  it("appending to a 200-row array does not re-render existing rows", () => {
+    const Rows = () => {
+      const { renderItems, append } = useArrayField();
+      return (
+        <>
+          {renderItems()}
+          <button type="button" onClick={() => append({ v: "" })}>
+            add
+          </button>
+        </>
+      );
+    };
+    const [ArrForm] = setupForm({ renderRoot: FormRoot, fieldMapping: { text: Counted, array: Rows } });
+    render(
+      <ArrForm<any>
+        defaultValues={{ rows: Array.from({ length: 200 }, () => ({ v: "" })) }}
+        config={{ rows: { type: "array", props: { config: { v: { type: "text" } } } } }}
+      />,
+    );
+    reset();
+    act(() => {
+      fireEvent.click(screen.getByText("add"));
+    });
+    expect(othersRerendered(["rows.200.v"])).toEqual([]);
+  });
+
   it("appending to a 200-row array does not remount existing rows", () => {
     const Rows = () => {
       const { renderItems, append } = useArrayField();

@@ -63,14 +63,23 @@ describe("deps – scoped conditional re-render", () => {
     expect(screen.getByTestId("studentId")).toBeTruthy();
   });
 
-  it("without deps, any change re-evaluates visible() (backward compatible)", () => {
+  // Since 0.16 deps are inferred from the values visible() reads.
+  it("without deps, only changes to the paths visible() reads re-evaluate it", () => {
     const visible = renderForm(false);
     const before = visible.mock.calls.length;
 
     act(() => {
       fireEvent.change(screen.getByTestId("note"), { target: { value: "x" } });
     });
+    expect(visible.mock.calls.length).toBe(before);
+
+    act(() => {
+      fireEvent.change(screen.getByTestId("role"), {
+        target: { value: "student" },
+      });
+    });
     expect(visible.mock.calls.length).toBeGreaterThan(before);
+    expect(screen.getByTestId("studentId")).toBeTruthy();
   });
 });
 
