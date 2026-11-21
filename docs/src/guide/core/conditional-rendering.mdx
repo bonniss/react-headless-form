@@ -25,7 +25,7 @@ When a function is provided, BlueForm evaluates it reactively from the current f
 
 ## Conditions inside array rows and sections
 
-_Added in v0.15._
+_Added in v0.16._
 
 The functions receive a second argument with the field's position:
 
@@ -129,7 +129,7 @@ Use `visible` when the field should disappear entirely from the current UI.
 
 ## Performance: `deps`
 
-_Added in v0.14. Since v0.15, deps are inferred and `deps` is optional._
+_Added in v0.14. Since v0.16, deps are inferred and `deps` is optional._
 
 Each field evaluates its own `visible` / `disabled` / `required` functions. While a function runs, BlueForm records which values it reads from the `values` argument (`values.role`, `values.profile.city`, …). After that, the function runs again only when one of those paths changes, and the field re-renders only when the **result** changes. Typing anywhere else in the form does not touch the field.
 
@@ -146,7 +146,7 @@ You can still declare `deps`. It overrides the inference: the functions then re-
 studentId: {
   type: "text",
   visible: (values) => values.role === "student",
-  deps: ["role"], // optional since v0.15
+  deps: ["role"], // optional since v0.16
 },
 ```
 
