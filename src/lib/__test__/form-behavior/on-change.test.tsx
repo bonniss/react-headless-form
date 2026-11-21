@@ -76,7 +76,7 @@ describe("BlueForm – change behavior", () => {
               config: {
                 userId: {
                   type: "inline",
-                  render: ({ onChange }) => (
+                  render: ({ onChange }: any) => (
                     <button
                       type="button"
                       data-testid="change"

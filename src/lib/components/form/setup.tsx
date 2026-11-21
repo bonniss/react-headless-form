@@ -72,12 +72,9 @@ export function defineMapping(userMapping?: ComponentMap) {
  * `ref` forwarding. At runtime, it is implemented by a single React component
  * created via `forwardRef`.
  */
-export type TypedFormComponent<TComponentMap extends ComponentMap> = {
-  <TModel extends FieldValues>(
+export type TypedFormComponent<TComponentMap extends ComponentMap> = <TModel extends FieldValues>(
     props: Omit<BlueFormProps<TModel, TComponentMap>, "fieldMapping"> &
-      React.RefAttributes<BlueFormRef<TModel>>,
-  ): JSX.Element;
-};
+      React.RefAttributes<BlueFormRef<TModel>>,) => JSX.Element;
 
 /**
  * A typed `<Section />` component signature.
@@ -89,11 +86,9 @@ export type TypedFormComponent<TComponentMap extends ComponentMap> = {
  * Usage:
  * - `<Section<MySubModel> config={defineConfig<MySubModel>({...})} />`
  */
-export type TypedSectionComponent<TComponentMap extends ComponentMap> = {
-  <TModel extends FieldValues>(props: {
+export type TypedSectionComponent<TComponentMap extends ComponentMap> = <TModel extends FieldValues>(props: {
     config: FormConfig<TModel, TComponentMap>;
-  }): JSX.Element;
-};
+  }) => JSX.Element;
 
 /**
  * Creates a typed helper for defining form configuration objects.
@@ -151,17 +146,20 @@ export function setupForm(): readonly [
   ReturnType<typeof createDefineConfigFn<DefaultComponentMap>>,
   TypedSectionComponent<DefaultComponentMap>,
 ];
+// Built-in types (`array`, `section`, `hidden`, `inline`) are always available,
+// so they are merged into the map even when `fieldMapping` is a plain object
+// rather than `defineMapping(...)`.
 export function setupForm<TUserMap extends ComponentMap>(
   baseConfig: BlueFormBaseConfig<TUserMap>,
 ): readonly [
-  TypedFormComponent<TUserMap>,
-  ReturnType<typeof createDefineConfigFn<TUserMap>>,
-  TypedSectionComponent<TUserMap>,
+  TypedFormComponent<DefaultComponentMap & TUserMap>,
+  ReturnType<typeof createDefineConfigFn<DefaultComponentMap & TUserMap>>,
+  TypedSectionComponent<DefaultComponentMap & TUserMap>,
 ];
 export function setupForm(baseConfig?: BlueFormBaseConfig<ComponentMap>) {
   const resolvedConfig = {
-    fieldMapping: defineMapping(),
     ...baseConfig,
+    fieldMapping: defineMapping(baseConfig?.fieldMapping ?? {}),
   };
 
   const defineConfig = createDefineConfigFn<any>();

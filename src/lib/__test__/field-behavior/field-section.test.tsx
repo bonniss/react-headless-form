@@ -425,7 +425,7 @@ describe("BlueForm – section", () => {
         config={{
           "nested.key": {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <input
                 data-testid="input"
                 value={value ?? ""}
@@ -466,7 +466,7 @@ describe("BlueForm – section", () => {
         config={{
           "a.b.c": {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <input
                 data-testid="deep"
                 value={value ?? ""}
@@ -507,7 +507,7 @@ describe("BlueForm – section", () => {
         config={{
           "user.name": {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <input
                 data-testid="name"
                 value={value ?? ""}
@@ -517,7 +517,7 @@ describe("BlueForm – section", () => {
           },
           "user.age": {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <input
                 data-testid="age"
                 value={value ?? ""}
@@ -566,7 +566,7 @@ describe("BlueForm – section", () => {
               config: {
                 email: {
                   type: "inline",
-                  render: ({ value, onChange }) => (
+                  render: ({ value, onChange }: any) => (
                     <input
                       data-testid="email"
                       value={value ?? ""}
@@ -579,7 +579,7 @@ describe("BlueForm – section", () => {
           },
           "profile.name": {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <input
                 data-testid="name"
                 value={value ?? ""}
@@ -633,7 +633,7 @@ describe("BlueForm – section", () => {
                     config: {
                       mode: {
                         type: "inline",
-                        render: ({ value, onChange }) => (
+                        render: ({ value, onChange }: any) => (
                           <input
                             data-testid="mode"
                             value={value ?? ""}
@@ -649,7 +649,7 @@ describe("BlueForm – section", () => {
           },
           "settings.theme.color": {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <input
                 data-testid="color"
                 value={value ?? ""}
@@ -693,7 +693,7 @@ describe("BlueForm – section inside array", () => {
         config={{
           users: {
             type: "array",
-            render: ({ children }) => {
+            render: ({ children }: any) => {
               const { append } = useArrayField();
               // Append một object có data ban đầu để test
               return (
@@ -808,7 +808,7 @@ describe("BlueForm – section inside array", () => {
               config: {
                 tags: {
                   type: "array",
-                  render: ({ children }) => {
+                  render: ({ children }: any) => {
                     const { append } = useArrayField();
                     return (
                       <div>

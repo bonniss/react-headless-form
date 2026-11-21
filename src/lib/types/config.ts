@@ -4,7 +4,7 @@ import type { TranslatableText } from "@/components/i18n";
 import type { ComponentProps, ComponentType, ReactNode } from "react";
 import type { FieldResolvedProps } from "./input";
 import type { FieldValues, Path } from "react-hook-form";
-import { RenderFn } from "./render";
+import type { RenderFn } from "./render";
 import type { ValidationRules } from "./rule";
 import type { WithKnownKeys } from "./utils";
 
@@ -46,6 +46,8 @@ export type ComponentMap = WithKnownKeys<CoreFieldType, ComponentType<any>>;
 /**
  * Content of a field slot: a node, or a function of the field's resolved props.
  */
+type PropsOf<C> = C extends ComponentType<infer P> ? P : never;
+
 export type FieldSlotContent =
   | ReactNode
   | ((field: FieldResolvedProps) => ReactNode);
@@ -81,7 +83,14 @@ export type FormFieldConfig<
   /**
    * Props to pass to the renderer component associated with the field type.
    */
-  props?: ComponentProps<TComponentMap[TFieldType]>;
+  props?: TFieldType extends "section" | "array"
+    ? // Nested config is checked against the same component map, so unknown
+      // `type`s and wrong `props` inside sections/arrays are errors too.
+      // (Model keys inside are only checked with `defineConfig<SubModel>()`.)
+      Omit<PropsOf<TComponentMap[TFieldType]>, "config"> & {
+        config?: FormConfig<any, TComponentMap>;
+      }
+    : ComponentProps<TComponentMap[TFieldType]>;
 
   /**
    * Field name, used as a key in the form state.

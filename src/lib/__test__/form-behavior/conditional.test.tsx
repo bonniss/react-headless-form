@@ -38,7 +38,7 @@ describe("conditional watch — visible behavior", () => {
         config={{
           type: {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <select
                 data-testid="type"
                 value={value ?? ""}
@@ -55,7 +55,7 @@ describe("conditional watch — visible behavior", () => {
             visible: (values: any) => values.type === "B",
             // Field component is responsible for hiding itself based on visible.
             // The engine passes visible down as a resolved prop — it does not skip rendering.
-            render: ({ visible }) =>
+            render: ({ visible }: any) =>
               visible ? <div data-testid="detail" /> : null,
           },
         }}
@@ -78,7 +78,7 @@ describe("conditional watch — visible behavior", () => {
         config={{
           toggle: {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <input
                 data-testid="toggle"
                 type="checkbox"
@@ -90,7 +90,7 @@ describe("conditional watch — visible behavior", () => {
           secret: {
             type: "inline",
             visible: (values: any) => Boolean(values.toggle),
-            render: ({ visible }) =>
+            render: ({ visible }: any) =>
               visible ? <div data-testid="secret" /> : null,
           },
         }}
@@ -116,7 +116,7 @@ describe("conditional watch — visible behavior", () => {
         config={{
           a: {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <input
                 data-testid="a"
                 value={value ?? ""}
@@ -126,7 +126,7 @@ describe("conditional watch — visible behavior", () => {
           },
           b: {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <input
                 data-testid="b"
                 value={value ?? ""}
@@ -138,7 +138,7 @@ describe("conditional watch — visible behavior", () => {
             type: "inline",
             // depends on both a and b
             visible: (values: any) => values.a === "x" && values.b === "y",
-            render: ({ visible }) =>
+            render: ({ visible }: any) =>
               visible ? <div data-testid="result" /> : null,
           },
         }}
@@ -180,7 +180,7 @@ describe("conditional watch — disabled behavior", () => {
         config={{
           lock: {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <input
                 data-testid="lock"
                 type="checkbox"
@@ -229,7 +229,7 @@ describe("conditional watch — disabled behavior", () => {
         config={{
           lock: {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <input
                 data-testid="lock"
                 type="checkbox"
@@ -284,7 +284,7 @@ describe("conditional watch — subscription optimization", () => {
         config={{
           firstName: {
             type: "inline",
-            render: ({ value, onChange }) => {
+            render: ({ value, onChange }: any) => {
               renderCount();
               return (
                 <input
@@ -297,7 +297,7 @@ describe("conditional watch — subscription optimization", () => {
           },
           lastName: {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <input
                 data-testid="lastName"
                 value={value ?? ""}
@@ -343,7 +343,7 @@ describe("conditional watch — subscription optimization", () => {
         config={{
           type: {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <input
                 data-testid="type"
                 value={value ?? ""}
@@ -354,7 +354,7 @@ describe("conditional watch — subscription optimization", () => {
           detail: {
             type: "inline",
             visible: (values: any) => values.type === "B",
-            render: ({ visible }) => {
+            render: ({ visible }: any) => {
               renderCount();
               return visible ? <div data-testid="detail-render" /> : null;
             },
@@ -385,7 +385,7 @@ describe("conditional watch — subscription optimization", () => {
         config={{
           name: {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <input
                 data-testid="name"
                 value={value ?? ""}
@@ -400,7 +400,7 @@ describe("conditional watch — subscription optimization", () => {
               config: {
                 toggle: {
                   type: "inline",
-                  render: ({ value, onChange }) => (
+                  render: ({ value, onChange }: any) => (
                     <input
                       data-testid="toggle"
                       type="checkbox"
@@ -412,7 +412,7 @@ describe("conditional watch — subscription optimization", () => {
                 conditional: {
                   type: "inline",
                   visible: (values: any) => Boolean(values.toggle),
-                  render: ({ visible }) =>
+                  render: ({ visible }: any) =>
                     visible ? <div data-testid="conditional" /> : null,
                 },
               },
@@ -453,7 +453,7 @@ describe("conditional watch — subscription optimization", () => {
             type: "inline",
             visible: true, // boolean, not function
             disabled: false, // boolean, not function
-            render: ({ value, onChange }) => {
+            render: ({ value, onChange }: any) => {
               renderCount();
               return (
                 <input
@@ -466,7 +466,7 @@ describe("conditional watch — subscription optimization", () => {
           },
           b: {
             type: "inline",
-            render: ({ value, onChange }) => (
+            render: ({ value, onChange }: any) => (
               <input
                 data-testid="b"
                 value={value ?? ""}

@@ -829,7 +829,7 @@ describe("BlueForm - field array", () => {
             render: ({ errorMessage, append, remove, items }) => (
               <>
                 {errorMessage && <div data-testid="error">{errorMessage}</div>}
-                {items.map((_, index) => (
+                {items.map((_: unknown, index: number) => (
                   <button
                     key={index}
                     type="button"
@@ -962,7 +962,7 @@ describe("useArrayField - swap()", () => {
         config={{
           users: {
             type: "array",
-            _render: ({ append, swap }) => {
+            _render: ({ append, swap }: any) => {
               return (
                 <>
                   <button type="button" onClick={() => append({ name: "A" })}>
@@ -984,7 +984,7 @@ describe("useArrayField - swap()", () => {
               this._render = value;
             },
             props: { config: { name: { type: "inline", render: () => null } } },
-          },
+          } as any,
         }}
       />,
     );

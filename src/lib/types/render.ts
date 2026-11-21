@@ -1,6 +1,6 @@
-import { useArrayField } from "@/components";
+import type { useArrayField } from "@/components";
 import type { ReactNode } from "react";
-import { FieldResolvedProps } from "./input";
+import type { FieldResolvedProps } from "./input";
 
 // ── Inline field render ─────────────────────────────────────────────────────
 //
@@ -8,7 +8,9 @@ import { FieldResolvedProps } from "./input";
 // No component exists in fieldMapping for this field.
 // Receives resolved field props only.
 
-export type InlineRenderContext = FieldResolvedProps;
+// The context comes from `useField()`, so the controller bindings are always set.
+export type InlineRenderContext = FieldResolvedProps &
+  Required<Pick<FieldResolvedProps, "onChange" | "onBlur">>;
 
 // ── Custom field render ─────────────────────────────────────────────────────
 //
@@ -65,8 +67,14 @@ export type ArrayRenderContext = ReturnType<typeof useArrayField> & {
 // with the correct context shape for their field type — no runtime guessing,
 // no manual casting.
 
+//   string    → any context (the component map is not statically known, e.g.
+//               an untyped/dynamic map; there is no literal type to narrow on)
+
 export type RenderFn<TFieldType extends string & keyof any = string> =
-  TFieldType extends "array"
+  string extends TFieldType
+    ? // biome-ignore lint/suspicious/noExplicitAny: map is not statically known
+      (context: any) => ReactNode
+    : TFieldType extends "array"
     ? (context: ArrayRenderContext) => ReactNode
     : TFieldType extends "section"
       ? (context: SectionRenderContext) => ReactNode
