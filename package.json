@@ -2,20 +2,28 @@
   "name": "react-headless-form",
   "description": "Form as configuration. Bring your own UI, entirely. Great DX. Built on React Hook Form.",
   "private": false,
+  "license": "MIT",
+  "type": "commonjs",
+  "sideEffects": false,
   "version": "0.14.0",
   "packageManager": "pnpm@10.12.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bonniss/react-headless-form"
+    "url": "git+https://github.com/bonniss/react-headless-form.git"
   },
   "main": "./dist/react-headless-form.umd.cjs",
   "module": "./dist/react-headless-form.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/react-headless-form.mjs",
-      "require": "./dist/react-headless-form.umd.cjs"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/react-headless-form.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/react-headless-form.umd.cjs"
+      }
     },
     "./package.json": "./package.json"
   },
@@ -26,15 +34,20 @@
     "typecheck:test": "tsc",
     "typecheck": "tsc -p tsconfig.build.json",
     "dev": "ladle serve",
-    "build": "tsc -p tsconfig.build.json && vite build",
+    "build": "tsc -p tsconfig.build.json && vite build && node scripts/copy-dmts.mjs",
     "static": "ladle build --viteConfig .ladle/vite-build.config.ts",
     "preview": "ladle preview",
     "lint": "npx @biomejs/biome lint --write ./src",
     "format": "npx @biomejs/biome check --write --organize-imports-enabled=true ./src",
     "test": "vitest",
-    "test:cov": "vitest run --coverage"
+    "test:cov": "vitest run --coverage",
+    "lint:ci": "biome lint ./src",
+    "check:types": "tsc -p test/types && tsc -p test/types/register",
+    "check:package": "node scripts/check-package.mjs && publint && attw --pack .",
+    "verify": "pnpm lint:ci && pnpm typecheck && pnpm typecheck:test && vitest run && pnpm build && pnpm check:types && pnpm check:package"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "~0.18.5",
     "@babel/core": "7.27.4",
     "@biomejs/biome": "2.0.4",
     "@hookform/devtools": "^4.4.0",
@@ -52,6 +65,7 @@
     "jsdom": "26.1.0",
     "lint-staged": "16.1.2",
     "prism-react-renderer": "^2.4.1",
+    "publint": "0.3.25",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.62.0",
@@ -78,9 +92,5 @@
       "biome lint --write --no-errors-on-unmatched --files-ignore-unknown=true",
       "biome format --write --no-errors-on-unmatched"
     ]
-  },
-  "dependencies": {
-    "just-debounce-it": "^3.2.0",
-    "react-easy-provider": "^0.2.1"
   }
 }

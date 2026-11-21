@@ -22,6 +22,7 @@ const app = async (): Promise<UserConfigExport> => {
       dts({
         tsconfigPath: path.resolve(__dirname, "tsconfig.build.json"),
         insertTypesEntry: true,
+        rollupTypes: true,
       }),
     ],
     build: {

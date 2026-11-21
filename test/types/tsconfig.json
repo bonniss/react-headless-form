@@ -1,0 +1,18 @@
+{
+  // Type-checks consumer code against the BUILT declarations in dist/.
+  // Run `pnpm build` first. See CONTRIBUTING.md → Core guarantees.
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": false,
+    "types": [],
+    "baseUrl": ".",
+    "paths": { "react-headless-form": ["../../dist/index.d.ts"] }
+  },
+  "include": ["consumer"]
+}

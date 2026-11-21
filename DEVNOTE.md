@@ -69,6 +69,11 @@ Khi KHÔNG nên dùng
 
 ## Roadmap
 
+> **Trạng thái (0.15):**
+> - **Đã xong:** #2 (không mutate rules), #3 (`useFormState({ name })`), #8 (thông báo lỗi rõ ràng cho `useField`/`useArrayField`), #10 (debounce ổn định, có flush), #12 (`key={field.id}`).
+> - **Xong một phần:** #1 và #5 (`deps`, chỉ có hiệu lực khi mọi trường điều kiện cùng cấp đều khai báo). Số liệu nền: khi không có `deps`, gõ một trường làm ~199/200 trường khác re-render (`core-guarantees.test.tsx` → G3).
+> - **Ràng buộc:** mọi thay đổi phải giữ các "Core guarantees" trong `CONTRIBUTING.md` (CI chạy `pnpm verify`).
+
 * ✅ **Mức ưu tiên**: P0 (critical), P1 (high), P2 (improvement), P3 (nice-to-have)
 * 🗂 **Phân loại**:
 

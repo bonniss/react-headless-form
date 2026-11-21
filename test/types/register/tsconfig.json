@@ -1,0 +1,6 @@
+{
+  // Separate program: `Register` augmentation is global to a program.
+  "extends": "../tsconfig.json",
+  "compilerOptions": { "baseUrl": "..", "paths": { "react-headless-form": ["../../dist/index.d.ts"] } },
+  "include": ["."]
+}
