@@ -149,6 +149,31 @@ describe("G3 scoped re-renders on large forms", () => {
     expect(screen.queryByTestId("c0")).toBeNull();
   });
 
+  it("computed fields re-run and re-render only when a value they read changes", () => {
+    const compute = vi.fn((v: any) => `${v.f0 ?? ""}!`);
+    const config: Record<string, any> = Object.fromEntries(
+      Array.from({ length: 200 }, (_, i) => [`f${i}`, { type: "text" }]),
+    );
+    for (let i = 0; i < 40; i++) config[`k${i}`] = { type: "text", readOnly: true, compute };
+    render(<Form<any> config={config} />);
+    reset();
+    compute.mockClear();
+
+    act(() => {
+      fireEvent.change(screen.getByTestId("f1"), { target: { value: "x" } });
+    });
+    expect(othersRerendered(["f1"])).toEqual([]);
+    expect(compute).not.toHaveBeenCalled();
+
+    reset();
+    act(() => {
+      fireEvent.change(screen.getByTestId("f0"), { target: { value: "y" } });
+    });
+    const computed = Array.from({ length: 40 }, (_, i) => `k${i}`);
+    expect(othersRerendered(["f0", ...computed])).toEqual([]);
+    expect((screen.getByTestId("k39") as HTMLInputElement).value).toBe("y!");
+  });
+
   it("appending to a 200-row array does not re-render existing rows", () => {
     const Rows = () => {
       const { renderItems, append } = useArrayField();

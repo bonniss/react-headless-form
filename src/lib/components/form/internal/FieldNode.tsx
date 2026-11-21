@@ -7,6 +7,7 @@ import SectionField from "../field/SectionField";
 import StandardField from "../field/StandardField";
 import { useBlueFormInternal } from "./BlueFormInternalProvider";
 import { compileField } from "./compile-field";
+import { useComputedValue } from "./use-computed-value";
 import { useFieldConditions } from "./use-field-conditions";
 
 type FieldNodeProps = {
@@ -38,11 +39,10 @@ function FieldNode({ name, field, namespace }: FieldNodeProps) {
     [name, field, namespace, i18nConfig, formReadOnly],
   );
 
-  const { visible, disabled, required } = useFieldConditions(field, {
-    path: compiled.path,
-    name,
-    namespace,
-  });
+  const position = { path: compiled.path, name, namespace };
+  const { visible, disabled, required } = useFieldConditions(field, position);
+  // Runs even while the field is hidden, so computed values stay current.
+  useComputedValue(field, position, !compiled.base.readOnly && !disabled);
 
   const resolved = useMemo(() => {
     const { base } = compiled;

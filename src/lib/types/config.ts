@@ -3,7 +3,7 @@
 import type { TranslatableText } from "@/components/i18n";
 import type { ComponentProps, ComponentType, ReactNode } from "react";
 import type { FieldResolvedProps } from "./input";
-import type { FieldValues, Path } from "react-hook-form";
+import type { FieldValues, Path, PathValue } from "react-hook-form";
 import type { Condition } from "./condition";
 import type { RenderFn } from "./render";
 import type { ValidationRules } from "./rule";
@@ -56,7 +56,7 @@ export type FieldSlotContent =
 /**
  * Second argument of `visible` / `disabled` / `required` functions.
  */
-export type ConditionContext = {
+export type ConditionContext<TScope = any> = {
   /** Full path of the field, e.g. `"rows.2.detail"`. */
   path: string;
   /** Config key of the field, e.g. `"detail"`. */
@@ -66,15 +66,35 @@ export type ConditionContext = {
   /**
    * Values at `namespace` (the current array row or nested section), or the
    * whole form values at the top level. Reads are tracked like `values`.
+   * Typed by the config's model (e.g. the row model in `defineConfig<Row, Root>`).
    */
-  scope: any;
+  scope: Partial<TScope>;
 };
 
-/** A `visible` / `disabled` / `required` function. */
-export type ConditionFn<TModel extends FieldValues> = (
-  values: Partial<TModel>,
-  ctx: ConditionContext,
+/**
+ * Type of `values` in condition / compute functions: the root model, or `any`
+ * when the root is unknown (configs returned by `defineConfig` drop it).
+ */
+type RootValues<TRoot> = [TRoot] extends [never] ? any : Partial<TRoot>;
+
+/**
+ * A `visible` / `disabled` / `required` function. `values` are the whole form
+ * values (typed by the root model); `ctx.scope` the values of the field's array
+ * row / nested section (typed by the config's model).
+ */
+export type ConditionFn<TModel extends FieldValues, TRoot extends FieldValues = TModel> = (
+  values: RootValues<TRoot>,
+  ctx: ConditionContext<TModel>,
 ) => boolean;
+
+/**
+ * Derives a field's value from other values (same arguments as conditions).
+ * Return `undefined` when the inputs are incomplete.
+ */
+export type ComputeFn<TModel extends FieldValues, TRoot extends FieldValues, TValue> = (
+  values: RootValues<TRoot>,
+  ctx: ConditionContext<TModel>,
+) => TValue | undefined;
 
 /**
  * Configuration for a single form field.
@@ -158,13 +178,13 @@ export type FormFieldConfig<
    * // inside an array item config: show `detail` when this row's `kind` is "other"
    * detail: { type: "text", visible: (_, { scope }) => scope?.kind === "other" }
    */
-  visible?: boolean | ConditionFn<TModel> | Condition<TModel, TRoot>;
+  visible?: boolean | ConditionFn<TModel, TRoot> | Condition<TModel, TRoot>;
 
   /**
    * Optional function to determine whether the field should be disabled,
    * based on the current form values (same arguments as `visible`).
    */
-  disabled?: boolean | ConditionFn<TModel> | Condition<TModel, TRoot>;
+  disabled?: boolean | ConditionFn<TModel, TRoot> | Condition<TModel, TRoot>;
 
   /**
    * Marks the field as required in the UI (`useField().required`, e.g. to show "*").
@@ -173,7 +193,7 @@ export type FormFieldConfig<
    * This only affects the resolved `required` flag; enforce the rule itself with
    * `rules.validate` or your schema. When omitted, it is inferred from `rules.required`.
    */
-  required?: boolean | ConditionFn<TModel> | Condition<TModel, TRoot>;
+  required?: boolean | ConditionFn<TModel, TRoot> | Condition<TModel, TRoot>;
 
   /**
    * Form paths that `visible` / `disabled` / `required` functions depend on.
@@ -326,5 +346,20 @@ export type FormConfig<
     TModel,
     TComponentMap,
     TRoot
-  >;
+  > & {
+    /**
+     * Derives this field's value from other values; the return type is this
+     * field's type. Re-runs when a value it reads changes (like conditions).
+     *
+     * - `readOnly` / `disabled` fields always follow the computed value.
+     * - Editable fields follow it until the user changes the field (an existing
+     *   value that differs from the computed one counts as a change); clearing
+     *   the field resumes syncing on the next change.
+     *
+     * @example
+     * bmi: { type: "number", readOnly: true, compute: (v) => v.weight && v.height ? v.weight / (v.height / 100) ** 2 : undefined }
+     * slug: { type: "text", compute: (v) => slugify(v.title ?? "") }
+     */
+    compute?: ComputeFn<TModel, TRoot, K extends Path<TModel> ? PathValue<TModel, K> : unknown>;
+  };
 };

@@ -92,7 +92,7 @@ export function useFieldConditions(
   field: FormFieldConfig<any, any>,
   position: FieldPosition,
 ): FieldConditions {
-  const { getValues, subscribe } = useFormContext();
+  const { getValues, watch } = useFormContext();
   const [, rerender] = useReducer((n: number) => n + 1, 0);
   const conditional = isConditionalField(field);
 
@@ -125,14 +125,13 @@ export function useFieldConditions(
       else state.deps = next.deps;
     };
 
-    const unsubscribe = subscribe({
-      formState: { values: true },
-      callback: ({ name }: { name?: string }) => check(name),
-    });
+    // `watch(callback)` receives the raw payload: `name` is the changed path,
+    // or undefined for reset() (subscribe() would merge a stale name).
+    const subscription = watch((_, { name }) => check(name));
     // Catch changes made between render and subscription.
     check();
-    return unsubscribe;
-  }, [conditional, subscribe, getValues]);
+    return () => subscription.unsubscribe();
+  }, [conditional, watch, getValues]);
 
   return current.result;
 }
