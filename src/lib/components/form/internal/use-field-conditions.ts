@@ -2,6 +2,7 @@
 import { useEffect, useReducer, useRef } from "react";
 import { useFormContext } from "react-hook-form";
 
+import { evaluateCondition, readPath } from "@/components/helper/condition";
 import { isRelatedPath, trackReads } from "@/components/helper/track-reads";
 import type { ConditionContext, FormFieldConfig } from "@/types";
 
@@ -19,19 +20,18 @@ type Evaluation = {
   deps: string[] | null;
 };
 
+// A function or a JSON condition object (booleans are static).
+const isDynamic = (value: unknown) =>
+  typeof value === "function" || (typeof value === "object" && value !== null);
+
 export function isConditionalField(field: any): boolean {
-  return (
-    typeof field?.visible === "function" ||
-    typeof field?.disabled === "function" ||
-    typeof field?.required === "function"
-  );
+  return isDynamic(field?.visible) || isDynamic(field?.disabled) || isDynamic(field?.required);
 }
 
-function scopeOf(values: any, namespace?: string) {
-  if (!namespace) return values;
-  let target = values;
-  for (const key of namespace.split(".")) target = target?.[key];
-  return target;
+/** Resolves a static flag, a function or a JSON condition. */
+function resolveFlag(flag: any, values: any, ctx: ConditionContext | undefined): boolean {
+  if (typeof flag === "function") return !!flag(values, ctx);
+  return evaluateCondition(flag, values, ctx!.scope);
 }
 
 function evaluate(
@@ -50,20 +50,22 @@ function evaluate(
         ...position,
         scope: tracker
           ? tracker.at(position.namespace ?? "")
-          : scopeOf(values, position.namespace),
+          : position.namespace
+            ? readPath(values, position.namespace)
+            : values,
       } as ConditionContext)
     : undefined;
 
   // Results are coerced to booleans: `(v) => v.locked` may return undefined.
   const result: FieldConditions = {
-    visible: typeof visible === "function" ? !!visible(values, ctx!) : visible !== false,
-    disabled: typeof disabled === "function" ? !!disabled(values, ctx!) : !!disabled,
+    visible: isDynamic(visible) ? resolveFlag(visible, values, ctx) : visible !== false,
+    disabled: isDynamic(disabled) ? resolveFlag(disabled, values, ctx) : !!disabled,
     // `required` only drives the UI flag (e.g. "*"); validation stays in `rules`.
     required:
       required === undefined
         ? Boolean(rules?.required)
-        : typeof required === "function"
-          ? !!required(values, ctx!)
+        : isDynamic(required)
+          ? resolveFlag(required, values, ctx)
           : !!required,
   };
 

@@ -4,6 +4,7 @@ import type { TranslatableText } from "@/components/i18n";
 import type { ComponentProps, ComponentType, ReactNode } from "react";
 import type { FieldResolvedProps } from "./input";
 import type { FieldValues, Path } from "react-hook-form";
+import type { Condition } from "./condition";
 import type { RenderFn } from "./render";
 import type { ValidationRules } from "./rule";
 import type { WithKnownKeys } from "./utils";
@@ -96,6 +97,7 @@ export type FormFieldConfig<
   TComponentMap extends ComponentMap,
   TFieldType extends string & keyof TComponentMap = string &
     keyof TComponentMap,
+  TRoot extends FieldValues = TModel,
 > = {
   /**
    * The type of field, used to select the appropriate renderer component.
@@ -111,7 +113,8 @@ export type FormFieldConfig<
       // `type`s and wrong `props` inside sections/arrays are errors too.
       // (Model keys inside are only checked with `defineConfig<SubModel>()`.)
       Omit<PropsOf<TComponentMap[TFieldType]>, "config"> & {
-        config?: FormConfig<any, TComponentMap>;
+        // `TRoot` keeps `from: "root"` conditions checked inside nested configs.
+        config?: FormConfig<any, TComponentMap, TRoot>;
       }
     : ComponentProps<TComponentMap[TFieldType]>;
 
@@ -155,13 +158,13 @@ export type FormFieldConfig<
    * // inside an array item config: show `detail` when this row's `kind` is "other"
    * detail: { type: "text", visible: (_, { scope }) => scope?.kind === "other" }
    */
-  visible?: boolean | ConditionFn<TModel>;
+  visible?: boolean | ConditionFn<TModel> | Condition<TModel, TRoot>;
 
   /**
    * Optional function to determine whether the field should be disabled,
    * based on the current form values (same arguments as `visible`).
    */
-  disabled?: boolean | ConditionFn<TModel>;
+  disabled?: boolean | ConditionFn<TModel> | Condition<TModel, TRoot>;
 
   /**
    * Marks the field as required in the UI (`useField().required`, e.g. to show "*").
@@ -170,7 +173,7 @@ export type FormFieldConfig<
    * This only affects the resolved `required` flag; enforce the rule itself with
    * `rules.validate` or your schema. When omitted, it is inferred from `rules.required`.
    */
-  required?: boolean | ConditionFn<TModel>;
+  required?: boolean | ConditionFn<TModel> | Condition<TModel, TRoot>;
 
   /**
    * Form paths that `visible` / `disabled` / `required` functions depend on.
@@ -270,11 +273,13 @@ export type FormFieldConfig<
 type FieldConfigUnion<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap,
+  TRoot extends FieldValues = TModel,
 > = {
   [K in keyof TComponentMap]: FormFieldConfig<
     TModel,
     TComponentMap,
-    K extends string ? K : never
+    K extends string ? K : never,
+    TRoot
   > & {
     type: K;
   };
@@ -315,9 +320,11 @@ type VirtualFieldKey = `__${string}`;
 export type FormConfig<
   TModel extends FieldValues,
   TComponentMap extends ComponentMap,
+  TRoot extends FieldValues = TModel,
 > = {
   [K in Path<TModel> | VirtualFieldKey]?: FieldConfigUnion<
     TModel,
-    TComponentMap
+    TComponentMap,
+    TRoot
   >;
 };

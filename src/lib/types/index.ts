@@ -1,3 +1,4 @@
+export type * from './condition';
 export type * from './config';
 export type {
   BlueFormBaseConfig,

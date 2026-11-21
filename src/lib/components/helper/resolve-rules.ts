@@ -13,7 +13,7 @@ import { typedKeys } from './typed-keys';
  */
 const REGEX_LITERAL = /^\/(.+)\/([dgimsuvy]*)$/;
 
-function toRegExp(source: string): RegExp {
+export function toRegExp(source: string): RegExp {
   const literal = REGEX_LITERAL.exec(source);
   return literal ? new RegExp(literal[1], literal[2]) : new RegExp(source);
 }

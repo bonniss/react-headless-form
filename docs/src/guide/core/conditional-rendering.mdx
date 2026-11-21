@@ -56,6 +56,75 @@ items: {
 
 Reads through `scope` are tracked like reads through `values`. Typing in one row re-runs only that row's conditions.
 
+## JSON conditions
+
+_Added in v0.17._
+
+`visible`, `disabled` and `required` also accept a plain object, so a whole config can be stored as JSON (e.g. in a database) and loaded with `defineDynamicConfig`:
+
+```tsx
+const config = defineConfig<Order>({
+  discountCode: { type: "text", visible: { when: "role", eq: "member" } },
+  notes: {
+    type: "text",
+    disabled: { or: [{ when: "status", in: ["paid", "shipped"] }, { when: "locked", eq: true }] },
+  },
+  insurance: { type: "text", visible: { when: "age", gte: 18, lt: 65 } },
+});
+```
+
+| Operator | Holds when the value… | Field types |
+|---|---|---|
+| _(none)_ | is truthy | any |
+| `eq` / `neq` | is / is not `===` the given value | any |
+| `in` / `notIn` | is / is not one of the values | any |
+| `empty` / `notEmpty` | is / is not `null`, `undefined`, `""` or `[]` | any |
+| `gt` `gte` `lt` `lte` | compares as a number (numeric strings from inputs are converted) | number |
+| `matches` | matches a regular expression (`"^a"` or `"/^a/i"`) | string |
+
+Several operators in one object must all hold (`{ when: "age", gte: 18, lt: 65 }`). Combine conditions with `and: [...]`, `or: [...]` and `not: {...}`.
+
+**Type-checked.** In a typed config `when` autocompletes the model's paths and each operator only accepts values of that field's type:
+
+```tsx
+visible: { when: "rol", eq: "admin" }    // ✗ unknown path
+visible: { when: "role", eq: "guest" }   // ✗ not "admin" | "member"
+visible: { when: "age", eq: "18" }       // ✗ age is a number
+visible: { when: "name", gt: 1 }         // ✗ numeric comparison on a string
+```
+
+**Relative to the scope.** `when` is a path relative to the field's array row or nested section (the form root at the top level), so per-row conditions need no index. Use `from: "root"` for a path from the form root. Root paths are checked against the form model, even in inline nested configs:
+
+```tsx
+items: {
+  type: "array",
+  props: {
+    config: {
+      kind: { type: "select" },
+      detail: { type: "text", visible: { when: "kind", eq: "other" } },               // this row
+      adminNote: { type: "text", visible: { when: "role", from: "root", eq: "admin" } }, // form root
+    },
+  },
+},
+```
+
+For a row config written separately, pass the root model as the second type argument, so both kinds of paths are checked: `defineConfig<Item, Order>({...})`. A config written with `defineConfig<Item>()` still nests anywhere; it just cannot use `from: "root"`.
+
+Dependencies are tracked the same way as for functions: a condition is re-evaluated only when a path it reads changes.
+
+import { Tab, Tabs } from '@rspress/core/theme';
+import EgJsonConditionsForm from '../../examples/_shared/EgJsonConditionsForm';
+
+<Tabs>
+  <Tab label="Preview">
+    <EgJsonConditionsForm />
+  </Tab>
+  <Tab label="Code">
+    ```tsx lineNumbers file="../../examples/_shared/EgJsonConditionsForm.tsx"
+    ```
+  </Tab>
+</Tabs>
+
 ## `visible`
 
 When `visible` resolves to `false`, BlueForm does not render that field node. The field is not registered through RHF at that moment.

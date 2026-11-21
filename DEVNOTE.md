@@ -120,7 +120,7 @@ Thời gian: ngang RHF `useController` ở cả ba kịch bản gõ phím, nhanh
 ### 0.17 — API cho form chạy bằng dữ liệu
 
 6. ✅ **Suy ra `TModel` từ schema:** prop `schema` (Standard Schema; interface chép theo spec, không thêm dependency). Input của schema quy định type cho `config` / `defaultValues` / ref; output quy định type cho `onSubmit`, giống `TTransformedValues` của RHF. Có overload cho `<Form>`. Không kết hợp được với `formOptions.resolver`.
-7. **Điều kiện khai báo bằng JSON:** `visible: { when: "role", eq: "student" }` (`eq/in/notEmpty/and/or`), deps tự suy ra; lưu được vào DB, dùng cùng `defineDynamicConfig`.
+7. ✅ **Điều kiện khai báo bằng JSON:** `visible/disabled/required: { when, from?, ...ops }` cùng `and/or/not`; toán tử `eq neq in notIn empty notEmpty gt gte lt lte matches`, nhiều toán tử trong một object nghĩa là AND. `when` là path tương đối theo scope; `from: "root"` để trỏ từ gốc form, được kiểm type cả khi config lồng nhau viết inline (`TRoot` truyền qua `FormConfig`; `defineConfig<Row, Root>()`; kiểu trả về của `defineConfig` bỏ root để config tương thích ngược). Dùng chung tracker với điều kiện dạng hàm. Chi phí type: model 40 field cùng 80 điều kiện JSON làm thời gian typecheck tăng khoảng 0.2 giây (+10k instantiation).
 8. ~~`transform(values)` trước submit~~: bỏ, xem bảng "Không làm".
 9. **Trường computed:** `compute: (values) => ...` kèm deps.
 10. **Recipe wizard nhiều bước** dựa trên section + `trigger(paths)`; thêm recipe CRUD, bảng động.

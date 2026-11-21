@@ -124,10 +124,21 @@ export type TypedSectionComponent<TComponentMap extends ComponentMap> = <TModel 
  * - improves autocomplete for field types and props
  */
 function createDefineConfigFn<TComponentMap extends ComponentMap>() {
-  return function defineConfig<TModel extends FieldValues>(
-    config: FormConfig<TModel, TComponentMap>,
-  ): FormConfig<TModel, TComponentMap> {
-    return config;
+  /**
+   * `TRoot` is the form's root model, for configs of array rows / nested
+   * sections written separately: `defineConfig<Row, Order>({...})` checks
+   * relative `when` paths against `Row` and `from: "root"` paths against `Order`.
+   */
+  return function defineConfig<
+    TModel extends FieldValues,
+    TRoot extends FieldValues = TModel,
+  >(
+    config: FormConfig<TModel, TComponentMap, TRoot>,
+  ): FormConfig<TModel, TComponentMap, never> {
+    // Root conditions are checked here, against `TRoot`. The result drops the
+    // root model (`never`) so it fits any parent: a row config written with
+    // `defineConfig<Row>()` can be nested in a form of any model.
+    return config as FormConfig<TModel, TComponentMap, never>;
   };
 }
 
