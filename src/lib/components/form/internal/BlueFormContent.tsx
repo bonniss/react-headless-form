@@ -57,8 +57,13 @@ export function BlueFormContent<
   useChangeEffect(rawTranslator, () => {
     // the live errors (`form.formState` is a snapshot of the useForm host,
     // which does not subscribe to errors)
-    const paths = errorPaths((form.control as unknown as { _formState: { errors: FieldErrors } })._formState.errors)
-    if (paths.length) void form.trigger(paths as Path<TModel>[])
+    const control = form.control as unknown as { _formState: { errors: FieldErrors }; _fields: object }
+    // Only errors that validation produced: an error from setError() (e.g. a
+    // server error) would be cleared by validating the field again
+    const paths = errorPaths(control._formState.errors).filter(([path, type]) =>
+      VALIDATION_TYPES.includes(type) || getProperty(control._fields, path)?._f?.validate?.[type],
+    )
+    if (paths.length) void form.trigger(paths.map(([path]) => path) as Path<TModel>[])
   })
 
   // Always call the latest callbacks without recreating the subscription or
@@ -170,9 +175,15 @@ export function BlueFormContent<
   return renderRoot?.(formRendererArgs)
 }
 
-/** Paths of the fields (or arrays, via `root`) that currently have an error message. */
-const errorPaths = (errors: FieldErrors, prefix = ""): string[] =>
+const VALIDATION_TYPES = ["required", "min", "max", "minLength", "maxLength", "pattern", "validate", "schema"]
+
+/** [path, type] of the fields (or arrays, via `root`) that currently have an error message. */
+const errorPaths = (errors: FieldErrors, prefix = ""): [string, string][] =>
   Object.entries(errors).flatMap(([key, value]: [string, any]) => {
     const path = key === "root" ? prefix : prefix ? `${prefix}.${key}` : key
-    return !value || typeof value !== "object" ? [] : typeof value.message === "string" ? [path] : errorPaths(value, path)
+    return !value || typeof value !== "object"
+      ? []
+      : typeof value.message === "string"
+        ? [[path, value.type] as [string, string]]
+        : errorPaths(value, path)
   })

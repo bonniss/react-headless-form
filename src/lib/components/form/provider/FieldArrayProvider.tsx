@@ -7,6 +7,7 @@ import {
   createProviderContext,
 } from '../../helper/create-provider'
 import BlueFormEngine from '../internal/BlueFormEngine'
+import { useBlueFormInternal } from '../internal/BlueFormInternalProvider'
 
 type FieldArrayProviderParams = {
   resolved: FieldResolvedProps
@@ -30,7 +31,8 @@ function useArrayFieldValue({ resolved, config }: FieldArrayProviderParams) {
   })
 
   const rootError = errors?.root ?? errors
-  const errorMessage = rootError?.message
+  const { i18nConfig } = useBlueFormInternal()
+  const errorMessage = rootError?.message && i18nConfig.t(rootError.message)
 
   const fieldProps: FieldResolvedProps = {
     ...resolved,
