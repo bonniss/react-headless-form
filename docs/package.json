@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/sync-version.mjs && rspress build && pnpm build:demos && node scripts/postbuild-llms.mjs",
-    "dev": "node scripts/sync-version.mjs && rspress dev",
+    "dev": "node scripts/sync-version.mjs && node scripts/dev.mjs",
     "preview": "rspress preview",
     "build:demos": "tsc -p integrations && vite build -c integrations/vite.config.ts",
-    "dev:demos": "vite -c integrations/vite.config.ts"
+    "dev:demos": "vite -c integrations/vite.config.ts",
+    "dev:docs": "node scripts/sync-version.mjs && rspress dev"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

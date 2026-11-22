@@ -1,7 +1,7 @@
 /**
  * A live integration demo, built from docs/integrations into doc_build/demos and
- * served from the docs' own origin (no third-party embed or service). In `pnpm dev`, run
- * `pnpm dev:demos` alongside to serve them from Vite.
+ * served from the docs' own origin (no third-party embed or service). In
+ * development the demos come from the Vite server that `pnpm dev` starts.
  */
 const REPO = "https://github.com/bonniss/react-headless-form";
 const DEV_ORIGIN = "http://localhost:5180";
