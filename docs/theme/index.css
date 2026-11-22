@@ -14,23 +14,23 @@ html.dark .shiki span {
 /* Home page library wall (components/LibWall.tsx) */
 .lib-wall {
   max-width: 72rem;
-  margin: 0 auto 4rem;
+  margin: 4rem auto;
   padding: 0 1.5rem;
   text-align: center;
 }
 .lib-wall h2 {
   font-size: 1.75rem;
   font-weight: 700;
-  margin: 0 0 0.25rem;
+  margin: 0 0 1.25rem;
 }
 .lib-wall h3 {
   font-size: 1rem;
   font-weight: 600;
-  margin: 2rem 0 0.75rem;
+  margin: 2rem 0 1rem;
   color: var(--rp-c-text-2);
 }
 .lib-wall p {
-  margin: 0 0 1.5rem;
+  margin: 0 0 1.25rem;
   color: var(--rp-c-text-2);
 }
 .lib-wall__grid {
@@ -65,7 +65,9 @@ html.dark .shiki span {
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  color: #fff;
+  /* a light chip in both themes, so dark and full-color logos stay visible */
+  background: #fff;
+  border: 1px solid var(--rp-c-divider);
   font-weight: 700;
   font-size: 14px;
 }
@@ -74,8 +76,18 @@ html.dark .shiki span {
   font-weight: 600;
   line-height: 1.2;
 }
-.lib-wall__note {
-  display: block;
-  font-size: 12px;
-  color: var(--rp-c-text-2);
+
+/* The last tile of a group: an invitation, not a library */
+.lib-wall__tile--cta {
+  grid-column: span 2;
+  justify-content: center;
+  border-style: dashed;
+  border-color: var(--rp-c-brand);
+  background: transparent;
+  color: var(--rp-c-brand);
+  font-weight: 600;
+}
+.lib-wall__tile--cta:hover {
+  background: var(--rp-c-brand);
+  color: #fff;
 }

@@ -69,8 +69,8 @@ importers:
         specifier: ^10.9.9
         version: 10.9.9(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react-headless-form:
-        specifier: ^0.20.0
-        version: 0.20.0(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4)
+        specifier: ^0.21.0
+        version: 0.21.0(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4)
       react-hook-form:
         specifier: ^7.71.2
         version: 7.71.2(react@19.2.4)
@@ -120,6 +120,9 @@ importers:
       react-dom:
         specifier: ^19.2.4
         version: 19.2.4(react@19.2.4)
+      simple-icons:
+        specifier: ^16.38.1
+        version: 16.38.1
       tailwindcss:
         specifier: ^4.3.5
         version: 4.3.5
@@ -3608,8 +3611,8 @@ packages:
       '@types/react':
         optional: true
 
-  react-headless-form@0.20.0:
-    resolution: {integrity: sha512-6i8GdKjD3nemyk7UPj6PB9W5qDWZfWhca0xDIRriDBh8ycDJu2+5n3mMGJLzXhoiNwVLfzwiuLg6psHRZwU9vw==}
+  react-headless-form@0.21.0:
+    resolution: {integrity: sha512-kzqXXy13fQUR9jXActOQBoUiMKjXzBHdDrBElplXmkoeb+CfP8aL4yhDghD5A5OqNBlsae4rIrWZ0Wj+07BnEA==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -3952,6 +3955,10 @@ packages:
   shiki@4.0.2:
     resolution: {integrity: sha512-eAVKTMedR5ckPo4xne/PjYQYrU3qx78gtJZ+sHlXEg5IHhhoQhMfZVzetTYuaJS0L2Ef3AcCRzCHV8T0WI6nIQ==}
     engines: {node: '>=20'}
+
+  simple-icons@16.38.1:
+    resolution: {integrity: sha512-q4JnGp1cgeASp4jzEsmSh/7BD/e2y7aYO8XST+QBEvOJ5wzZ/9WRmKsI+QUwkfPUSiXC+sfh2+QetD38zl3N0g==}
+    engines: {node: '>=0.12.18'}
 
   simple-swizzle@0.2.4:
     resolution: {integrity: sha512-nAu1WFPQSMNr2Zn9PGSZK9AGn4t/y97lEm+MXTtUDwfP0ksAIX4nO+6ruD9Jwut4C49SB1Ws+fbXsm/yScWOHw==}
@@ -8937,7 +8944,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.14
 
-  react-headless-form@0.20.0(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4):
+  react-headless-form@0.21.0(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4):
     dependencies:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
@@ -9385,6 +9392,8 @@ snapshots:
       '@shikijs/types': 4.0.2
       '@shikijs/vscode-textmate': 10.0.2
       '@types/hast': 3.0.4
+
+  simple-icons@16.38.1: {}
 
   simple-swizzle@0.2.4:
     dependencies:

@@ -16,6 +16,10 @@ The [registration form demo](./index.mdx#live-demos) written with PrimeReact, se
 - Import a theme (`primereact/resources/themes/lara-light-blue/theme.css`) and wrap the app in `PrimeReactProvider`.
 - PrimeReact v11 is a different, unstyled primitives library; this demo uses v10.
 
+:::tip
+`main.tsx` only mounts the docs' demo stage (language switch, payload drawer); your app renders `Form` itself. See [Connect your UI kit](./index.mdx#bring-your-own-library).
+:::
+
 import { Tab, Tabs } from '@rspress/core/theme';
 import LiveDemo from '../../../../components/LiveDemo';
 

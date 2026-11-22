@@ -1,104 +1,156 @@
 ---
 title: Integrations
-description: "The same registration form for eleven UI libraries (Mantine, shadcn/ui, Ant Design, Material UI, animal-island-ui, Chakra UI, PrimeReact, Arco, Semi, TDesign, React Native Web), each config passing the library's own component props, typed by that library."
+description: "Connect BlueForm to any UI library: adapters with useField, setupForm, and the library's own typed props. Live demos for 11 libraries."
 ---
 
 # Integrations
 
-BlueForm renders no UI of its own: the config holds the logic (rules, conditions, computed values, labels) and a UI library displays it. Field `props` are typed by the component you map, so a config written for Mantine takes Mantine's props, with autocomplete and type errors.
+BlueForm renders no UI. You connect your UI kit with small **adapters**: an adapter is a React component that calls `useField()` and renders one of your kit's inputs (the Guide calls it a [field component](../../../guide/core/field-authoring/index.mdx)). The config keeps the logic — rules, conditions, computed values — and its `props` are typed by your kit's own components.
+
+New to BlueForm? Read the [Quick start](../../../guide/start/quick-start.mdx) first; this page builds on it.
 
 import IntegrationDiagram from '../../../../components/IntegrationDiagram';
 
 <IntegrationDiagram />
 
-## Live demos
+## Connect your UI kit {#bring-your-own-library}
 
-The same registration form, written for each library: [Mantine](./mantine.mdx) · [shadcn/ui](./shadcn.mdx) · [Ant Design](./antd.mdx) · [Material UI](./mui.mdx) · [animal-island-ui](./animal-island.mdx) · [Chakra UI](./chakra-ui.mdx) · [PrimeReact](./prime-react.mdx) · [Arco Design](./arco-design.mdx) · [Semi Design](./semi-design.mdx) · [TDesign](./tdesign.mdx) · [React Native Web](./react-native-web.mdx). Each demo is self-contained: copy its `fields.tsx` (adapters) and `form.tsx` (setup and config) into your app. Sources: [`docs/integrations`](https://github.com/bonniss/react-headless-form/tree/main/docs/integrations).
+### Write an adapter per input type
 
-In every demo: switch the language in the header, submit with the header button (`form="demo-form"`), click the error count to jump to a field, and read the submitted payload in the drawer.
-
-| Field | Demonstrates |
-|---|---|
-| form title | `renderRoot`: the form's own layout (title, responsive grid, submit button) |
-| `name`, `email` | `required`, `pattern`, translated messages; `placeholder` translated with `translateProps` |
-| `ticket` | a select; each adapter maps the options to its library's prop |
-| `studentId` | JSON condition `visible` (student tickets only); left out of the payload when hidden |
-| `promoCode` | JSON condition `disabled` (not for student tickets) |
-| `guests` | array with `maxLength: 3`; each guest's name is required, with the error on its own row |
-| `invoice` → `billing` | a checkbox showing a nested section with its own rules |
-| `total` | computed value: ticket price + $100 per guest |
-
-## Props typed by the UI library
-
-An adapter takes the library's component props, minus what `useField()` controls, with [`AdapterProps`](../../../guide/core/field-authoring/use-field.mdx#typing-an-adapters-props):
+One adapter per kind of input your forms use (text, select, checkbox…). It reads the field from `useField()` and hands it to your component:
 
 ```tsx
-// mantine/fields.tsx: Mantine's TextInput props minus value / onChange / label / disabled / … and `error`
-export type TextFieldProps = AdapterProps<TextInputProps, 'error' | 'withAsterisk'>
-function TextField(props: TextFieldProps) {
-  const { value, onChange, ...field } = useField()
-  return <TextInput {...props} value={value ?? ''} onChange={e => onChange(e.currentTarget.value)} ... />
+import { Input, type InputProps } from "my-ui"
+import { type AdapterProps, useField } from "react-headless-form"
+
+// your component's props, minus what useField() provides, minus `error` (set below)
+export type TextFieldProps = AdapterProps<InputProps, "error">
+
+export function TextField(props: TextFieldProps) {
+  const { value, onChange, onBlur, ref, label, description, errorMessage, required, disabled, readOnly } =
+    useField()
+  return (
+    <Input
+      {...props}
+      ref={ref}
+      label={label}
+      hint={description}
+      error={errorMessage}
+      required={required}
+      disabled={disabled}
+      readOnly={readOnly}
+      value={value ?? ""}
+      onChange={(e) => onChange(e.target.value)}
+      onBlur={onBlur}
+    />
+  )
 }
 ```
 
-`props` in the config is then `ComponentProps` of the mapped component, so each config uses its library's API:
+- **Pass the value to `onChange`.** Check what your component's change handler gives you — a value, a DOM event or an object — and extract the value (`e.target.value`, `checked`, `e.value`…).
+- **Attach `ref`** so the form can focus a field with an error.
+- [`AdapterProps`](../../../guide/core/field-authoring/use-field.mdx#typing-an-adapters-props) removes what `useField()` provides (`value`, `onChange`, `label`, `disabled`, …) from your component's props; its second argument lists the props the adapter sets itself (here `error`), so a config cannot override them.
+
+### Register them
+
+```tsx
+import { defineMapping, setupForm } from "react-headless-form"
+
+export const [Form, defineConfig] = setupForm({
+  renderRoot: ({ children, onSubmit }) => <form onSubmit={onSubmit}>{children}</form>,
+  fieldMapping: defineMapping({ text: TextField, select: SelectField, checkbox: CheckboxField }),
+})
+```
+
+The keys (`text`, `select`, `checkbox`) are the `type` values of your config. `renderRoot` draws the form itself (its layout, a submit button). `array`, `section`, `inline` and `hidden` are built-in types and need no adapter.
+
+### Write configs with your kit's props
+
+A field's `props` are typed by its adapter, so each config speaks its kit's API:
 
 import { Tab, Tabs } from '@rspress/core/theme';
 
 <Tabs>
   <Tab label="Mantine">
     ```tsx
-    email: { type: 'text', label: 'field.email', props: { type: 'email', leftSection: '@' } },
-    ticket: { type: 'select', label: 'field.ticket', props: { data: [{ value: 'student', label: t('ticket.student') }] } },
+    email: { type: "text", label: "Email", props: { type: "email", leftSection: "@" } },
+    ticket: { type: "select", label: "Ticket", props: { data: [{ value: "student", label: "Student" }] } },
     ```
   </Tab>
   <Tab label="Ant Design">
     ```tsx
-    email: { type: 'text', label: 'field.email', props: { type: 'email', prefix: '@' } },
-    ticket: { type: 'select', label: 'field.ticket', props: { options: [{ value: 'student', label: t('ticket.student') }] } },
+    email: { type: "text", label: "Email", props: { type: "email", prefix: "@" } },
+    ticket: { type: "select", label: "Ticket", props: { options: [{ value: "student", label: "Student" }] } },
     ```
   </Tab>
   <Tab label="Material UI">
     ```tsx
-    promoCode: { type: 'text', label: 'field.promoCode', props: { helperText: 'hint.promoCode' } },
-    ticket: { type: 'select', label: 'field.ticket', props: { children: [<MenuItem key="student" value="student">{t('ticket.student')}</MenuItem>] } },
+    promoCode: { type: "text", label: "Promo code", props: { helperText: "Not for student tickets" } },
+    ticket: { type: "select", label: "Ticket", props: { children: [<MenuItem key="student" value="student">Student</MenuItem>] } },
     ```
   </Tab>
 </Tabs>
 
-A prop the component does not have, or a wrong value, is a type error. [`type-checks.tsx`](https://github.com/bonniss/react-headless-form/blob/main/docs/integrations/type-checks.tsx) asserts this for each library (`// @ts-expect-error`), and the docs build type-checks it.
+A prop the component does not have, or a wrong value, is a type error (see [`type-checks.tsx`](https://github.com/bonniss/react-headless-form/blob/main/docs/integrations/type-checks.tsx)).
 
-Text props such as `placeholder` are translated when listed in `i18nConfig.translateProps` (the demos list `placeholder`, `description` and `helperText`). Nothing is defaulted: an adapter decides what to show when a prop is missing.
+### Render the form
 
-## Event signatures
+Render `Form` inside your kit's provider, as you would any component:
 
-`onChange` from `useField()` accepts a value or a native event; passing the value explicitly is clearer:
+```tsx
+<Form<Registration>
+  config={config}
+  defaultValues={{ ticket: "standard", guests: [] }}
+  onSubmit={(data) => save(data)}
+/>
+```
 
-| Library | Text input | Select | Boolean |
-|---|---|---|---|
-| Mantine | event → `e.currentTarget.value` | value | event → `e.currentTarget.checked` |
-| shadcn/ui (native) | event → `e.target.value` | event (native `<select>`); `onValueChange` with Radix | event; `onCheckedChange` with Radix |
-| Ant Design | event → `e.target.value` | value | event → `e.target.checked` |
-| Material UI | event → `e.target.value` | event (`TextField select`) | event → `e.target.checked` |
-| animal-island-ui | event → `e.target.value` | key (options use `key`) | `Switch` → checked |
-| Chakra UI | event → `e.target.value` | event (`NativeSelect`) | `onCheckedChange` → `{ checked }` |
-| PrimeReact | event → `e.target.value` | `Dropdown` → `e.value` | `e.checked` |
-| Arco Design | value | value | value |
-| Semi Design | value (event second) | value | event → `e.target.checked` |
-| TDesign | value | value | value |
-| React Native Web | `onChangeText` → text | (no native select) | `Switch` `onValueChange` → value |
+Labels are plain strings unless you add [i18n](../../../guide/core/i18n.mdx): with `i18nConfig.t`, labels, descriptions and error messages are translated. Use the field's `description` for help text (translated, read with `useField().description`); `i18nConfig.translateProps` translates the library's own text props such as `placeholder` or MUI `helperText`.
 
-## Bring your own library
+## Ready-made: 11 libraries
 
-1. Call `useField()` in a field component and destructure what you need.
-2. Map `value` to the library's value prop and call `onChange(value)` from its change handler.
-3. Wire `label`, `errorMessage`, `required`, `disabled` and `readOnly`. Associate the label yourself (`useId()` in the adapter, or the input inside its `<label>`): `useField()` gives no DOM id.
+The same registration form, built with each library. Each is a starting point for a kit that works the same way:
 
+| Library | Change handler gives | Setup |
+|---|---|---|
+| [Mantine](./mantine.mdx) | text: event (`e.currentTarget.value`) · select: value | `MantineProvider`, `@mantine/core/styles.css` |
+| [shadcn/ui](./shadcn.mdx) | DOM events (native inputs) | Tailwind |
+| [Ant Design](./antd.mdx) | text: event · select: value | — |
+| [Material UI](./mui.mdx) | DOM events (`TextField select` too) | `CssBaseline` (optional) |
+| [Chakra UI](./chakra-ui.mdx) | text: event · checkbox: `{ checked }` | `ChakraProvider` |
+| [PrimeReact](./prime-react.mdx) | text: event · `Dropdown`: `e.value` · checkbox: `e.checked` | a theme CSS, `PrimeReactProvider` |
+| [Arco Design](./arco-design.mdx) | values | its CSS, `ConfigProvider` for locale |
+| [Semi Design](./semi-design.mdx) | text: value (event second) · checkbox: event | its CSS (`semi-ui-19` for React 19) |
+| [TDesign](./tdesign.mdx) | values | its CSS, `ConfigProvider` for locale |
+| [animal-island-ui](./animal-island.mdx) | text: event · select: key · `Switch`: checked | its CSS |
+| [React Native Web](./react-native-web.mdx) | `onChangeText`: text · `Switch`: value | alias `react-native` → `react-native-web` |
+
+:::info What to copy from a demo
+- **`fields.tsx`**: the adapters, as is.
+- **`form.tsx`**: `setupForm` and the config. It imports `useT` and `FORM_ID` from the docs' demo stage: use your own i18n hook and drop the form `id`.
+- **Not needed in your app**: `main.tsx` and `docs/integrations/shared/*` (language switch, header submit button, error list, payload drawer).
+
+The demos render `Form` with `i18nConfig` (`t`, `validationTranslation`, `translateProps: ["placeholder", "description", "helperText"]`) and `formOptions={{ shouldUnregister: true }}`, which drops hidden fields from the payload. With arrays, read [pitfall 14](../../../guide/start/pitfalls.mdx) before keeping `shouldUnregister`.
+:::
+
+## What the demo form shows
+
+**Form:** [`renderRoot`](../../../guide/core/setup-form/index.mdx) draws the title, a responsive grid and the submit button.
+
+| Field | Demonstrates |
+|---|---|
+| `name`, `email` | `required`, `pattern`; translated messages and `placeholder` |
+| `ticket` | a select; its options go in `props`, in the library's shape (`data`, `options`, `children`) |
+| `studentId` | [JSON condition](../../../guide/core/conditional-rendering.mdx) `visible` (student tickets only); left out of the payload when hidden, since the demos set `shouldUnregister` |
+| `promoCode` | JSON condition `disabled` (not for student tickets) |
+| `guests` | [array](../../../guide/core/builtin-types/array.mdx) with `maxLength: 3`; each guest's name is required, with the error on its row |
+| `invoice` → `billing` | a checkbox showing a nested [section](../../../guide/core/builtin-types/section.mdx) with its own rules |
+| `total` | [computed](../../../guide/core/computed.mdx) value: ticket price + $100 per guest |
 
 ## Validation libraries
 
-Zod, Valibot, ArkType (the `schema` prop), Yup and Ajv (`formOptions.resolver`): see the [Schema example](../../foundational/schema-form.mdx) and [Schema validation](../../../guide/core/schema-validation.mdx).
+Zod, Valibot, ArkType and Yup (1.7+) implement Standard Schema: pass them to the `schema` prop. For Ajv (JSON Schema) or any other react-hook-form resolver, use `formOptions.resolver`. With a schema, field `rules` are not used; set `required: true` on a field to show its `*`. See the [Schema example](../../foundational/schema-form.mdx).
 
-## Running the demos locally
+## Contributing: running the demos locally
 
-In `docs/`, `pnpm dev` starts the docs and the demos together (the demos on Vite, port 5180); `pnpm dev:docs` or `pnpm dev:demos` start one of them. `pnpm build` builds both.
+In `docs/`, `pnpm dev` starts the docs and the demos (Vite, port 5180); `pnpm dev:docs` or `pnpm dev:demos` starts one of them.

@@ -1,12 +1,12 @@
 import { useId } from 'react'
 
 /**
- * The config holds the logic; `fieldMapping` adapters connect it to a UI
- * library, whose own props the config passes. Colors come from the docs theme
- * variables, so the diagram follows light and dark mode.
+ * The config holds the logic; adapters (registered with setupForm) connect it
+ * to a UI library, whose own typed props the config passes. Colors come from
+ * the docs theme variables, so the diagram follows light and dark mode.
  */
-const libs = ['Mantine', 'shadcn/ui', 'Ant Design', 'Material UI', '+ 7 more']
-const logic = ['labels · i18n', 'rules', 'JSON conditions', 'computed values', 'props (typed)']
+const libs = ['Mantine', 'shadcn/ui', 'Ant Design', 'Material UI', 'your design system']
+const logic = ['labels · i18n', 'rules', 'JSON conditions', 'computed values', 'model · defaults']
 
 const text = 'var(--rp-c-text-1)'
 const muted = 'var(--rp-c-text-2)'
@@ -45,19 +45,22 @@ export default function IntegrationDiagram() {
         </g>
       ))}
 
-      {/* fieldMapping: adapters + config with native props */}
+      {/* adapters, registered with setupForm({ fieldMapping }) */}
       <rect x="322" y="16" width="126" height="290" rx="14" fill="none" stroke={line} strokeDasharray="5 4" />
       <text x="385" y="44" textAnchor="middle" fontSize="17" fontWeight="700" fill={text}>
-        fieldMapping
+        adapters
       </text>
       <text x="385" y="64" textAnchor="middle" fontSize="14" fill={muted}>
         fields.tsx
+      </text>
+      <text x="385" y="296" textAnchor="middle" fontSize="12" fill={muted}>
+        via setupForm
       </text>
       <text x="385" y="146" textAnchor="middle" fontSize="14" fill={muted}>
         useField()
       </text>
       <text x="385" y="166" textAnchor="middle" fontSize="14" fill={muted}>
-        → library
+        → your
       </text>
       <text x="385" y="186" textAnchor="middle" fontSize="14" fill={muted}>
         components
@@ -68,10 +71,20 @@ export default function IntegrationDiagram() {
       {/* libraries */}
       {libs.map((lib, i) => {
         const y = 22 + i * 58
+        const own = i === libs.length - 1
         return (
           <g key={lib}>
             <line x1="452" y1="161" x2="498" y2={y + 20} stroke={line} strokeWidth="1.5" markerEnd={`url(#${arrow})`} />
-            <rect x="502" y={y} width="206" height="40" rx="8" fill={soft} stroke={line} />
+            <rect
+              x="502"
+              y={y}
+              width="206"
+              height="40"
+              rx="8"
+              fill={own ? 'none' : soft}
+              stroke={own ? brand : line}
+              strokeDasharray={own ? '5 4' : undefined}
+            />
             <text x="605" y={y + 26} textAnchor="middle" fontSize="16" fill={text}>
               {lib}
             </text>
@@ -83,7 +96,7 @@ export default function IntegrationDiagram() {
         Logic: what the form does
       </text>
       <text x="515" y="334" textAnchor="middle" fontSize="15" fontWeight="600" fill={muted}>
-        Per library: how it looks
+        Per library: how it looks (its typed props)
       </text>
     </svg>
   )
