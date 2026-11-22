@@ -9,15 +9,18 @@ This recipe is not built with the docs yet: its snippets are not checked in CI, 
 :::
 This recipe demonstrates how to wire [Semi Design](https://semi.design/en-US/) components with BlueForm.
 
-Each field type is a small component that reads everything from `useField()` and forwards it to the library's input. The form config, `setupForm` and submit logic are the same as in every other recipe — see [Integrations](./index.mdx) for the shared sample form and the event-signature notes.
+Each field type is a small component that reads everything from `useField()` and forwards it to the library's input. The form config, `setupForm` and submit logic are the same as in every other recipe. Type the adapter's props with [`AdapterProps`](../../../guide/core/field-authoring/use-field.mdx#typing-an-adapters-props), so a config's `props` takes the library's own props; see [Integrations](./index.mdx) for the live demos and the event-signature notes.
 
 ## Text field adapter
 
 ```tsx
 import { Input } from "@douyinfe/semi-ui"
-import { useField } from "react-headless-form"
+import { type AdapterProps, useField } from "react-headless-form"
 
-export function TextField(props: React.ComponentProps<typeof Input>) {
+// Semi's Input props minus what useField() controls, and the props set below
+export type TextFieldProps = AdapterProps<React.ComponentProps<typeof Input>, "validateStatus" | "readonly">
+
+export function TextField(props: TextFieldProps) {
   const { value, onChange, onBlur, label, errorMessage, required, disabled, readOnly } = useField()
   return (
     <label>
