@@ -8,6 +8,7 @@ import {
   siMui,
   siPrimereact,
   siReact,
+  siReactbootstrap,
   siShadcnui,
   siZod,
 } from 'simple-icons'
@@ -33,6 +34,7 @@ const uiLibs: Lib[] = [
   { name: 'Semi Design', href: integration('semi-design'), mark: 'Se', color: '#0064fa', logo: 'semi.svg' },
   { name: 'TDesign', href: integration('tdesign'), mark: 'TD', color: '#0052d9', logo: 'tdesign.svg' },
   { name: 'animal-island-ui', href: integration('animal-island'), mark: 'ai', color: '#e8a33d', logo: 'animal-island.png' },
+  { name: 'React-Bootstrap', href: integration('react-bootstrap'), mark: 'B', color: '#41e0fd', icon: siReactbootstrap },
   { name: 'React Native Web', href: integration('react-native-web'), mark: 'RN', color: '#61dafb', icon: siReact },
 ]
 

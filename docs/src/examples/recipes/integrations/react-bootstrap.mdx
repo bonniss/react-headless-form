@@ -1,0 +1,42 @@
+---
+title: React-Bootstrap
+description: "React-Bootstrap (Bootstrap 5) inputs wired to BlueForm field types with useField; live demo built from the repo."
+outline: false
+---
+
+# React-Bootstrap
+
+The [registration form demo](./index.mdx#live-demos) written with React-Bootstrap, self-contained:
+
+- `form.tsx`: `setupForm` (with a `renderRoot` for the title and grid) and the config. `props` use React-Bootstrap's own API, typed by its components.
+- `fields.tsx`: the adapters, typed with React-Bootstrap's own props minus what `useField()` controls.
+- `main.tsx`: mounts it in the demo stage (header, payload drawer).
+
+- `Form.Group controlId` links each label to its control; `Form.Control.Feedback` shows the error.
+- `Form.Control`, `Form.Select` and `Form.Check` pass DOM events: read `e.target.value` / `checked`.
+- Import `bootstrap/dist/css/bootstrap.min.css`; no provider is needed.
+
+:::tip
+`main.tsx` only mounts the docs' demo stage (language switch, payload drawer); your app renders `Form` itself. See [Connect your UI kit](./index.mdx#bring-your-own-library).
+:::
+
+import { Tab, Tabs } from '@rspress/core/theme';
+import LiveDemo from '../../../../components/LiveDemo';
+
+<Tabs>
+  <Tab label="Live demo">
+    <LiveDemo lib="react-bootstrap" />
+  </Tab>
+  <Tab label="form.tsx">
+    ```tsx file="../../../../integrations/react-bootstrap/form.tsx"
+    ```
+  </Tab>
+  <Tab label="fields.tsx">
+    ```tsx file="../../../../integrations/react-bootstrap/fields.tsx"
+    ```
+  </Tab>
+  <Tab label="main.tsx">
+    ```tsx file="../../../../integrations/react-bootstrap/main.tsx"
+    ```
+  </Tab>
+</Tabs>

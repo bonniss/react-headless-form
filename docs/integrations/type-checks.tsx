@@ -6,6 +6,7 @@
 import { defineConfig as arcoConfig } from './arco-design/form'
 import { defineConfig as chakraConfig } from './chakra-ui/form'
 import { defineConfig as primeConfig } from './prime-react/form'
+import { defineConfig as bootstrapConfig } from './react-bootstrap/form'
 import { defineConfig as rnwConfig } from './react-native-web/form'
 import { defineConfig as semiConfig } from './semi-design/form'
 import { defineConfig as tdesignConfig } from './tdesign/form'
@@ -65,3 +66,5 @@ semiConfig<Email>({ email: { type: 'text', props: { validateStatus: 'error' } } 
 tdesignConfig<Email>({ email: { type: 'text', props: { type: 'email' } } })
 // @ts-expect-error React Native: the adapter sets `onChangeText`
 rnwConfig<Email>({ email: { type: 'text', props: { onChangeText: () => {} } } })
+// @ts-expect-error React-Bootstrap: the adapter sets `isInvalid` from the error
+bootstrapConfig<Email>({ email: { type: 'text', props: { isInvalid: true } } })

@@ -1,6 +1,6 @@
 ---
 title: Integrations
-description: "Connect BlueForm to any UI library: adapters with useField, setupForm, and the library's own typed props. Live demos for 11 libraries."
+description: "Connect BlueForm to any UI library: adapters with useField, setupForm, and the library's own typed props. Live demos for 12 libraries."
 ---
 
 # Integrations
@@ -107,7 +107,7 @@ Render `Form` inside your kit's provider, as you would any component:
 
 Labels are plain strings unless you add [i18n](../../../guide/core/i18n.mdx): with `i18nConfig.t`, labels, descriptions and error messages are translated. Use the field's `description` for help text (translated, read with `useField().description`); `i18nConfig.translateProps` translates the library's own text props such as `placeholder` or MUI `helperText`.
 
-## Ready-made: 11 libraries
+## Ready-made: 12 libraries {#live-demos}
 
 The same registration form, built with each library. Each is a starting point for a kit that works the same way:
 
@@ -123,6 +123,7 @@ The same registration form, built with each library. Each is a starting point fo
 | [Semi Design](./semi-design.mdx) | text: value (event second) · checkbox: event | its CSS (`semi-ui-19` for React 19) |
 | [TDesign](./tdesign.mdx) | values | its CSS, `ConfigProvider` for locale |
 | [animal-island-ui](./animal-island.mdx) | text: event · select: key · `Switch`: checked | its CSS |
+| [React-Bootstrap](./react-bootstrap.mdx) | DOM events | `bootstrap/dist/css/bootstrap.min.css` |
 | [React Native Web](./react-native-web.mdx) | `onChangeText`: text · `Switch`: value | alias `react-native` → `react-native-web` |
 
 :::info What to copy from a demo
