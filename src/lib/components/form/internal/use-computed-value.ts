@@ -4,6 +4,7 @@ import { set, useFormContext } from "react-hook-form";
 
 import { readPath } from "@/components/helper/condition";
 import { isRelatedPath, trackReads } from "@/components/helper/track-reads";
+import { useChangeEffect } from "@/components/helper/use-change-effect";
 import { listenToValues } from "@/components/helper/value-listeners";
 import type { ConditionContext, FormFieldConfig } from "@/types";
 
@@ -58,6 +59,7 @@ export function useComputedValue(
   const hasCompute = typeof (field as any).compute === "function";
   const latest = useRef({ field, position, editable });
   latest.current = { field, position, editable };
+  const runRef = useRef<(() => void) | null>(null);
   const state = useRef<{ deps: string[] | null; written: unknown; running: boolean }>({
     deps: [],
     written: NOT_WRITTEN,
@@ -142,6 +144,14 @@ export function useComputedValue(
     // `name` is the changed path, or undefined for reset().
     const unlisten = listenToValues(control, watch, run);
     run();
-    return unlisten;
+    runRef.current = () => run();
+    return () => {
+      runRef.current = null;
+      unlisten();
+    };
   }, [hasCompute, getValues, watch, setValue, getFieldState, control]);
+
+  // A new `compute` function (e.g. it closes over a value outside the form,
+  // like the current language) runs again, not only when a value it read changes.
+  useChangeEffect((field as any).compute, () => runRef.current?.());
 }

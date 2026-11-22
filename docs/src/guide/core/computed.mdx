@@ -5,7 +5,7 @@ description: Derive a field's value from other values with compute — type-chec
 
 _Added in v0.17._
 
-`compute` derives a field's value from other values. It is re-run when a value it reads changes, and its return type is checked against the field's type.
+`compute` derives a field's value from other values. It is re-run when a value it reads changes, and its return type is checked against the field's type. A new `compute` function also re-runs it, so a compute that closes over something outside the form (the current language, a fetched rate) follows it when the config is rebuilt.
 
 ```tsx
 const config = defineConfig<Checkup>({

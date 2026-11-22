@@ -113,6 +113,8 @@ function useBlueFormInternalValue(
     } as I18nResolvedConfig,
     fieldMapping,
     hasResolver: Boolean(props.schema || props.formOptions?.resolver),
+    /** The translator as passed in, to notice a language change (`t` above is rebuilt every render). */
+    rawTranslator: i18nConfig?.enabled === false ? undefined : i18nConfig?.t,
     ...props,
   }
 }

@@ -85,6 +85,10 @@ Use the literal form for text that is not a translation key — e.g. labels load
 label: row.isKey ? row.label : { text: row.label },
 ```
 
+### Switching language
+
+Pass a new `t` when the language changes (for example `t` from `useTranslation()`). Labels and descriptions follow it, and the error messages already shown are validated again, so they switch language too; fields without an error are not validated. Keep `t` stable between renders of the same language (as i18n libraries do): a new function is read as a language change.
+
 ### Translating props
 
 _Added in v0.14._

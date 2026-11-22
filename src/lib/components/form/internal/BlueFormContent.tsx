@@ -5,6 +5,7 @@ import type {
   RootRendererArgs,
 } from "@/types/form"
 
+import { useChangeEffect } from "@/components/helper/use-change-effect"
 import { useLatestRef } from "@/components/helper/use-latest-ref"
 import { debounce } from "@/components/helper/debounce"
 import {
@@ -18,6 +19,7 @@ import {
   type Path,
   type FieldValues,
   type SubmitHandler,
+  type FieldErrors,
   type WatchObserver,
   get as getProperty,
   useFormContext,
@@ -46,7 +48,18 @@ export function BlueFormContent<
     onSubmitError,
     onInvalid,
     onSubmitFailure,
+    rawTranslator,
   } = useBlueFormInternal()
+
+  // Messages are stored when a field is validated: when the translator
+  // changes (a language switch), validate the failing fields again so the
+  // messages already shown follow the new language.
+  useChangeEffect(rawTranslator, () => {
+    // the live errors (`form.formState` is a snapshot of the useForm host,
+    // which does not subscribe to errors)
+    const paths = errorPaths((form.control as unknown as { _formState: { errors: FieldErrors } })._formState.errors)
+    if (paths.length) void form.trigger(paths as Path<TModel>[])
+  })
 
   // Always call the latest callbacks without recreating the subscription or
   // resetting a pending debounce timer when parent passes inline functions.
@@ -156,3 +169,10 @@ export function BlueFormContent<
 
   return renderRoot?.(formRendererArgs)
 }
+
+/** Paths of the fields (or arrays, via `root`) that currently have an error message. */
+const errorPaths = (errors: FieldErrors, prefix = ""): string[] =>
+  Object.entries(errors).flatMap(([key, value]: [string, any]) => {
+    const path = key === "root" ? prefix : prefix ? `${prefix}.${key}` : key
+    return !value || typeof value !== "object" ? [] : typeof value.message === "string" ? [path] : errorPaths(value, path)
+  })
