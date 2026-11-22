@@ -13,7 +13,7 @@ const [Form, defineConfig] = setupDemo(fields, shells)
 const buildConfig = (t: Translator) =>
   defineConfig<Profile>({
     name: { type: 'text', ...logic.name, props: { placeholder: 'Phở Bò' } },
-    slug: { type: 'text', ...logic.slug, props: { placeholder: t('hint.slug') } },
+    slug: { type: 'text', ...logic.slug, props: { placeholder: 'hint.slug' } },
     email: { type: 'text', ...logic.email, props: { type: 'email', autoComplete: 'email', placeholder: 'you@example.com' } },
     role: { type: 'select', ...logic.role, props: { children: roleOptions(t).map(o => (
           <option key={o.value} value={o.value}>

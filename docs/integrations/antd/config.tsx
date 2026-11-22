@@ -13,7 +13,7 @@ const [Form, defineConfig] = setupDemo(fields, shells)
 const buildConfig = (t: Translator) =>
   defineConfig<Profile>({
     name: { type: 'text', ...logic.name, props: { placeholder: 'Phở Bò', allowClear: true } },
-    slug: { type: 'text', ...logic.slug, props: { placeholder: t('hint.slug') } },
+    slug: { type: 'text', ...logic.slug, props: { placeholder: 'hint.slug' } },
     email: { type: 'text', ...logic.email, props: { type: 'email', prefix: '@', autoComplete: 'email' } },
     role: { type: 'select', ...logic.role, props: { options: roleOptions(t), showSearch: true, optionFilterProp: 'label' } },
     adminCode: { type: 'text', ...logic.adminCode },
