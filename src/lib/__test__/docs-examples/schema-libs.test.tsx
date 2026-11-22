@@ -6,7 +6,7 @@ import EgZodForm from "../../../../docs/src/examples/_shared/EgZodForm";
 
 const fill = (placeholder: string, value: string) =>
   act(() => {
-    fireEvent.change(screen.getByPlaceholderText(placeholder), { target: { value } });
+    fireEvent.change(screen.getByLabelText(placeholder, { exact: false }), { target: { value } });
   });
 const submit = async () => {
   await act(async () => {

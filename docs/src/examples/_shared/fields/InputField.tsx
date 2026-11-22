@@ -1,37 +1,24 @@
+import type { InputHTMLAttributes } from "react";
 import { useField } from "react-headless-form";
-import { FunctionComponent } from "react";
 
-interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {}
-
-const InputField: FunctionComponent<InputFieldProps> = (props) => {
-  const {
-    id,
-    name,
-    value,
-    onChange,
-    errorMessage,
-    label,
-    description,
-    required,
-    disabled,
-    readOnly,
-    ref,
-  } = useField();
-
+export default function InputField(props: InputHTMLAttributes<HTMLInputElement>) {
+  const { id, value, onChange, onBlur, ref, label, description, errorMessage, required, disabled, readOnly } =
+    useField();
   return (
-    <div id={id}>
-      <span style={{ marginRight: 10 }}>
-        {label} {required && "*"}
-      </span>
+    <div>
+      <label htmlFor={id}>
+        {label}
+        {required && " *"}
+      </label>
       <input
         {...props}
+        id={id}
         ref={ref}
-        name={name}
         value={value ?? ""}
         onChange={onChange}
+        onBlur={onBlur}
         disabled={disabled}
         readOnly={readOnly}
-        placeholder={props.placeholder ?? label}
         aria-required={required}
         aria-invalid={Boolean(errorMessage)}
       />
@@ -39,6 +26,4 @@ const InputField: FunctionComponent<InputFieldProps> = (props) => {
       {errorMessage && <div className="fieldError">{errorMessage}</div>}
     </div>
   );
-};
-
-export default InputField;
+}

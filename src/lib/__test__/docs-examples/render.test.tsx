@@ -8,7 +8,7 @@ const click = (name: string | RegExp) =>
   });
 const type = (placeholder: string, value: string, index = 0) =>
   act(() => {
-    fireEvent.change(screen.getAllByPlaceholderText(placeholder)[index], { target: { value } });
+    fireEvent.change(screen.getAllByLabelText(placeholder, { exact: false })[index], { target: { value } });
   });
 const submit = () =>
   act(async () => {
@@ -51,7 +51,7 @@ describe("docs: EgRenderForm", () => {
     act(() => {
       fireEvent.click(screen.getAllByRole("button", { name: "Remove" })[3]);
     });
-    expect(screen.getAllByPlaceholderText("Tag")).toHaveLength(3);
+    expect(screen.getAllByLabelText(/^Tag( \*)?$/)).toHaveLength(3);
     await submit();
     await waitFor(() => screen.getByTestId("payload"));
   });

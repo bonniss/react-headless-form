@@ -115,52 +115,6 @@ addresses: {
 
 Item-level validation is defined in `props.config` and handled the same way as regular fields. Use `errorAt(index)` when you need to inspect an item's error state from outside the item — for example, to highlight a collapsed item that contains invalid fields.
 
-## Complete example
+## Example
 
-```tsx
-addresses: {
-  type: "array",
-  label: "Addresses",
-  rules: {
-    minLength: { value: 2, message: "At least 2 addresses required" },
-  },
-  props: {
-    config: defineConfig<Address>({
-      street:  { type: "text", label: "Street" },
-      city:    { type: "text", label: "City" },
-      country: { type: "text", label: "Country" },
-    }),
-  },
-  render: ({ label, errorMessage, items, renderItems, append, duplicate, pop, clear }) => (
-    <fieldset>
-      <legend>{label}</legend>
-
-      {renderItems()}
-
-      <div>
-        <button
-          type="button"
-          onClick={() => append({ street: "", city: "", country: "" })}
-        >
-          Add
-        </button>
-        <button
-          type="button"
-          disabled={!items.length}
-          onClick={() => duplicate(items.length - 1)}
-        >
-          Duplicate last
-        </button>
-        <button type="button" disabled={!items.length} onClick={pop}>
-          Remove last
-        </button>
-        <button type="button" disabled={!items.length} onClick={clear}>
-          Clear all
-        </button>
-      </div>
-
-      {errorMessage && <div>{errorMessage}</div>}
-    </fieldset>
-  ),
-}
-```
+A runnable form with add, remove, duplicate and array-level validation: [Array Fields](../../../examples/foundational/array-form.mdx).

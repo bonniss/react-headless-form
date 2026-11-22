@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import EgSchemaForm from "../../../../docs/src/examples/_shared/EgSchemaForm";
 
 const fill = (placeholder: string, value: string) =>
-  fireEvent.change(screen.getByPlaceholderText(placeholder), { target: { value } });
+  fireEvent.change(screen.getByLabelText(placeholder, { exact: false }), { target: { value } });
 
 describe("docs: EgSchemaForm", () => {
   it("shows schema errors, then submits the coerced output", async () => {

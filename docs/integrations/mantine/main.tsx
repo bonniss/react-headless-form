@@ -1,7 +1,20 @@
 import '@mantine/core/styles.css'
-import { MantineProvider } from '@mantine/core'
+import { Button, MantineProvider, SegmentedControl } from '@mantine/core'
 import { mountDemo } from '../shared/mount'
-import { demo } from './config'
-import { shells } from './fields'
+import { Form, buildConfig, defaultValues } from './form'
 
-mountDemo(demo, shells, { Wrapper: MantineProvider })
+// The demo stage around the form: header controls drawn with Mantine
+mountDemo(
+  { Form, buildConfig, defaultValues },
+  {
+    SubmitButton: ({ form, children }) => (
+      <Button type="submit" form={form} size="xs">
+        {children}
+      </Button>
+    ),
+    LanguageSwitch: ({ value, options, onChange }) => (
+      <SegmentedControl size="xs" value={value} data={options} onChange={onChange} />
+    ),
+  },
+  { Wrapper: MantineProvider },
+)

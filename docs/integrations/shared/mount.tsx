@@ -2,9 +2,7 @@ import { type ComponentType, type ReactNode, useEffect, useMemo, useState } from
 import { createRoot } from 'react-dom/client'
 import { useFormRef, useFormState } from 'react-headless-form'
 import type { FieldErrors } from 'react-hook-form'
-import { type Profile, computedPaths, defaultValues } from './logic'
 import { type Lang, TranslatorContext, createTranslator, languageOptions, useT } from './i18n'
-import { FORM_ID } from './setup'
 import type { DemoForm, Shells } from './types'
 
 /*
@@ -17,6 +15,11 @@ type Options = {
   /** Library provider / theme around the demo (e.g. MantineProvider). */
   Wrapper?: ComponentType<{ children: ReactNode }>
 }
+
+/** Each library's form.tsx renders `<form id={FORM_ID}>`, so the header button can submit it. */
+export const FORM_ID = 'demo-form'
+/** Highlighted in the payload drawer. */
+const computedPaths = ['total']
 
 const Passthrough = ({ children }: { children: ReactNode }) => <>{children}</>
 
@@ -83,18 +86,18 @@ function PayloadTree({ value, path = '' }: { value: unknown; path?: string }) {
 }
 
 /** Renders the shared demo form with one library's adapters inside the demo stage. */
-export function mountDemo({ Form, buildConfig }: DemoForm, shells: Shells, { Wrapper = Passthrough }: Options = {}) {
+export function mountDemo({ Form, buildConfig, defaultValues }: DemoForm, shells: Shells, { Wrapper = Passthrough }: Options = {}) {
   const { LanguageSwitch, SubmitButton } = shells
 
   function Demo() {
     const [lang, setLang] = useState<Lang>('en')
-    const [payload, setPayload] = useState<Partial<Profile>>()
+    const [payload, setPayload] = useState<Record<string, unknown>>()
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [errorList, setErrorList] = useState<FieldError[]>([])
     const [showErrors, setShowErrors] = useState(false)
     const t = useMemo(() => createTranslator(lang), [lang])
     const config = useMemo(() => buildConfig(t), [t])
-    const formRef = useFormRef<Profile>()
+    const formRef = useFormRef()
 
     // Messages are stored when a field is validated: after a language switch,
     // validate the failing fields again to get them in the new language.
@@ -143,7 +146,7 @@ export function mountDemo({ Form, buildConfig }: DemoForm, shells: Shells, { Wra
             )}
           </header>
 
-          <main style={{ maxWidth: 440, margin: '0 auto', padding: '72px 16px 32px' }}>
+          <main style={{ maxWidth: 880, margin: '0 auto', padding: '72px 16px 32px' }}>
             <Form
               ref={formRef}
               config={config}
@@ -159,9 +162,9 @@ export function mountDemo({ Form, buildConfig }: DemoForm, shells: Shells, { Wra
                   maxLength: 'validation.maxLength',
                 },
               }}
-              // hidden fields (adminCode) leave the payload
+              // hidden fields (studentId, billing) leave the payload
               formOptions={{ shouldUnregister: true }}
-              onSubmit={(data: Profile) => {
+              onSubmit={(data: Record<string, unknown>) => {
                 setPayload(data)
                 setDrawerOpen(true)
               }}
@@ -182,9 +185,9 @@ export function mountDemo({ Form, buildConfig }: DemoForm, shells: Shells, { Wra
               <div style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12, lineHeight: 1.6 }}>
                 <PayloadTree value={payload} />
               </div>
-              {!('adminCode' in payload) && (
+              {!('studentId' in payload) && (
                 <p style={{ color: tone.muted, fontSize: 12, marginTop: 16 }}>
-                  {t('shell.dropped')}: <code>adminCode</code>
+                  {t('shell.dropped')}: <code>studentId</code>
                 </p>
               )}
             </aside>

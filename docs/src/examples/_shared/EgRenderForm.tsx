@@ -13,12 +13,6 @@ const tagConfig = defineConfig<{ label: string }>({
   label: { type: 'text', label: 'Tag', rules: { required: 'Tag is required' } },
 })
 
-const box = {
-  border: '1px dashed var(--bf-border)',
-  borderRadius: 8,
-  padding: '0.75rem 1rem',
-  marginBottom: '0.75rem',
-} as const
 
 function EgRenderForm() {
   const [payload, setPayload] = useState<Feedback>()
@@ -32,8 +26,8 @@ function EgRenderForm() {
           label: 'Rating',
           rules: { required: 'Pick a rating' },
           render: ({ value, onChange, label, errorMessage, required }) => (
-            <div style={{ marginBottom: '0.75rem' }}>
-              <span style={{ marginRight: 10 }}>
+            <div>
+              <span>
                 {label} {required && '*'}
               </span>
               {[1, 2, 3, 4, 5].map(star => (
@@ -43,7 +37,6 @@ function EgRenderForm() {
                   aria-label={`${star} star${star > 1 ? 's' : ''}`}
                   aria-pressed={value === star}
                   onClick={() => onChange(star)}
-                  style={{ border: 0, background: 'none', fontSize: 22, cursor: 'pointer', padding: 2 }}
                 >
                   {value >= star ? '★' : '☆'}
                 </button>
@@ -58,9 +51,9 @@ function EgRenderForm() {
           label: 'Name',
           rules: { required: 'Name is required' },
           render: ({ self }) => (
-            <div style={box}>
+            <div>
               {self}
-              <small style={{ color: 'var(--bf-text-muted)' }}>Shown on your public profile</small>
+              <small className="fieldDescription">Shown on your public profile</small>
             </div>
           ),
         },
@@ -69,7 +62,7 @@ function EgRenderForm() {
           type: 'section',
           label: 'Contact',
           render: ({ label, children }) => (
-            <fieldset style={box}>
+            <fieldset>
               <legend>{label}</legend>
               {children}
             </fieldset>
@@ -87,10 +80,10 @@ function EgRenderForm() {
           label: 'Tags (max 3)',
           rules: { maxLength: { value: 3, message: 'At most 3 tags' } },
           render: ({ label, items, renderItem, append, remove, errorMessage }) => (
-            <fieldset style={box}>
+            <fieldset>
               <legend>{label}</legend>
               {items.map((item, index) => (
-                <div key={item.id} style={{ display: 'flex', gap: 8, alignItems: 'end', marginBottom: 8 }}>
+                <div key={item.id}>
                   {renderItem(item, index)}
                   <button type="button" onClick={() => remove(index)}>
                     Remove

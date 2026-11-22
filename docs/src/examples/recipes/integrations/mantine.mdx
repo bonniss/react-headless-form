@@ -6,10 +6,11 @@ outline: false
 
 # Mantine
 
-The [shared demo form](./index.mdx#what-each-field-shows) (rules, JSON conditions, computed values, nested sections, an invoice array with per-row errors, i18n) rendered with Mantine. The logic comes from [`shared/logic.ts`](./index.mdx#one-logic-ui-only-differences). This library adds two files:
+The [registration form demo](./index.mdx#live-demos) written with Mantine, self-contained:
 
-- `fields.tsx`: adapters typed with Mantine's own props (`TextInputProps` minus what `useField()` controls).
-- `config.tsx`: the config. Each field spreads its logic (`...logic.email`) and sets `props` with Mantine's API, typed and autocompleted as Mantine's props.
+- `form.tsx`: `setupForm` (with a `renderRoot` for the title and grid) and the config. `props` use Mantine's own API, typed by its components.
+- `fields.tsx`: the adapters, typed with Mantine's own props minus what `useField()` controls.
+- `main.tsx`: mounts it in the demo stage (header, payload drawer).
 
 - `Select` passes the **value** to `onChange` (not an event); `TextInput` / `Checkbox` pass events.
 - Wrap the app in `MantineProvider` and import `@mantine/core/styles.css`.
@@ -21,8 +22,8 @@ import LiveDemo from '../../../../components/LiveDemo';
   <Tab label="Live demo">
     <LiveDemo lib="mantine" />
   </Tab>
-  <Tab label="config.tsx">
-    ```tsx file="../../../../integrations/mantine/config.tsx"
+  <Tab label="form.tsx">
+    ```tsx file="../../../../integrations/mantine/form.tsx"
     ```
   </Tab>
   <Tab label="fields.tsx">

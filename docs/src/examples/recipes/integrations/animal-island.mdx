@@ -6,10 +6,11 @@ outline: false
 
 # animal-island-ui
 
-The [shared demo form](./index.mdx#what-each-field-shows) (rules, JSON conditions, computed values, nested sections, an invoice array with per-row errors, i18n) rendered with animal-island-ui. The logic comes from [`shared/logic.ts`](./index.mdx#one-logic-ui-only-differences). This library adds two files:
+The [registration form demo](./index.mdx#live-demos) written with animal-island-ui, self-contained:
 
-- `fields.tsx`: adapters typed with animal-island-ui's own props (`InputProps` minus what `useField()` controls).
-- `config.tsx`: the config. Each field spreads its logic (`...logic.email`) and sets `props` with animal-island-ui's API, typed and autocompleted as animal-island-ui's props.
+- `form.tsx`: `setupForm` (with a `renderRoot` for the title and grid) and the config. `props` use animal-island-ui's own API, typed by its components.
+- `fields.tsx`: the adapters, typed with animal-island-ui's own props minus what `useField()` controls.
+- `main.tsx`: mounts it in the demo stage (header, payload drawer).
 
 - `Select` options use `key` (not `value`) and `onChange` receives the key.
 - There is no `TextArea`; long text uses `Input`. Its `Checkbox` is a group (array of values), so a boolean field uses `Switch`.
@@ -22,8 +23,8 @@ import LiveDemo from '../../../../components/LiveDemo';
   <Tab label="Live demo">
     <LiveDemo lib="animal-island" />
   </Tab>
-  <Tab label="config.tsx">
-    ```tsx file="../../../../integrations/animal-island/config.tsx"
+  <Tab label="form.tsx">
+    ```tsx file="../../../../integrations/animal-island/form.tsx"
     ```
   </Tab>
   <Tab label="fields.tsx">

@@ -1,9 +1,7 @@
-import { Button, Card, Input, Select, Switch, Title } from 'animal-island-ui'
+import { Input, Select, Switch } from 'animal-island-ui'
 import type { CSSProperties, ReactNode } from 'react'
-import { useArrayField, useField } from 'react-headless-form'
+import { useField } from 'react-headless-form'
 import type { InputProps, SelectProps, SwitchProps } from 'animal-island-ui'
-import type { Shells } from '../shared/types'
-import { useT } from '../shared/i18n'
 
 const stack: CSSProperties = { display: 'grid', gap: 12 }
 
@@ -46,9 +44,6 @@ function TextField(props: TextFieldProps) {
   )
 }
 
-// No TextArea in animal-island-ui: its Input stands in, with the same props.
-export type LongTextFieldProps = TextFieldProps
-const LongTextField = TextField
 
 /** `options` come from the config, in animal-island-ui's shape (`key`). */
 export type SelectFieldProps = Omit<SelectProps, 'value' | 'defaultValue' | 'onChange' | 'disabled' | 'aria-label'>
@@ -84,72 +79,6 @@ function CheckboxField(props: CheckboxFieldProps) {
 
 export const fields = {
   text: TextField,
-  longText: LongTextField,
   select: SelectField,
   checkbox: CheckboxField,
-}
-
-export const shells: Shells = {
-  Root: ({ id, children, onSubmit }) => {
-    const t = useT()
-    return (
-      <form id={id} onSubmit={onSubmit} noValidate style={stack}>
-        {children}
-        <Button type="primary" htmlType="submit">
-          {t('action.save')}
-        </Button>
-      </form>
-    )
-  },
-  SubmitButton: ({ form, children }) => (
-    <Button type="primary" htmlType="submit" form={form} size="small">
-      {children}
-    </Button>
-  ),
-  LanguageSwitch: ({ value, options, onChange }) => (
-    <div style={{ display: 'flex', gap: 6 }}>
-      {options.map(option => (
-        <Button
-          key={option.value}
-          size="small"
-          type={option.value === value ? 'primary' : 'default'}
-          aria-pressed={option.value === value}
-          onClick={() => onChange(option.value)}
-        >
-          {option.label}
-        </Button>
-      ))}
-    </div>
-  ),
-  Section: ({ title, children }) => (
-    <Card color="app-blue" style={stack}>
-      <Title size="small" color="app-blue">
-        {title}
-      </Title>
-      {children}
-    </Card>
-  ),
-  LinesList: () => {
-    const t = useT()
-    const { label, items, renderItem, append, remove, errorMessage } = useArrayField()
-    return (
-      <Card color="app-yellow" style={stack}>
-        <Title size="small" color="app-yellow">
-          {label}
-        </Title>
-        {items.map((item, index) => (
-          <Card key={item.id} type="dashed" style={stack}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>{renderItem(item, index)}</div>
-            <Button type="text" size="small" onClick={() => remove(index)}>
-              {t('action.remove')}
-            </Button>
-          </Card>
-        ))}
-        {errorMessage && <span style={{ color: '#d9534f', fontSize: 13 }}>{errorMessage}</span>}
-        <Button type="dashed" onClick={() => append({ item: '', qty: '1', price: '' })}>
-          {t('action.addLine')}
-        </Button>
-      </Card>
-    )
-  },
 }

@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import EgComputableForm from "../../../../docs/src/examples/_shared/EgComputableForm";
 
-const input = (label: string) => screen.getByPlaceholderText(label) as HTMLInputElement;
+const input = (label: string) => screen.getByLabelText(label, { exact: false }) as HTMLInputElement;
 const fill = (label: string, value: string) =>
   act(() => {
     fireEvent.change(input(label), { target: { value } });

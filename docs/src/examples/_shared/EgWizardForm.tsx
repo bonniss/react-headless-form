@@ -137,7 +137,7 @@ function EgWizardForm() {
         onSubmit={(data) => setSubmitted(data)}
       >
         {({ trigger }) => (
-          <div style={{ display: "flex", gap: 8, marginTop: "0.5rem" }}>
+          <div>
             {step > 0 && (
               <button type="button" onClick={() => setStep((s) => s - 1)}>
                 ← Back
@@ -146,7 +146,6 @@ function EgWizardForm() {
             {step < STEPS.length - 1 ? (
               <button
                 type="button"
-                style={{ marginLeft: "auto" }}
                 // Validate only the current step before moving on.
                 onClick={async () => {
                   if (await trigger([...STEPS[step].paths])) setStep((s) => s + 1);
@@ -155,7 +154,7 @@ function EgWizardForm() {
                 Next →
               </button>
             ) : (
-              <button type="submit" style={{ marginLeft: "auto" }}>
+              <button type="submit">
                 Submit
               </button>
             )}

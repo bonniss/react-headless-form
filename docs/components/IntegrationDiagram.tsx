@@ -1,12 +1,12 @@
 import { useId } from 'react'
 
 /**
- * One logic, many UIs: the shared logic (rules, conditions, computes) is
- * spread into each library's config, whose `props` use that library's own API. Colors come from the docs theme variables, so the
- * diagram follows light and dark mode.
+ * The config holds the logic; `fieldMapping` adapters connect it to a UI
+ * library, whose own props the config passes. Colors come from the docs theme
+ * variables, so the diagram follows light and dark mode.
  */
 const libs = ['Mantine', 'shadcn/ui', 'Ant Design', 'Material UI', 'animal-island-ui']
-const logic = ['labels · i18n', 'rules', 'JSON conditions', 'computed values', 'model · defaults']
+const logic = ['labels · i18n', 'rules', 'JSON conditions', 'computed values', 'props (typed)']
 
 const text = 'var(--rp-c-text-1)'
 const muted = 'var(--rp-c-text-2)'
@@ -21,7 +21,7 @@ export default function IntegrationDiagram() {
     <svg
       viewBox="0 0 720 350"
       role="img"
-      aria-label="Shared logic file spread into each library's config; props typed by each library; five UI libraries"
+      aria-label="A form config (labels, rules, conditions, computed values, typed props) connected through fieldMapping adapters to five UI libraries"
       style={{ width: '100%', height: 'auto', maxWidth: 760, margin: '16px 0' }}
       fontFamily="inherit"
     >
@@ -34,7 +34,7 @@ export default function IntegrationDiagram() {
       {/* shared config: the logic */}
       <rect x="12" y="16" width="260" height="290" rx="14" fill={soft} stroke={brand} strokeWidth="2" />
       <text x="142" y="44" textAnchor="middle" fontSize="18" fontWeight="700" fill={text}>
-        shared/logic.ts
+        config
       </text>
       {logic.map((item, i) => (
         <g key={item}>
@@ -45,25 +45,22 @@ export default function IntegrationDiagram() {
         </g>
       ))}
 
-      {/* per library: adapters + config with native props */}
+      {/* fieldMapping: adapters + config with native props */}
       <rect x="322" y="16" width="126" height="290" rx="14" fill="none" stroke={line} strokeDasharray="5 4" />
       <text x="385" y="44" textAnchor="middle" fontSize="17" fontWeight="700" fill={text}>
-        per library
+        fieldMapping
       </text>
       <text x="385" y="64" textAnchor="middle" fontSize="14" fill={muted}>
         fields.tsx
       </text>
-      <text x="385" y="84" textAnchor="middle" fontSize="14" fill={muted}>
-        config.tsx
-      </text>
       <text x="385" y="146" textAnchor="middle" fontSize="14" fill={muted}>
-        ...logic.x
+        useField()
       </text>
       <text x="385" y="166" textAnchor="middle" fontSize="14" fill={muted}>
-        + native
+        → library
       </text>
       <text x="385" y="186" textAnchor="middle" fontSize="14" fill={muted}>
-        props
+        components
       </text>
 
       <line x1="276" y1="161" x2="316" y2="161" stroke={muted} strokeWidth="2" markerEnd={`url(#${arrow})`} />
@@ -83,10 +80,10 @@ export default function IntegrationDiagram() {
       })}
 
       <text x="142" y="334" textAnchor="middle" fontSize="15" fontWeight="600" fill={brand}>
-        Logic: written once, spread
+        Logic: what the form does
       </text>
       <text x="515" y="334" textAnchor="middle" fontSize="15" fontWeight="600" fill={muted}>
-        Per library: UI and its typed props
+        Per library: how it looks
       </text>
     </svg>
   )

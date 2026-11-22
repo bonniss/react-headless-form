@@ -6,10 +6,11 @@ outline: false
 
 # Ant Design
 
-The [shared demo form](./index.mdx#what-each-field-shows) (rules, JSON conditions, computed values, nested sections, an invoice array with per-row errors, i18n) rendered with Ant Design. The logic comes from [`shared/logic.ts`](./index.mdx#one-logic-ui-only-differences). This library adds two files:
+The [registration form demo](./index.mdx#live-demos) written with Ant Design, self-contained:
 
-- `fields.tsx`: adapters typed with Ant Design's own props (`InputProps` minus what `useField()` controls).
-- `config.tsx`: the config. Each field spreads its logic (`...logic.email`) and sets `props` with Ant Design's API, typed and autocompleted as Ant Design's props.
+- `form.tsx`: `setupForm` (with a `renderRoot` for the title and grid) and the config. `props` use Ant Design's own API, typed by its components.
+- `fields.tsx`: the adapters, typed with Ant Design's own props minus what `useField()` controls.
+- `main.tsx`: mounts it in the demo stage (header, payload drawer).
 
 - `Form.Item` is used for **layout only** (label, help, status); values and errors come from `useField()`, so no antd `Form` instance is involved.
 - `Select` passes the value to `onChange`; `Input` / `Checkbox` pass events.
@@ -21,8 +22,8 @@ import LiveDemo from '../../../../components/LiveDemo';
   <Tab label="Live demo">
     <LiveDemo lib="antd" />
   </Tab>
-  <Tab label="config.tsx">
-    ```tsx file="../../../../integrations/antd/config.tsx"
+  <Tab label="form.tsx">
+    ```tsx file="../../../../integrations/antd/form.tsx"
     ```
   </Tab>
   <Tab label="fields.tsx">

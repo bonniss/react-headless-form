@@ -6,10 +6,11 @@ outline: false
 
 # shadcn/ui
 
-The [shared demo form](./index.mdx#what-each-field-shows) (rules, JSON conditions, computed values, nested sections, an invoice array with per-row errors, i18n) rendered with shadcn/ui. The logic comes from [`shared/logic.ts`](./index.mdx#one-logic-ui-only-differences). This library adds two files:
+The [registration form demo](./index.mdx#live-demos) written with shadcn/ui, self-contained:
 
-- `fields.tsx`: adapters typed with shadcn/ui's own props (`ComponentProps<typeof Input>` minus what `useField()` controls).
-- `config.tsx`: the config. Each field spreads its logic (`...logic.email`) and sets `props` with shadcn/ui's API, typed and autocompleted as shadcn/ui's props.
+- `form.tsx`: `setupForm` (with a `renderRoot` for the title and grid) and the config. `props` use shadcn/ui's own API, typed by its components.
+- `fields.tsx`: the adapters, typed with shadcn/ui's own props minus what `useField()` controls.
+- `main.tsx`: mounts it in the demo stage (header, payload drawer).
 
 - shadcn components are plain elements you own, so adapters are a few lines. The demo keeps its primitives minimal (`ui.tsx`, no Radix); with the real `Select` / `Checkbox` from `npx shadcn add`, use `onValueChange` / `onCheckedChange` (value, not event).
 - Tailwind v4 scans only this demo, so its preflight does not leak into the other demos.
@@ -21,8 +22,8 @@ import LiveDemo from '../../../../components/LiveDemo';
   <Tab label="Live demo">
     <LiveDemo lib="shadcn" />
   </Tab>
-  <Tab label="config.tsx">
-    ```tsx file="../../../../integrations/shadcn/config.tsx"
+  <Tab label="form.tsx">
+    ```tsx file="../../../../integrations/shadcn/form.tsx"
     ```
   </Tab>
   <Tab label="fields.tsx">

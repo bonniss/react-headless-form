@@ -1,39 +1,24 @@
+import type { InputHTMLAttributes } from "react";
 import { useField } from "react-headless-form";
-import { FunctionComponent } from "react";
 
-interface CheckboxFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {}
-
-const CheckboxField: FunctionComponent<CheckboxFieldProps> = (props) => {
-  const {
-    id,
-    value,
-    onChange,
-    label,
-    description,
-    errorMessage,
-    disabled,
-    readOnly,
-    ref,
-  } = useField();
-
+export default function CheckboxField(props: InputHTMLAttributes<HTMLInputElement>) {
+  const { id, value, onChange, ref, label, description, errorMessage, disabled, readOnly } = useField();
   return (
-    <div id={id}>
+    <div>
       <label>
         <input
+          {...props}
+          id={id}
           ref={ref}
           type="checkbox"
           checked={Boolean(value)}
-          onChange={(e) => onChange?.(e.target.checked)}
-          disabled={disabled}
-          readOnly={readOnly}
-          {...props}
-        />
+          onChange={(e) => onChange(e.target.checked)}
+          disabled={disabled || readOnly}
+        />{" "}
         {label}
       </label>
       {description && <div className="fieldDescription">{description}</div>}
       {errorMessage && <div className="fieldError">{errorMessage}</div>}
     </div>
   );
-};
-
-export default CheckboxField;
+}
