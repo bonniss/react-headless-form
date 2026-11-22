@@ -32,12 +32,11 @@ function FieldNode({ name, field, namespace }: FieldNodeProps) {
     i18nConfig,
     fieldMapping,
     readOnly: formReadOnly,
-    idPrefix,
   } = useBlueFormInternal();
 
   const compiled = useMemo(
-    () => compileField({ name, field, namespace, i18n: i18nConfig, formReadOnly, idPrefix }),
-    [name, field, namespace, i18nConfig, formReadOnly, idPrefix],
+    () => compileField({ name, field, namespace, i18n: i18nConfig, formReadOnly }),
+    [name, field, namespace, i18nConfig, formReadOnly],
   );
 
   const position = { path: compiled.path, name, namespace };

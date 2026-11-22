@@ -157,22 +157,20 @@ export function InputField() {
 
 ### Accessibility
 
-Use `id` and `ref` from `useField` for proper label association and RHF's `setFocus`:
+The DOM belongs to the adapter: `useField()` gives no DOM id (its deprecated `id` is just the path, shared by two forms with the same fields). Associate the label yourself, and attach `ref` so RHF's `setFocus` and focus-on-error work:
 
 ```tsx
 export function InputField() {
-  const { id, ref, value, onChange, label, required } = useField()
+  const id = useId() // unique per instance, SSR-safe (React 18+)
+  const { ref, value, onChange, label, required, errorMessage } = useField()
 
   return (
     <div>
       <label htmlFor={id}>{label}{required && ' *'}</label>
-      <input
-        id={id}
-        ref={ref}
-        value={value ?? ''}
-        onChange={(e) => onChange?.(e.target.value)}
-      />
+      <input id={id} ref={ref} value={value ?? ''} onChange={(e) => onChange(e.target.value)} aria-invalid={Boolean(errorMessage)} />
     </div>
   )
 }
 ```
+
+Without `useId` (React 16/17), put the input inside its `<label>`: no id is needed.

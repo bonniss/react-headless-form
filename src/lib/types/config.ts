@@ -16,7 +16,7 @@ import type { WithKnownKeys } from "./utils";
  *   but participates fully in form state — its defaultValue is registered,
  *   it can be validated, and it will be included in the submission payload.
  *   Useful for passing fixed values or storing internal state without user interaction.
- *   Equivalent in behavior to an <input type="hidden" />, but fully integrated into the form engine.
+ *   A value without UI: nothing is rendered, on any platform.
  *
  * - 'array': A repeatable list of sub-items. Represents a field with type T[].
  *   Typically rendered with "Add/Remove" item functionality via `useArrayField`.

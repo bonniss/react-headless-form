@@ -92,7 +92,7 @@ Text props such as `placeholder` are translated when listed in `i18nConfig.trans
 
 1. Call `useField()` in a field component and destructure what you need.
 2. Map `value` to the library's value prop and call `onChange(value)` from its change handler.
-3. Wire `label`, `errorMessage`, `required`, `disabled`, `readOnly` and `id` (for label association).
+3. Wire `label`, `errorMessage`, `required`, `disabled` and `readOnly`. Associate the label yourself (`useId()` in the adapter, or the input inside its `<label>`): `useField()` gives no DOM id.
 
 
 ## Validation libraries
