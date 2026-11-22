@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.0](https://github.com/bonniss/react-headless-form/compare/v0.21.0...v0.22.0) (2026-11-22)
+
+
+### Features
+
+* **i18n:** a Form's i18nConfig merges over setupForm's key by key ([6cac9e2](https://github.com/bonniss/react-headless-form/commit/6cac9e288b2ec2883158e7a2b05dda237fba8d5b))
+
 ## [0.21.0](https://github.com/bonniss/react-headless-form/compare/v0.20.0...v0.21.0) (2026-11-22)
 
 
