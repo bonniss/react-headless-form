@@ -21,8 +21,8 @@ importers:
         specifier: ^25.8.17
         version: 25.8.17
       react-headless-form:
-        specifier: ^0.14.0
-        version: 0.14.0(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4)
+        specifier: ^0.17.1
+        version: 0.17.1(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4)
       react-hook-form:
         specifier: ^7.71.2
         version: 7.71.2(react@19.2.4)
@@ -904,9 +904,6 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
-  just-debounce-it@3.2.0:
-    resolution: {integrity: sha512-WXzwLL0745uNuedrCsCs3rpmfD6DBaf7uuVwaq98/8dafURfgQaBsSpjiPp5+CW6Vjltwy9cOGI6qE71b3T8iQ==}
-
   kind-of@6.0.3:
     resolution: {integrity: sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==}
     engines: {node: '>=0.10.0'}
@@ -1187,15 +1184,8 @@ packages:
     peerDependencies:
       react: ^19.2.4
 
-  react-easy-provider@0.2.1:
-    resolution: {integrity: sha512-x752xWETL11NK+ynKfFUPhxaqTWTNm45jpekuTwHJqLIjB7ZdCvRnTBNeEaw1kElAQg7r14grnAEFLx0ly+xUQ==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      react: ^16.8.0 || ^17 || ^18 || ^19
-      react-dom: ^16.8.0 || ^17 || ^18 || ^19
-
-  react-headless-form@0.14.0:
-    resolution: {integrity: sha512-3xiAmo1UcSCJoKUtY//+yL/PTAXtGguNf6N7Eg+z5Cref2fs3UaUb1KgEdsjH5IV5S/AbyV0HH2UKRTerZAcZw==}
+  react-headless-form@0.17.1:
+    resolution: {integrity: sha512-COZhF06kT8IS0snCprMr827DQS9ufAhlj6GiOrWTu/ukKYcOB5OAlBM3r/g9TLJbDGZCW+C2hibSt9rW0UZ2xQ==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -2627,8 +2617,6 @@ snapshots:
 
   json5@2.2.3: {}
 
-  just-debounce-it@3.2.0: {}
-
   kind-of@6.0.3: {}
 
   lines-and-columns@1.2.4: {}
@@ -3174,17 +3162,10 @@ snapshots:
       react: 19.2.4
       scheduler: 0.27.0
 
-  react-easy-provider@0.2.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  react-headless-form@0.17.1(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4):
     dependencies:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
-
-  react-headless-form@0.14.0(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4):
-    dependencies:
-      just-debounce-it: 3.2.0
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      react-easy-provider: 0.2.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react-hook-form: 7.71.2(react@19.2.4)
 
   react-hook-form@7.71.2(react@19.2.4):
