@@ -1,9 +1,9 @@
 ---
 title: Internationalization (i18n)
-description: How BlueForm translates labels, descriptions, error messages and selected props through one function, how setupForm and Form combine their i18nConfig, and what a language switch does.
+description: How BlueForm translates labels, descriptions, placeholders and error messages through one function, how setupForm and Form combine their i18nConfig, and what a language switch does.
 ---
 
-BlueForm translates at the **form level**, not inside field components. Labels, descriptions, error messages and the props you list are translated before they reach a field: `useField()` returns ready-to-render strings, so field components never deal with locales or an i18n library.
+BlueForm translates at the **form level**, not inside field components. Labels, descriptions, placeholders and error messages are translated before they reach a field: `useField()` returns ready-to-render strings, so field components never deal with locales or an i18n library.
 
 i18n is optional: without `i18nConfig`, every text is shown as written. Runnable examples (a hand-written `t`, JSON files, your own language store, i18next, react-intl, Lingui, Paraglide JS): [i18n recipe](../../examples/recipes/i18n.mdx).
 
@@ -13,9 +13,8 @@ Everything goes through `i18nConfig.t(key, params)`:
 
 | What | When `t` is called | `params` |
 |---|---|---|
-| `label`, `description` | when the field renders | from `{ message, params }`, see [Text forms](#text-forms) |
+| `label`, `description`, `props.placeholder` | when the field renders | from `{ message, params }`, see [Text forms](#text-forms) |
 | error messages | when they are displayed (`errorMessage` of `useField()` / `useArrayField()`) | `field` + the rule value, for [validation messages](#validation-messages) |
-| props listed in `translateProps` | when the field renders | none |
 
 BlueForm does not dictate a key format or where messages come from: `t` can be a `switch`, a lookup in JSON files, or an i18n library's function. For a key it does not know, a good `t` returns the key itself (i18next does by default): plain text then shows unchanged next to translated text.
 
@@ -31,7 +30,6 @@ const t = (key: string, params?: Record<string, unknown>) =>
 | Key | Usually in | Why |
 |---|---|---|
 | `validationTranslation` | `setupForm` | your message keys do not change with the language |
-| `translateProps` | `setupForm` | the same props are translated in every form |
 | `t` | `<Form>` | a new function per language, usually from a hook, which `setupForm` cannot call |
 | `enabled` | either | `false` turns i18n off, for every form or for one |
 
@@ -42,7 +40,6 @@ const [Form] = setupForm({
   renderRoot,
   i18nConfig: {
     validationTranslation: { required: "validation.required", minLength: "validation.minLength" },
-    translateProps: ["placeholder"],
   },
 });
 
@@ -54,7 +51,7 @@ How the merge resolves:
 
 - A key on the Form replaces the same key from `setupForm`; the other keys are kept. Override one key or all of them.
 - The merge is shallow: a Form's `validationTranslation` replaces the setup's whole map, it is not merged rule by rule.
-- A key set to `undefined` on the Form drops the setup's value for that form (e.g. `translateProps: undefined`).
+- A key set to `undefined` on the Form drops the setup's value for that form (e.g. `validationTranslation: undefined`).
 - Without a Form `i18nConfig`, the setup's applies as is.
 
 When `t` comes from a hook, wrap the wiring once in a hook of your app and pass its result, so forms do not repeat it:
@@ -74,7 +71,7 @@ A static `t` in `setupForm` (e.g. `i18next.t`) is enough when the app has one la
 
 **A new `t` function means the language changed.** When the Form receives one:
 
-- labels, descriptions and translated props are translated again;
+- labels, descriptions and placeholders are translated again;
 - fields that show a validation error are validated again, so their messages follow; fields without an error are not validated;
 - errors set with `setError()` (e.g. a server error) are kept, and translated again as they are displayed;
 - the values are kept: nothing is remounted.
@@ -121,7 +118,7 @@ Messages read directly from `formState.errors` are the raw keys.
 
 ## Text forms
 
-`label` and `description` accept a `TranslatableText`:
+`label`, `description` and `props.placeholder` accept a `TranslatableText`:
 
 | Form | Example | Result |
 |---|---|---|
@@ -137,19 +134,17 @@ Use the literal form for text that is not a key, e.g. labels loaded from a datab
 label: row.isKey ? row.label : { text: row.label },
 ```
 
-## Translating props
+## Placeholders and other props
 
-_Added in v0.14._
+_v0.23+_ (before, through `translateProps`)
 
-Field `props` are passed through untouched, except those listed in `translateProps`: their string or `TranslatableText` values go through `t`, anything else is left as is.
+`props.placeholder` is translated like a label: a key, `{ message, params }` or `{ text }`. Other field `props` are passed through untouched, since most are not text (`type`, `variant`, `size`) and sending them to `t` would make the i18n library report missing keys.
 
 ```ts
-i18nConfig: { translateProps: ["placeholder", "title"] }
-// config
-email: { type: "text", props: { placeholder: "form.email.placeholder" } }, // translated
+email: { type: "text", label: "form.email", props: { placeholder: "form.email.placeholder" } },
 ```
 
-Only top-level props are translated, not nested values such as select options: each UI library shapes options differently (`data`, `options`, `<option>` children), so translate their labels where you build them, with your `t`, and let the adapter pass them to the library's prop.
+Help text goes in the field's `description`, translated, and the adapter passes it to the library's prop (Mantine `description`, MUI `helperText`). Other text props (`title`, `aria-label`) and nested values such as select options are translated where you build the config, with your `t`: each UI library shapes options differently (`data`, `options`, `<option>` children).
 
 ## Type-checked keys
 

@@ -10,12 +10,13 @@ type Extra = 'error'
 export type TextFieldProps = AdapterProps<TextInputProps, Extra | 'withAsterisk'>
 
 function TextField(props: TextFieldProps) {
-  const { value, onChange, onBlur, ref, label, errorMessage, required, disabled, readOnly } = useField()
+  const { value, onChange, onBlur, ref, label, description, errorMessage, required, disabled, readOnly } = useField()
   return (
     <TextInput
       {...props}
       ref={ref}
       label={label}
+      description={description ?? props.description} // the field's description, translated
       value={value ?? ''}
       onChange={e => onChange(e.currentTarget.value)}
       onBlur={onBlur}

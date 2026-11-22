@@ -31,7 +31,7 @@ import EgI18nValidation from '../_shared/EgI18nValidation';
 
 ## Messages in JSON files
 
-The usual practice in an app: one file per language, keys for labels, for validation messages (`{field}` and the rule value are filled in) and for translated props. All examples below read these two files.
+The usual practice in an app: one file per language, keys for labels, for validation messages (`{field}` and the rule value are filled in) and for placeholders. All examples below read these two files.
 
 <Tabs>
   <Tab label="en.json">
@@ -46,7 +46,7 @@ The usual practice in an app: one file per language, keys for labels, for valida
 
 ## Shared setup, `t` per form
 
-What does not change with the language goes into `setupForm` once: the validation keys and the translated props. Each `<Form>` passes only `t`; the two are merged key by key (_v0.22+_).
+What does not change with the language goes into `setupForm` once: the validation keys. Each `<Form>` passes only `t`; the two are merged key by key (_v0.22+_).
 
 ```tsx file="../_shared/i18n/form.tsx"
 ```

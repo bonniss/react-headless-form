@@ -12,7 +12,7 @@ export type TextFieldProps = AdapterProps<MuiTextFieldProps, Extra>
 
 /** Merges the config's `slotProps` with the read-only flag from useField(). */
 function Field({ slotProps, helperText, ...props }: TextFieldProps) {
-  const { value, onChange, onBlur, ref, label, errorMessage, required, disabled, readOnly } = useField()
+  const { value, onChange, onBlur, ref, label, description, errorMessage, required, disabled, readOnly } = useField()
   return (
     <MuiTextField
       fullWidth
@@ -24,7 +24,7 @@ function Field({ slotProps, helperText, ...props }: TextFieldProps) {
       onChange={e => onChange(e.target.value)}
       onBlur={onBlur}
       error={Boolean(errorMessage)}
-      helperText={errorMessage ?? helperText}
+      helperText={errorMessage ?? description ?? helperText} // the field's description, translated
       required={required}
       disabled={disabled}
       slotProps={{ ...slotProps, htmlInput: { ...(slotProps?.htmlInput as object), readOnly } }}

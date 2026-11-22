@@ -13,7 +13,7 @@ i18n.load({ en, vi });
 i18n.activate("en");
 
 function UsernameForm() {
-  // `_` changes on i18n.activate(); validationTranslation and translateProps come from setupForm
+  // `_` changes on i18n.activate(); validationTranslation comes from setupForm
   const { i18n, _ } = useLingui();
   return (
     <I18nForm

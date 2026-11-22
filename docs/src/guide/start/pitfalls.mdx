@@ -40,7 +40,7 @@ const [Form] = setupForm({
 
 ## i18n
 
-**11. Only `label`, `description` and error messages are translated.** Field `props` such as `placeholder` are passed through untouched unless listed in `i18nConfig.translateProps`.
+**11. Only `label`, `description`, `props.placeholder` and error messages are translated.** Other field `props` (`title`, `aria-label`, select options) are passed through untouched: translate them with your `t` where you build the config.
 
 **12. Every string label is treated as a translation key.** Wrap text that is not a key (e.g. from a database) as `{ text: "..." }` so `t` is skipped. See [i18n](../core/i18n.mdx).
 

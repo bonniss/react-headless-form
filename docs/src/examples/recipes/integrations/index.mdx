@@ -105,7 +105,7 @@ Render `Form` inside your kit's provider, as you would any component:
 />
 ```
 
-Labels are plain strings unless you add [i18n](../../../guide/core/i18n.mdx): with `i18nConfig.t`, labels, descriptions and error messages are translated. Use the field's `description` for help text (translated, read with `useField().description`); `i18nConfig.translateProps` translates the library's own text props such as `placeholder` or MUI `helperText`.
+Labels are plain strings unless you add [i18n](../../../guide/core/i18n.mdx): with `i18nConfig.t`, labels, descriptions, placeholders and error messages are translated. Use the field's `description` for help text (translated, read with `useField().description`) and pass it to the library's prop, e.g. Mantine `description` or MUI `helperText`.
 
 ## Ready-made: 12 libraries {#live-demos}
 
@@ -131,7 +131,7 @@ The same registration form, built with each library. Each is a starting point fo
 - **`form.tsx`**: `setupForm` and the config. It imports `useT` and `FORM_ID` from the docs' demo stage: use your own i18n hook and drop the form `id`.
 - **Not needed in your app**: `main.tsx` and `docs/integrations/shared/*` (language switch, header submit button, error list, payload drawer).
 
-The demos render `Form` with `i18nConfig` (`t`, `validationTranslation`, `translateProps: ["placeholder", "description", "helperText"]`) and `formOptions={{ shouldUnregister: true }}`, which drops hidden fields from the payload. With arrays, read [pitfall 14](../../../guide/start/pitfalls.mdx) before keeping `shouldUnregister`.
+The demos render `Form` with `i18nConfig` (`t`, `validationTranslation`) and `formOptions={{ shouldUnregister: true }}`, which drops hidden fields from the payload. With arrays, read [pitfall 14](../../../guide/start/pitfalls.mdx) before keeping `shouldUnregister`.
 :::
 
 ## What the demo form shows

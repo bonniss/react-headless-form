@@ -103,7 +103,7 @@ For how to author field components, see [Field authoring](../field-authoring/).
 
 ## `i18nConfig`
 
-Translates labels, descriptions, error messages and listed props through one `t` function. Optional: if omitted, all text is shown as written. Put what is fixed here; a `<Form>` can pass its own `i18nConfig`, merged key by key over this one (_v0.22+_), usually just `t` when it changes with the language.
+Translates labels, descriptions, placeholders and error messages through one `t` function. Optional: if omitted, all text is shown as written. Put what is fixed here; a `<Form>` can pass its own `i18nConfig`, merged key by key over this one (_v0.22+_), usually just `t` when it changes with the language.
 
 ```ts
 i18nConfig: {
@@ -111,7 +111,6 @@ i18nConfig: {
     required: 'validation.required',
     minLength: 'validation.minLength',
   },
-  translateProps: ['placeholder'],
 }
 // a form: <Form i18nConfig={{ t }} ... />
 ```

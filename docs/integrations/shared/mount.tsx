@@ -154,9 +154,7 @@ export function mountDemo({ Form, buildConfig, defaultValues }: DemoForm, shells
               config={config}
               defaultValues={defaultValues}
               i18nConfig={{
-                t,
-                // these top-level props are i18n keys too; each library names them differently
-                translateProps: ['placeholder', 'description', 'helperText'],
+                t, // label, description and placeholder are keys
                 // `{field}` receives the translated label
                 validationTranslation: {
                   required: 'validation.required',
