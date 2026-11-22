@@ -1,35 +1,43 @@
 ---
 title: Integrations
-description: "The same form rendered with Mantine, shadcn/ui, Ant Design, Material UI and animal-island-ui: one shared config, one adapter file per library, live demos hosted with the docs."
+description: "One shared form config, five UI libraries (Mantine, shadcn/ui, Ant Design, Material UI, animal-island-ui): all form logic is written once; libraries differ only in a thin adapter layer."
 ---
 
 # Integrations
 
-BlueForm renders no UI of its own, so it works with **any React UI library**: a library is wired in by writing one small adapter per field type, each reading everything from `useField()`.
+BlueForm renders no UI of its own. **All form logic lives in one config**: rules, conditions, computed values, arrays, i18n. A UI library only provides the components that display it. Swapping libraries means rewriting a small adapter file, never the logic.
+
+import IntegrationDiagram from '../../../../components/IntegrationDiagram';
+import LogicVsUi from '../../../../components/LogicVsUi';
+
+<IntegrationDiagram />
 
 ## Live demos
 
-Each demo below renders **the same form config** with a different library. Only `fields.tsx` changes. They are built from [`docs/integrations`](https://github.com/bonniss/react-headless-form/tree/main/docs/integrations) together with these docs, and served from the docs site itself.
+Each demo renders **the same config** with a different library: [Mantine](./mantine.mdx) · [shadcn/ui](./shadcn.mdx) · [Ant Design](./antd.mdx) · [Material UI](./mui.mdx) · [animal-island-ui](./animal-island.mdx). They are built from [`docs/integrations`](https://github.com/bonniss/react-headless-form/tree/main/docs/integrations) with these docs and served from this site.
 
-| Library | Demo |
+In every demo: switch the language in the header, submit with the header button (it targets the form by `form="demo-form"`), click the error count to jump to a field, and read the submitted payload in the drawer, where computed values are tagged.
+
+## What each field shows
+
+| Field | Demonstrates |
 |---|---|
-| [Mantine](./mantine.mdx) | Mantine v8 |
-| [shadcn/ui](./shadcn.mdx) | Tailwind v4, shadcn-style primitives |
-| [Ant Design](./antd.mdx) | antd v6, `Form.Item` for layout only |
-| [Material UI](./mui.mdx) | MUI v7 |
-| [animal-island-ui](./animal-island.mdx) | a cozy island-style UI |
+| `name` | `required` with a translated message |
+| `slug` | editable computed value: follows the name until you edit it |
+| `email` | `pattern` rule |
+| `role` → `adminCode` | JSON condition `visible`; a hidden field is left out of the payload |
+| `role` → `bio` | JSON condition `disabled` |
+| `health.weight` / `height` → `bmi` → `bmiClass` | nested section, computes reading their section through `ctx.scope`, a computed chain |
+| `settings.*` | nested section with a checkbox and a select |
+| `lines` | array with `maxLength: 3`; required row fields, with each error on its own row (`lines.1.price`) |
+| `lines.*.total` → `subtotal` → `vat` → `grandTotal` | per-row computed values and an aggregate chain |
+| language switch | labels, option labels, validation messages (also those already shown) |
 
-Static recipes (no live demo yet): [Chakra UI](./chakra-ui.mdx), [PrimeReact](./prime-react.mdx), [Arco Design](./arco-design.mdx), [Semi Design](./semi-design.mdx), [TDesign](./tdesign.mdx), [React Native Web](./react-native-web.mdx).
+## One logic, UI-only differences
 
-## Sample form
+The numbers below are counted from the demo sources when the docs are built. Every rule, condition and computed value sits in the shared config, and **every adapter file has none**: what differs between libraries is only which component displays a value.
 
-The shared config shows most of the API in one form:
-
-- `rules` with translated messages (`required`, `pattern`)
-- JSON conditions: `adminCode` is **visible** only for admins, `bio` is **disabled** for viewers
-- computed fields: an editable `slug` from the name, a read-only `addressCount` aggregate
-- a nested `section` and an `array` field
-- i18n (English / 日本語): labels are translation keys resolved by `i18nConfig.t`
+<LogicVsUi />
 
 import { Tab, Tabs } from '@rspress/core/theme';
 
@@ -42,25 +50,13 @@ import { Tab, Tabs } from '@rspress/core/theme';
     ```ts file="../../../../integrations/shared/types.ts"
     ```
   </Tab>
-  <Tab label="shared/mount.tsx">
-    ```tsx file="../../../../integrations/shared/mount.tsx"
-    ```
-  </Tab>
 </Tabs>
 
-`shared/types.ts` is the contract every library's adapters implement: the same props for `text`, `longText`, `select` and `checkbox`, plus three layout shells (`Root`, `Section`, `AddressList`). That is why the config type-checks identically for all of them.
-
-## What changes, what doesn't
-
-|                           | Changes                                          | Stays the same                            |
-| ------------------------- | ------------------------------------------------ | ----------------------------------------- |
-| **Field components**      | UI library imports, prop names, event signatures | `useField` call, destructuring            |
-| **Section / array shell** | Layout component (`Card`, `Fieldset`, …)         | `render` prop pattern, `useArrayField`    |
-| **Form config**           | Nothing                                          | Everything (rules, conditions, computes)  |
+`shared/types.ts` is the contract every library implements: four field types (`text`, `longText`, `select`, `checkbox`) and the layout pieces (`Root`, `SubmitButton`, `LanguageSwitch`, `Section`, `LinesList`). The demo stage around them (header, error list, payload drawer) is shared too.
 
 ## Event signatures
 
-`onChange` from `useField()` accepts a value or a native event, but passing the value explicitly is clearer:
+`onChange` from `useField()` accepts a value or a native event; passing the value explicitly is clearer:
 
 | Library | Text input | Select | Boolean |
 |---|---|---|---|
@@ -76,10 +72,12 @@ import { Tab, Tabs } from '@rspress/core/theme';
 2. Map `value` to the library's value prop and call `onChange(value)` from its change handler.
 3. Wire `label`, `errorMessage`, `required`, `disabled`, `readOnly` and `id` (for label association).
 
+Recipes without a built demo: [Chakra UI](./chakra-ui.mdx), [PrimeReact](./prime-react.mdx), [Arco Design](./arco-design.mdx), [Semi Design](./semi-design.mdx), [TDesign](./tdesign.mdx), [React Native Web](./react-native-web.mdx).
+
 ## Validation libraries
 
-Any [Standard Schema](https://standardschema.dev) works directly with the `schema` prop, no resolver package needed: see [Zod](./zod.mdx), [Valibot](./valibot.mdx) and [ArkType](./arktype.mdx). Other libraries use a resolver through `formOptions.resolver`: see [Yup](./yup.mdx) and [Ajv](./ajv.mdx), and [Schema validation](../../../guide/core/schema-validation.mdx).
+Any [Standard Schema](https://standardschema.dev) works directly with the `schema` prop: [Zod](./zod.mdx), [Valibot](./valibot.mdx), [ArkType](./arktype.mdx). Other libraries use `formOptions.resolver`: [Yup](./yup.mdx), [Ajv](./ajv.mdx). See [Schema validation](../../../guide/core/schema-validation.mdx).
 
 ## Running the demos locally
 
-In `docs/`, `pnpm dev` starts the docs and the demos together (the demos on Vite, port 5180); `pnpm dev:docs` or `pnpm dev:demos` start only one of them. `pnpm build` builds both.
+In `docs/`, `pnpm dev` starts the docs and the demos together (the demos on Vite, port 5180); `pnpm dev:docs` or `pnpm dev:demos` start one of them. `pnpm build` builds both.

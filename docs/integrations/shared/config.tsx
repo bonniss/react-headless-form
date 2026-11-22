@@ -1,7 +1,9 @@
 import { defineMapping, setupForm } from 'react-headless-form'
-import type { createTranslator } from './i18n'
+import type { Translator } from './i18n'
 import { slugify } from './slugify'
 import type { Fields, Shells } from './types'
+
+type Line = { item: string; qty: string; price: string; total?: number }
 
 export type Profile = {
   name: string
@@ -10,43 +12,52 @@ export type Profile = {
   role: 'admin' | 'editor' | 'viewer'
   adminCode?: string
   bio?: string
+  health: { weight: string; height: string; bmi?: number; bmiClass?: string }
   settings: { newsletter: boolean; theme: 'light' | 'dark' }
-  addresses: { street: string; city: string }[]
-  addressCount: number
+  lines: Line[]
+  subtotal?: number
+  vat?: number
+  grandTotal?: number
 }
 
 export const defaultValues: Partial<Profile> = {
   role: 'viewer',
+  health: { weight: '', height: '' },
   settings: { newsletter: true, theme: 'light' },
-  addresses: [{ street: '', city: '' }],
+  lines: [{ item: 'Coffee', qty: '2', price: '35000' }],
 }
+
+/** Paths of computed fields, highlighted in the submitted payload. */
+export const computedPaths = ['slug', 'health.bmi', 'health.bmiClass', 'lines.*.total', 'subtotal', 'vat', 'grandTotal']
+
+export const MAX_LINES = 3
+
+const num = (value: unknown) => (value === '' || value == null ? undefined : Number(value))
 
 /**
  * The same form for every UI library: only `fields` and `shells` change.
- * It shows rules, JSON conditions (visible / disabled), computed fields, a
- * nested section, an array field and i18n.
+ * Every rule, condition and computed value below is shared logic.
  */
-export function createDemoForm(fields: Fields, { Root, Section, AddressList }: Shells) {
+export function createDemoForm(fields: Fields, { Root, Section, LinesList }: Shells) {
   const [Form, defineConfig] = setupForm({
-    renderRoot: ({ children, onSubmit }) => <Root onSubmit={onSubmit}>{children}</Root>,
+    renderRoot: ({ children, onSubmit }) => (
+      <Root id="demo-form" onSubmit={onSubmit}>
+        {children}
+      </Root>
+    ),
     fieldMapping: defineMapping(fields),
   })
 
-  /**
-   * Labels are translation keys, resolved by the form's i18nConfig.t. Option
-   * labels live inside `props`, so they are translated here with the same t.
-   */
-  const buildConfig = (t: ReturnType<typeof createTranslator>) =>
+  // Labels are translation keys resolved by i18nConfig.t; option labels live
+  // in `props`, so they are translated here with the same t.
+  const buildConfig = (t: Translator) =>
     defineConfig<Profile>({
+      // required + translated message
       name: { type: 'text', label: 'field.name', rules: { required: true } },
       // computed, editable: follows the name until the user edits it
       slug: { type: 'text', label: 'field.slug', compute: v => slugify(v.name ?? '') },
-      email: {
-        type: 'text',
-        label: 'field.email',
-        props: { type: 'email' },
-        rules: { pattern: '^\\S+@\\S+\\.\\S+$' },
-      },
+      // pattern rule
+      email: { type: 'text', label: 'field.email', props: { type: 'email' }, rules: { pattern: '^\\S+@\\S+\\.\\S+$' } },
       role: {
         type: 'select',
         label: 'field.role',
@@ -58,19 +69,48 @@ export function createDemoForm(fields: Fields, { Root, Section, AddressList }: S
           ],
         },
       },
-      // JSON condition: shown only to admins (and dropped from the payload otherwise)
+      // JSON condition `visible`: admins only, and left out of the payload when hidden
       adminCode: {
         type: 'text',
         label: 'field.adminCode',
         visible: { when: 'role', eq: 'admin' },
         rules: { required: true },
       },
-      // JSON condition: viewers cannot edit their bio
-      bio: {
-        type: 'longText',
-        label: 'field.bio',
-        disabled: { when: 'role', eq: 'viewer' },
-        props: { rows: 3 },
+      // JSON condition `disabled`: viewers cannot edit their bio
+      bio: { type: 'longText', label: 'field.bio', disabled: { when: 'role', eq: 'viewer' }, props: { rows: 2 } },
+      // nested section: computes read their own section through ctx.scope
+      health: {
+        type: 'section',
+        label: 'field.health',
+        render: ({ label, children }) => <Section title={label}>{children}</Section>,
+        props: {
+          nested: true,
+          config: {
+            weight: { type: 'text', label: 'field.weight', props: { type: 'number' } },
+            height: { type: 'text', label: 'field.height', props: { type: 'number' } },
+            bmi: {
+              type: 'text',
+              label: 'field.bmi',
+              readOnly: true,
+              compute: (_, { scope }) => {
+                const w = num(scope?.weight)
+                const h = num(scope?.height)
+                return w && h ? Math.round((w / (h / 100) ** 2) * 10) / 10 : undefined
+              },
+            },
+            // computed from a computed field; a language-neutral code, as data should be
+            bmiClass: {
+              type: 'text',
+              label: 'field.bmiClass',
+              readOnly: true,
+              compute: (_, { scope }) => {
+                const bmi = num(scope?.bmi)
+                if (bmi === undefined) return undefined
+                return bmi < 18.5 ? 'underweight' : bmi < 23 ? 'normal' : bmi < 25 ? 'overweight' : 'obese'
+              },
+            },
+          },
+        },
       },
       settings: {
         type: 'section',
@@ -93,23 +133,40 @@ export function createDemoForm(fields: Fields, { Root, Section, AddressList }: S
           },
         },
       },
-      addresses: {
+      // array: at most MAX_LINES rows; each row's fields are required (errors
+      // land on the exact row) and its total is computed from the row
+      lines: {
         type: 'array',
-        label: 'field.addresses',
-        render: () => <AddressList />,
+        label: 'field.lines',
+        rules: { maxLength: MAX_LINES },
+        render: () => <LinesList />,
         props: {
           config: {
-            street: { type: 'text', label: 'field.street' },
-            city: { type: 'text', label: 'field.city' },
+            item: { type: 'text', label: 'field.item', rules: { required: true } },
+            qty: { type: 'text', label: 'field.qty', props: { type: 'number' }, rules: { required: true } },
+            price: { type: 'text', label: 'field.price', props: { type: 'number' }, rules: { required: true } },
+            total: {
+              type: 'text',
+              label: 'field.total',
+              readOnly: true,
+              compute: (_, { scope }) => (num(scope?.qty) ?? 0) * (num(scope?.price) ?? 0),
+            },
           },
         },
       },
-      // computed, read-only: an aggregate of the array
-      addressCount: {
+      // aggregates: computed from computed row totals, chained
+      subtotal: {
         type: 'text',
-        label: 'field.addressCount',
+        label: 'field.subtotal',
         readOnly: true,
-        compute: v => v.addresses?.length ?? 0,
+        compute: v => (v.lines ?? []).reduce((sum, line) => sum + (line.total ?? 0), 0),
+      },
+      vat: { type: 'text', label: 'field.vat', readOnly: true, compute: v => Math.round((v.subtotal ?? 0) * 0.1) },
+      grandTotal: {
+        type: 'text',
+        label: 'field.grandTotal',
+        readOnly: true,
+        compute: v => (v.subtotal ?? 0) + (v.vat ?? 0),
       },
     })
 

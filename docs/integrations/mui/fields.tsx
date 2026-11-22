@@ -1,14 +1,4 @@
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Checkbox,
-  FormControlLabel,
-  MenuItem,
-  Stack,
-  TextField as MuiTextField,
-} from '@mui/material'
+import { Box, Button, Card, CardContent, CardHeader, Checkbox, FormControlLabel, MenuItem, Stack, TextField as MuiTextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import { useArrayField, useField } from 'react-headless-form'
 import type {
   CheckboxFieldProps,
@@ -78,15 +68,10 @@ export const fields: Fields = {
 }
 
 export const shells: Shells = {
-  LanguageButton: ({ active, onClick, children }) => (
-    <Button size="small" variant={active ? 'contained' : 'outlined'} aria-pressed={active} onClick={onClick}>
-      {children}
-    </Button>
-  ),
-  Root: ({ children, onSubmit }) => {
+  Root: ({ id, children, onSubmit }) => {
     const t = useT()
     return (
-      <form onSubmit={onSubmit}>
+      <form id={id} onSubmit={onSubmit} noValidate>
         <Stack spacing={2}>
           {children}
           <Button type="submit" variant="contained">
@@ -96,6 +81,20 @@ export const shells: Shells = {
       </form>
     )
   },
+  SubmitButton: ({ form, children }) => (
+    <Button type="submit" form={form} variant="contained" size="small">
+      {children}
+    </Button>
+  ),
+  LanguageSwitch: ({ value, options, onChange }) => (
+    <ToggleButtonGroup size="small" exclusive value={value} onChange={(_, next) => next && onChange(next)}>
+      {options.map(option => (
+        <ToggleButton key={option.value} value={option.value}>
+          {option.label}
+        </ToggleButton>
+      ))}
+    </ToggleButtonGroup>
+  ),
   Section: ({ title, children }) => (
     <Card variant="outlined">
       <CardHeader title={title} titleTypographyProps={{ variant: 'subtitle1' }} />
@@ -104,24 +103,29 @@ export const shells: Shells = {
       </CardContent>
     </Card>
   ),
-  AddressList: () => {
+  LinesList: () => {
     const t = useT()
-    const { label, items, renderItem, append, remove } = useArrayField()
+    const { label, items, renderItem, append, remove, errorMessage } = useArrayField()
     return (
       <Card variant="outlined">
         <CardHeader title={label} titleTypographyProps={{ variant: 'subtitle1' }} />
         <CardContent>
           <Stack spacing={2}>
             {items.map((item, index) => (
-              <Stack key={item.id} direction="row" spacing={1} alignItems="center">
-                {renderItem(item, index)}
-                <Button color="error" onClick={() => remove(index)}>
+              <Card key={item.id} variant="outlined" sx={{ p: 1.5 }}>
+                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>{renderItem(item, index)}</Box>
+                <Button color="error" size="small" onClick={() => remove(index)}>
                   {t('action.remove')}
                 </Button>
-              </Stack>
+              </Card>
             ))}
-            <Button variant="outlined" onClick={() => append({ street: '', city: '' })}>
-              {t('action.add')}
+            {errorMessage && (
+              <Typography color="error" variant="body2">
+                {errorMessage}
+              </Typography>
+            )}
+            <Button variant="outlined" onClick={() => append({ item: '', qty: '1', price: '' })}>
+              {t('action.addLine')}
             </Button>
           </Stack>
         </CardContent>

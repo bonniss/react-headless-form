@@ -100,48 +100,59 @@ export const fields: Fields = {
 }
 
 export const shells: Shells = {
-  LanguageButton: ({ active, onClick, children }) => (
-    <Button
-      type="button"
-      variant={active ? 'default' : 'outline'}
-      className="h-8 px-3"
-      aria-pressed={active}
-      onClick={onClick}
-    >
-      {children}
-    </Button>
-  ),
-  Root: ({ children, onSubmit }) => {
+  Root: ({ id, children, onSubmit }) => {
     const t = useT()
     return (
-      <form onSubmit={onSubmit} className="grid gap-4">
+      <form id={id} onSubmit={onSubmit} noValidate className="grid gap-4">
         {children}
         <Button type="submit">{t('action.save')}</Button>
       </form>
     )
   },
+  SubmitButton: ({ form, children }) => (
+    <Button type="submit" form={form} className="h-8 px-3">
+      {children}
+    </Button>
+  ),
+  LanguageSwitch: ({ value, options, onChange }) => (
+    <div className="inline-flex gap-1 rounded-lg border border-zinc-200 bg-white p-1">
+      {options.map(option => (
+        <Button
+          key={option.value}
+          type="button"
+          variant={option.value === value ? 'default' : 'outline'}
+          className="h-7 px-3"
+          aria-pressed={option.value === value}
+          onClick={() => onChange(option.value)}
+        >
+          {option.label}
+        </Button>
+      ))}
+    </div>
+  ),
   Section: ({ title, children }) => (
     <Card>
       <CardTitle>{title}</CardTitle>
       {children}
     </Card>
   ),
-  AddressList: () => {
+  LinesList: () => {
     const t = useT()
-    const { label, items, renderItem, append, remove } = useArrayField()
+    const { label, items, renderItem, append, remove, errorMessage } = useArrayField()
     return (
       <Card>
         <CardTitle>{label}</CardTitle>
         {items.map((item, index) => (
-          <div key={item.id} className="flex items-end gap-2 [&>div]:flex-1">
-            {renderItem(item, index)}
-            <Button type="button" variant="ghost" onClick={() => remove(index)}>
+          <div key={item.id} className="grid gap-2 rounded-lg border border-zinc-200 p-3">
+            <div className="grid grid-cols-2 gap-2">{renderItem(item, index)}</div>
+            <Button type="button" variant="ghost" className="h-8 justify-self-start px-2" onClick={() => remove(index)}>
               {t('action.remove')}
             </Button>
           </div>
         ))}
-        <Button type="button" variant="outline" onClick={() => append({ street: '', city: '' })}>
-          {t('action.add')}
+        {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
+        <Button type="button" variant="outline" onClick={() => append({ item: '', qty: '1', price: '' })}>
+          {t('action.addLine')}
         </Button>
       </Card>
     )

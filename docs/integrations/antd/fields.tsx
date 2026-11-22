@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, Flex, Form, Input, Select } from 'antd'
+import { Button, Card, Checkbox, Flex, Form, Input, Segmented, Select, Typography } from 'antd'
 import { useArrayField, useField } from 'react-headless-form'
 import type {
   CheckboxFieldProps,
@@ -99,15 +99,10 @@ export const fields: Fields = {
 }
 
 export const shells: Shells = {
-  LanguageButton: ({ active, onClick, children }) => (
-    <Button size="small" type={active ? 'primary' : 'default'} aria-pressed={active} onClick={onClick}>
-      {children}
-    </Button>
-  ),
-  Root: ({ children, onSubmit }) => {
+  Root: ({ id, children, onSubmit }) => {
     const t = useT()
     return (
-      <form onSubmit={onSubmit}>
+      <form id={id} onSubmit={onSubmit} noValidate>
         {children}
         <Button type="primary" htmlType="submit">
           {t('action.save')}
@@ -115,26 +110,35 @@ export const shells: Shells = {
       </form>
     )
   },
+  SubmitButton: ({ form, children }) => (
+    <Button type="primary" htmlType="submit" form={form} size="small">
+      {children}
+    </Button>
+  ),
+  LanguageSwitch: ({ value, options, onChange }) => (
+    <Segmented size="small" value={value} options={options} onChange={next => onChange(String(next))} />
+  ),
   Section: ({ title, children }) => (
     <Card title={title} size="small" style={{ marginBottom: 12 }}>
       {children}
     </Card>
   ),
-  AddressList: () => {
+  LinesList: () => {
     const t = useT()
-    const { label, items, renderItem, append, remove } = useArrayField()
+    const { label, items, renderItem, append, remove, errorMessage } = useArrayField()
     return (
       <Card title={label} size="small" style={{ marginBottom: 12 }}>
         {items.map((item, index) => (
-          <Flex key={item.id} gap={8} align="center">
-            <div style={{ flex: 1, display: 'flex', gap: 8 }}>{renderItem(item, index)}</div>
-            <Button danger type="text" onClick={() => remove(index)}>
+          <Card key={item.id} size="small" style={{ marginBottom: 8 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: 8 }}>{renderItem(item, index)}</div>
+            <Button danger type="link" size="small" onClick={() => remove(index)}>
               {t('action.remove')}
             </Button>
-          </Flex>
+          </Card>
         ))}
-        <Button type="dashed" block onClick={() => append({ street: '', city: '' })}>
-          {t('action.add')}
+        {errorMessage && <Typography.Text type="danger">{errorMessage}</Typography.Text>}
+        <Button type="dashed" block onClick={() => append({ item: '', qty: '1', price: '' })}>
+          {t('action.addLine')}
         </Button>
       </Card>
     )

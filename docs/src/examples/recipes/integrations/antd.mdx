@@ -6,7 +6,7 @@ outline: false
 
 # Ant Design
 
-The [shared sample form](./index.mdx#sample-form) (rules, a JSON condition, a computed slug, a nested section and an array) rendered with Ant Design. Only the field adapters below are library-specific.
+The [shared demo form](./index.mdx#what-each-field-shows) (rules, JSON conditions, computed values, nested sections, an invoice array with per-row errors, i18n) rendered with Ant Design. Only the adapters below are library-specific; the logic is in [`shared/config.tsx`](./index.mdx#one-logic-ui-only-differences).
 
 - `Form.Item` is used for **layout only** (label, help, status); values and errors come from `useField()`, so no antd `Form` instance is involved.
 - `Select` passes the value to `onChange`; `Input` / `Checkbox` pass events.

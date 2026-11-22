@@ -91,15 +91,10 @@ export const fields: Fields = {
 }
 
 export const shells: Shells = {
-  LanguageButton: ({ active, onClick, children }) => (
-    <Button size="small" type={active ? 'primary' : 'default'} aria-pressed={active} onClick={onClick}>
-      {children}
-    </Button>
-  ),
-  Root: ({ children, onSubmit }) => {
+  Root: ({ id, children, onSubmit }) => {
     const t = useT()
     return (
-      <form onSubmit={onSubmit} style={stack}>
+      <form id={id} onSubmit={onSubmit} noValidate style={stack}>
         {children}
         <Button type="primary" htmlType="submit">
           {t('action.save')}
@@ -107,6 +102,26 @@ export const shells: Shells = {
       </form>
     )
   },
+  SubmitButton: ({ form, children }) => (
+    <Button type="primary" htmlType="submit" form={form} size="small">
+      {children}
+    </Button>
+  ),
+  LanguageSwitch: ({ value, options, onChange }) => (
+    <div style={{ display: 'flex', gap: 6 }}>
+      {options.map(option => (
+        <Button
+          key={option.value}
+          size="small"
+          type={option.value === value ? 'primary' : 'default'}
+          aria-pressed={option.value === value}
+          onClick={() => onChange(option.value)}
+        >
+          {option.label}
+        </Button>
+      ))}
+    </div>
+  ),
   Section: ({ title, children }) => (
     <Card color="app-blue" style={stack}>
       <Title size="small" color="app-blue">
@@ -115,24 +130,25 @@ export const shells: Shells = {
       {children}
     </Card>
   ),
-  AddressList: () => {
+  LinesList: () => {
     const t = useT()
-    const { label, items, renderItem, append, remove } = useArrayField()
+    const { label, items, renderItem, append, remove, errorMessage } = useArrayField()
     return (
       <Card color="app-yellow" style={stack}>
         <Title size="small" color="app-yellow">
           {label}
         </Title>
         {items.map((item, index) => (
-          <div key={item.id} style={{ display: 'flex', gap: 8, alignItems: 'end' }}>
-            {renderItem(item, index)}
-            <Button type="text" onClick={() => remove(index)}>
+          <Card key={item.id} type="dashed" style={stack}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>{renderItem(item, index)}</div>
+            <Button type="text" size="small" onClick={() => remove(index)}>
               {t('action.remove')}
             </Button>
-          </div>
+          </Card>
         ))}
-        <Button type="dashed" onClick={() => append({ street: '', city: '' })}>
-          {t('action.add')}
+        {errorMessage && <span style={{ color: '#d9534f', fontSize: 13 }}>{errorMessage}</span>}
+        <Button type="dashed" onClick={() => append({ item: '', qty: '1', price: '' })}>
+          {t('action.addLine')}
         </Button>
       </Card>
     )
