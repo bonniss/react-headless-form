@@ -1,63 +1,38 @@
 ---
 title: PrimeReact
-description: Wire PrimeReact inputs (InputText, Dropdown, Checkbox…) to BlueForm field types with useField.
+description: "PrimeReact v10 inputs wired to BlueForm field types with useField; live demo built from the repo."
 outline: false
 ---
 
-:::info
-This recipe is not built with the docs yet: its snippets are not checked in CI, and its demo (if any) is an external StackBlitz project. See [Integrations](./index.mdx) for the demos built and tested with the docs.
-:::
-This recipe demonstrates how to wire [PrimeReact](https://primereact.org/) components with BlueForm.
+# PrimeReact
 
-Each field type is a small component that reads everything from `useField()` and forwards it to the library's input. The form config, `setupForm` and submit logic are the same as in every other recipe. Type the adapter's props with [`AdapterProps`](../../../guide/core/field-authoring/use-field.mdx#typing-an-adapters-props), so a config's `props` takes the library's own props; see [Integrations](./index.mdx) for the live demos and the event-signature notes.
+The [registration form demo](./index.mdx#live-demos) written with PrimeReact, self-contained:
 
-## Text field adapter
+- `form.tsx`: `setupForm` (with a `renderRoot` for the title and layout) and the config. `props` use PrimeReact's own API, typed by its components.
+- `fields.tsx`: the adapters, typed with PrimeReact's own props through `AdapterProps`.
+- `main.tsx`: mounts it in the demo stage (header, payload drawer).
 
-```tsx
-import { InputText, type InputTextProps } from "primereact/inputtext"
-import { type AdapterProps, useField } from "react-headless-form"
+- `Dropdown` and `Checkbox` pass `e.value` / `e.checked`, not the DOM event.
+- Import a theme (`primereact/resources/themes/lara-light-blue/theme.css`) and wrap the app in `PrimeReactProvider`.
+- PrimeReact v11 is a different, unstyled primitives library; this demo uses v10.
 
-// PrimeReact's InputText props minus what useField() controls, and `id` / `invalid` set below
-export type TextFieldProps = AdapterProps<InputTextProps, "id" | "invalid">
+import { Tab, Tabs } from '@rspress/core/theme';
+import LiveDemo from '../../../../components/LiveDemo';
 
-export function TextField(props: TextFieldProps) {
-  const { id, value, onChange, onBlur, label, errorMessage, required, disabled, readOnly } = useField()
-  return (
-    <div className="flex flex-column gap-2">
-      <label htmlFor={id}>
-        {label} {required && "*"}
-      </label>
-      <InputText
-        {...props}
-        id={id}
-        disabled={disabled}
-        readOnly={readOnly}
-        invalid={Boolean(errorMessage)}
-        value={value ?? ""}
-        onChange={(e) => onChange?.(e.target.value)}
-        onBlur={onBlur}
-      />
-      {errorMessage && <small className="p-error">{errorMessage}</small>}
-    </div>
-  )
-}
-```
-
-Register it in `setupForm`:
-
-```tsx
-export const [Form, defineConfig] = setupForm({
-  fieldMapping: defineMapping({ text: TextField }),
-  renderRoot: ({ children, onSubmit }) => <form onSubmit={onSubmit}>{children}</form>,
-})
-```
-
-## Full example
-
-The live demo below contains the complete set of fields (`text`, `longText`, `select`, `checkbox`), a nested section and an array field.
-
-<iframe
-  src="https://stackblitz.com/edit/vitejs-vite-bbjm4u1k?ctl=1&embed=1&file=index.html&hideNavigation=1&view=preview"
-  style={{ width: '100%', height: '500px', border: '0', borderRadius: '8px', overflow: 'hidden' }}
-  title="react-headless-form-demo"
-></iframe>
+<Tabs>
+  <Tab label="Live demo">
+    <LiveDemo lib="prime-react" />
+  </Tab>
+  <Tab label="form.tsx">
+    ```tsx file="../../../../integrations/prime-react/form.tsx"
+    ```
+  </Tab>
+  <Tab label="fields.tsx">
+    ```tsx file="../../../../integrations/prime-react/fields.tsx"
+    ```
+  </Tab>
+  <Tab label="main.tsx">
+    ```tsx file="../../../../integrations/prime-react/main.tsx"
+    ```
+  </Tab>
+</Tabs>

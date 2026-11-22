@@ -13,7 +13,7 @@ import type { DemoForm, Shells } from './types'
 
 type Options = {
   /** Library provider / theme around the demo (e.g. MantineProvider). */
-  Wrapper?: ComponentType<{ children: ReactNode }>
+  Wrapper?: ComponentType<{ children: ReactNode; lang: Lang }>
 }
 
 /** Each library's form.tsx renders `<form id={FORM_ID}>`, so the header button can submit it. */
@@ -21,7 +21,7 @@ export const FORM_ID = 'demo-form'
 /** Highlighted in the payload drawer. */
 const computedPaths = ['total']
 
-const Passthrough = ({ children }: { children: ReactNode }) => <>{children}</>
+const Passthrough = ({ children }: { children: ReactNode; lang: Lang }) => <>{children}</>
 
 type FieldError = { path: string; message: string }
 
@@ -106,6 +106,14 @@ export function mountDemo({ Form, buildConfig, defaultValues }: DemoForm, shells
       if (formRef.current && errorList.length) void formRef.current.trigger(errorList.map(e => e.path) as never)
     }, [t])
 
+    const onValid = (data: Record<string, unknown>) => {
+      setPayload(data)
+      setDrawerOpen(true)
+    }
+    const onInvalid = () => setShowErrors(true)
+    // for forms without a <form> element (React Native Web)
+    const submit = () => void formRef.current?.handleSubmit(onValid, onInvalid)()
+
     const focus = (path: string) => {
       setShowErrors(false)
       try {
@@ -117,7 +125,7 @@ export function mountDemo({ Form, buildConfig, defaultValues }: DemoForm, shells
 
     return (
       <TranslatorContext.Provider value={t}>
-        <Wrapper>
+        <Wrapper lang={lang}>
           <header style={header}>
             <LanguageSwitch value={lang} options={languageOptions} onChange={value => setLang(value as Lang)} />
             <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
@@ -131,7 +139,7 @@ export function mountDemo({ Form, buildConfig, defaultValues }: DemoForm, shells
                 </button>
               ) : null}
             </div>
-            <SubmitButton form={FORM_ID}>{t('action.save')}</SubmitButton>
+            <SubmitButton form={FORM_ID} onSubmit={submit}>{t('action.save')}</SubmitButton>
             {showErrors && errorList.length > 0 && (
               <ul data-testid="error-list" style={popover}>
                 {errorList.map(error => (
@@ -164,11 +172,8 @@ export function mountDemo({ Form, buildConfig, defaultValues }: DemoForm, shells
               }}
               // hidden fields (studentId, billing) leave the payload
               formOptions={{ shouldUnregister: true }}
-              onSubmit={(data: Record<string, unknown>) => {
-                setPayload(data)
-                setDrawerOpen(true)
-              }}
-              onInvalid={() => setShowErrors(true)}
+              onSubmit={onValid}
+              onInvalid={onInvalid}
             >
               <ErrorsBridge onChange={setErrorList} />
             </Form>

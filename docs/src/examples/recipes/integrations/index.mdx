@@ -1,6 +1,6 @@
 ---
 title: Integrations
-description: "One shared form logic, five UI libraries (Mantine, shadcn/ui, Ant Design, Material UI, animal-island-ui): logic is written once; each library's config passes its own component props, typed by that library."
+description: "The same registration form for eleven UI libraries (Mantine, shadcn/ui, Ant Design, Material UI, animal-island-ui, Chakra UI, PrimeReact, Arco, Semi, TDesign, React Native Web), each config passing the library's own component props, typed by that library."
 ---
 
 # Integrations
@@ -13,7 +13,7 @@ import IntegrationDiagram from '../../../../components/IntegrationDiagram';
 
 ## Live demos
 
-The same registration form, written for each library: [Mantine](./mantine.mdx) · [shadcn/ui](./shadcn.mdx) · [Ant Design](./antd.mdx) · [Material UI](./mui.mdx) · [animal-island-ui](./animal-island.mdx). Each demo is self-contained: copy its `fields.tsx` (adapters) and `form.tsx` (setup and config) into your app. Sources: [`docs/integrations`](https://github.com/bonniss/react-headless-form/tree/main/docs/integrations).
+The same registration form, written for each library: [Mantine](./mantine.mdx) · [shadcn/ui](./shadcn.mdx) · [Ant Design](./antd.mdx) · [Material UI](./mui.mdx) · [animal-island-ui](./animal-island.mdx) · [Chakra UI](./chakra-ui.mdx) · [PrimeReact](./prime-react.mdx) · [Arco Design](./arco-design.mdx) · [Semi Design](./semi-design.mdx) · [TDesign](./tdesign.mdx) · [React Native Web](./react-native-web.mdx). Each demo is self-contained: copy its `fields.tsx` (adapters) and `form.tsx` (setup and config) into your app. Sources: [`docs/integrations`](https://github.com/bonniss/react-headless-form/tree/main/docs/integrations).
 
 In every demo: switch the language in the header, submit with the header button (`form="demo-form"`), click the error count to jump to a field, and read the submitted payload in the drawer.
 
@@ -81,6 +81,12 @@ Text props such as `placeholder` are translated when listed in `i18nConfig.trans
 | Ant Design | event → `e.target.value` | value | event → `e.target.checked` |
 | Material UI | event → `e.target.value` | event (`TextField select`) | event → `e.target.checked` |
 | animal-island-ui | event → `e.target.value` | key (options use `key`) | `Switch` → checked |
+| Chakra UI | event → `e.target.value` | event (`NativeSelect`) | `onCheckedChange` → `{ checked }` |
+| PrimeReact | event → `e.target.value` | `Dropdown` → `e.value` | `e.checked` |
+| Arco Design | value | value | value |
+| Semi Design | value (event second) | value | event → `e.target.checked` |
+| TDesign | value | value | value |
+| React Native Web | `onChangeText` → text | (no native select) | `Switch` `onValueChange` → value |
 
 ## Bring your own library
 
@@ -88,7 +94,6 @@ Text props such as `placeholder` are translated when listed in `i18nConfig.trans
 2. Map `value` to the library's value prop and call `onChange(value)` from its change handler.
 3. Wire `label`, `errorMessage`, `required`, `disabled`, `readOnly` and `id` (for label association).
 
-Recipes without a built demo: [Chakra UI](./chakra-ui.mdx), [PrimeReact](./prime-react.mdx), [Arco Design](./arco-design.mdx), [Semi Design](./semi-design.mdx), [TDesign](./tdesign.mdx), [React Native Web](./react-native-web.mdx).
 
 ## Validation libraries
 

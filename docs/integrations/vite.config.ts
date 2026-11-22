@@ -8,12 +8,26 @@ import { defineConfig } from 'vite'
  * library). Output goes to doc_build/demos and is embedded in the docs with
  * same-origin iframes, so each library's CSS stays in its own page.
  */
-const pages = ['mantine', 'shadcn', 'antd', 'mui', 'animal-island']
+const pages = [
+  'mantine',
+  'shadcn',
+  'antd',
+  'mui',
+  'animal-island',
+  'chakra-ui',
+  'prime-react',
+  'arco-design',
+  'semi-design',
+  'tdesign',
+  'react-native-web',
+]
 
 export default defineConfig({
   root: __dirname,
   base: '/react-headless-form/demos/',
   plugins: [react(), tailwindcss()],
+  // React Native components on the web
+  resolve: { alias: { 'react-native': 'react-native-web' } },
   server: { port: 5180 },
   build: {
     outDir: resolve(__dirname, '../doc_build/demos'),

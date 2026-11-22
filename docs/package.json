@@ -12,6 +12,9 @@
     "dev:docs": "node scripts/sync-version.mjs && rspress dev"
   },
   "dependencies": {
+    "@arco-design/web-react": "^2.66.18",
+    "@chakra-ui/react": "^3.38.0",
+    "@douyinfe/semi-ui-19": "^2.105.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@hookform/devtools": "^4.4.0",
@@ -24,9 +27,12 @@
     "antd": "^6.7.1",
     "arktype": "^2.2.10",
     "i18next": "^25.8.17",
+    "primereact": "^10.9.9",
     "react-headless-form": "^0.18.0",
     "react-hook-form": "^7.71.2",
     "react-i18next": "^16.5.6",
+    "react-native-web": "^0.21.4",
+    "tdesign-react": "^1.18.6",
     "valibot": "^1.5.0",
     "zod": "^4.6.7"
   },
@@ -36,6 +42,7 @@
     "@types/node": "^22.8.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/react-native-web": "^0.19.3",
     "@vitejs/plugin-react": "^4.7.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

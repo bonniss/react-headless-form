@@ -5,7 +5,7 @@ import { useId } from 'react'
  * library, whose own props the config passes. Colors come from the docs theme
  * variables, so the diagram follows light and dark mode.
  */
-const libs = ['Mantine', 'shadcn/ui', 'Ant Design', 'Material UI', 'animal-island-ui']
+const libs = ['Mantine', 'shadcn/ui', 'Ant Design', 'Material UI', '+ 7 more']
 const logic = ['labels · i18n', 'rules', 'JSON conditions', 'computed values', 'props (typed)']
 
 const text = 'var(--rp-c-text-1)'
@@ -21,7 +21,7 @@ export default function IntegrationDiagram() {
     <svg
       viewBox="0 0 720 350"
       role="img"
-      aria-label="A form config (labels, rules, conditions, computed values, typed props) connected through fieldMapping adapters to five UI libraries"
+      aria-label="A form config (labels, rules, conditions, computed values, typed props) connected through fieldMapping adapters to eleven UI libraries"
       style={{ width: '100%', height: 'auto', maxWidth: 760, margin: '16px 0' }}
       fontFamily="inherit"
     >

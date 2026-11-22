@@ -13,8 +13,11 @@ export type DemoForm = {
 
 /** The demo stage's controls, drawn with the library's own components. */
 export type Shells = {
-  /** A submit button bound to the form by id (used in the header). */
-  SubmitButton: ComponentType<{ form: string; children: ReactNode }>
+  /**
+   * The header's submit button. DOM libraries bind it to the form with
+   * `form={form}`; React Native (no <form>) calls `onSubmit` instead.
+   */
+  SubmitButton: ComponentType<{ form: string; onSubmit: () => void; children: ReactNode }>
   /** Render prop for the language toggle, with the library's own control. */
   LanguageSwitch: ComponentType<{ value: string; options: LanguageOption[]; onChange: (value: string) => void }>
 }

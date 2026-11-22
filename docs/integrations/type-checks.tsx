@@ -3,6 +3,12 @@
  * library's own component props. Every `@ts-expect-error` below must fail to
  * compile; `tsc -p integrations` (run by the docs build) reports an unused one.
  */
+import { defineConfig as arcoConfig } from './arco-design/form'
+import { defineConfig as chakraConfig } from './chakra-ui/form'
+import { defineConfig as primeConfig } from './prime-react/form'
+import { defineConfig as rnwConfig } from './react-native-web/form'
+import { defineConfig as semiConfig } from './semi-design/form'
+import { defineConfig as tdesignConfig } from './tdesign/form'
 import { defineConfig as animalIslandConfig } from './animal-island/form'
 import { defineConfig as antdConfig } from './antd/form'
 import { defineConfig as mantineConfig } from './mantine/form'
@@ -44,3 +50,18 @@ animalIslandConfig<Model>({
   // @ts-expect-error animal-island-ui options use `key`, not `value`
   role: { type: 'select', props: { options: [{ value: 'a', label: 'A' }] } },
 })
+
+// A prop the adapter sets itself (AdapterProps' second argument) is rejected too
+type Email = { email: string }
+// @ts-expect-error Chakra: `value` comes from useField()
+chakraConfig<Email>({ email: { type: 'text', props: { value: 'x' } } })
+// @ts-expect-error PrimeReact: the adapter sets `invalid` from the error
+primeConfig<Email>({ email: { type: 'text', props: { invalid: true } } })
+// @ts-expect-error Arco: the adapter sets `status` from the error
+arcoConfig<Email>({ email: { type: 'text', props: { status: 'error' } } })
+// @ts-expect-error Semi: the adapter sets `validateStatus` from the error
+semiConfig<Email>({ email: { type: 'text', props: { validateStatus: 'error' } } })
+// @ts-expect-error TDesign: its Input has no `type="email"`
+tdesignConfig<Email>({ email: { type: 'text', props: { type: 'email' } } })
+// @ts-expect-error React Native: the adapter sets `onChangeText`
+rnwConfig<Email>({ email: { type: 'text', props: { onChangeText: () => {} } } })

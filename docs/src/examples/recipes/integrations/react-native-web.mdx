@@ -1,62 +1,38 @@
 ---
 title: React Native Web
-description: Use BlueForm with React Native primitives: field components built on TextInput and a View-based renderRoot.
+description: "React Native components (through react-native-web) wired to BlueForm field types with useField; live demo built from the repo."
 outline: false
 ---
 
-:::info
-This recipe is not built with the docs yet: its snippets are not checked in CI, and its demo (if any) is an external StackBlitz project. See [Integrations](./index.mdx) for the demos built and tested with the docs.
-:::
-This recipe demonstrates how to wire [React Native Web](https://necolas.github.io/react-native-web/) components with BlueForm.
+# React Native Web
 
-Each field type is a small component that reads everything from `useField()` and forwards it to the library's input. The form config, `setupForm` and submit logic are the same as in every other recipe. Type the adapter's props with [`AdapterProps`](../../../guide/core/field-authoring/use-field.mdx#typing-an-adapters-props), so a config's `props` takes the library's own props; see [Integrations](./index.mdx) for the live demos and the event-signature notes.
+The [registration form demo](./index.mdx#live-demos) written with React Native Web, self-contained:
 
-## Text field adapter
+- `form.tsx`: `setupForm` (with a `renderRoot` for the title and layout) and the config. `props` use React Native Web's own API, typed by its components.
+- `fields.tsx`: the adapters, typed with React Native Web's own props through `AdapterProps`.
+- `main.tsx`: mounts it in the demo stage (header, payload drawer).
 
-```tsx
-import { Button, Text, TextInput, View } from "react-native"
-import { type AdapterProps, defineMapping, setupForm, useField } from "react-headless-form"
+- There is no `<form>`: `renderRoot` renders a `View` and its `Button` calls `onSubmit()`; the header button calls it too.
+- `TextInput` reports text with `onChangeText`; the select is a row of `Pressable` options; the checkbox is a `Switch`.
+- On the web, alias `react-native` to `react-native-web` in the bundler (see the demos' `vite.config.ts`).
 
-// TextInput props minus what useField() controls, and the props set below
-export type TextFieldProps = AdapterProps<React.ComponentProps<typeof TextInput>, "editable" | "onChangeText">
+import { Tab, Tabs } from '@rspress/core/theme';
+import LiveDemo from '../../../../components/LiveDemo';
 
-export function TextField(props: TextFieldProps) {
-  const { value, onChange, onBlur, label, errorMessage, required, disabled, readOnly } = useField()
-  return (
-    <View>
-      <Text>
-        {label} {required && "*"}
-      </Text>
-      <TextInput
-        {...props}
-        editable={!disabled && !readOnly}
-        value={value ?? ""}
-        onChangeText={(text) => onChange?.(text)}
-        onBlur={onBlur}
-      />
-      {errorMessage && <Text style={{ color: "red" }}>{errorMessage}</Text>}
-    </View>
-  )
-}
-
-// There is no <form> in React Native: render a View and trigger onSubmit yourself
-export const [Form] = setupForm({
-  fieldMapping: defineMapping({ text: TextField }),
-  renderRoot: ({ children, onSubmit }) => (
-    <View>
-      {children}
-      <Button title="Submit" onPress={() => onSubmit()} />
-    </View>
-  ),
-})
-```
-
-## Full example
-
-The live demo below contains the complete set of fields (`text`, `longText`, `select`, `checkbox`), a nested section and an array field.
-
-<iframe
-  src="https://stackblitz.com/edit/vitejs-vite-fksk1yxs?ctl=1&embed=1&file=index.html&hideNavigation=1&view=preview"
-  style={{ width: '100%', height: '500px', border: '0', borderRadius: '8px', overflow: 'hidden' }}
-  title="react-headless-form-demo"
-></iframe>
+<Tabs>
+  <Tab label="Live demo">
+    <LiveDemo lib="react-native-web" />
+  </Tab>
+  <Tab label="form.tsx">
+    ```tsx file="../../../../integrations/react-native-web/form.tsx"
+    ```
+  </Tab>
+  <Tab label="fields.tsx">
+    ```tsx file="../../../../integrations/react-native-web/fields.tsx"
+    ```
+  </Tab>
+  <Tab label="main.tsx">
+    ```tsx file="../../../../integrations/react-native-web/main.tsx"
+    ```
+  </Tab>
+</Tabs>
