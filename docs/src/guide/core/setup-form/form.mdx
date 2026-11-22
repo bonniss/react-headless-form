@@ -133,7 +133,7 @@ Renamed to [`onInvalid`](#oninvalid) because the old name suggested it also hand
 
 ### `defaultValues`
 
-Initial values for the form, passed to [RHF `useForm`](https://react-hook-form.com/docs/useform). Use this prop: `formOptions.defaultValues` is ignored.
+Initial values for the form, passed to [RHF `useForm`](https://react-hook-form.com/docs/useform). This is the only place for them: `formOptions` does not accept `defaultValues`.
 
 ```tsx
 <Form defaultValues={{ username: "alice" }} ... />
@@ -161,7 +161,7 @@ Use `formOptions` when you want BlueForm to keep handling rendering and field wi
 
 ### `readOnly`
 
-When `true`, all fields in the form receive `readOnly: true`.
+When `true`, all fields in the form receive `readOnly: true`. It only adds read-only: with `false` (or omitted), each field keeps its own `readOnly`, so one form serves a view page (`readOnly`) and an edit page (`readOnly={false}`) while fields such as computed totals stay read-only on both.
 
 This is a form-level hint for your field components. BlueForm passes the flag down, but each renderer is still responsible for deciding how read-only mode should look and behave.
 
@@ -274,7 +274,7 @@ Each entry in `config` describes a single field. All fields share a common set o
 | `render` | `RenderFn` | Per-field render override - see [render prop](../field-authoring/render.mdx) |
 | `visible` | `boolean \| Condition \| (values, ctx) => boolean` | Controls field visibility - hidden fields unmount, so state retention depends on whether the field ever mounted and on RHF `shouldUnregister` |
 | `disabled` | `boolean \| Condition \| (values, ctx) => boolean` | Controls disabled state - disabled fields are excluded from the submit payload |
-| `readOnly` | `boolean` | Field-level read-only state; a form-level `readOnly` (when set) replaces it |
+| `readOnly` | `boolean` | Field-level read-only state; a form-level `readOnly` can only add to it |
 | `required` | `boolean \| Condition \| (values, ctx) => boolean` | UI-only `required` flag (e.g. to show `*`). Defaults to `Boolean(rules.required)`. Does not add validation |
 | `deps` | `Path[]` | Optional (inferred since v0.16). Overrides which paths re-run the `visible` / `disabled` / `required` functions and `compute`. See [conditional rendering](../conditional-rendering.mdx#performance-deps) |
 | `compute` | `(values, ctx) => value` | Derives the field's value from other values. See [computed fields](../computed.mdx) |
@@ -311,7 +311,7 @@ username: {
 
 _Added in v0.14._
 
-`slots` renders extra UI next to one specific field without replacing it via `render`. Slot content is rendered inside the field's context, so a slot component can call `useField()`, and a function slot receives the live field props (including `value`). On `array` fields a function slot receives the field's metadata only (no live value):
+`slots` renders extra UI next to one specific field without replacing it via `render`. Slot content is rendered inside the field's context, so a slot component can call `useField()`, and a function slot receives the live field props (including `value`). On `array` fields a function slot receives the array's metadata and its `errorMessage`:
 
 ```tsx
 note: {

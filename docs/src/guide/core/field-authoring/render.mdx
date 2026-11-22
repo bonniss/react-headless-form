@@ -40,7 +40,7 @@ In the [live example](#live-example): the `rating` stars.
 
 <RenderDiagram kind="mapped" />
 
-For fields with a registered component in `fieldMapping`, `render` receives the field's metadata (`label`, `description`, `required`, `disabled`, `readOnly`, `path`, …) plus `self` — the rendered instance of the registered component. It does **not** receive the live value (`value`, `onChange`, `errorMessage`): those belong to the component (`self`), or to a small component of your own that calls `useField()`. Use `render` to wrap or decorate the component without replacing it:
+For fields with a registered component in `fieldMapping`, `render` receives `self` — the rendered instance of the registered component — and the field's state to **read**: `label`, `required`, `value`, `errorMessage`, `isDirty`, … It gets no `onChange` / `onBlur` / `ref`: writing belongs to the component. To draw and control the input yourself, use an [`inline`](#inline-fields) field. Use `render` to wrap or decorate the component without replacing it:
 ```tsx
 name: {
   type: "text",
@@ -51,6 +51,20 @@ name: {
         {self}
       </div>
     </Tooltip>
+  ),
+}
+```
+
+Reading the state makes small decorations easy, e.g. a character counter:
+
+```tsx
+bio: {
+  type: "text",
+  render: ({ self, value }) => (
+    <div>
+      {self}
+      <small>{String(value ?? "").length} / 160</small>
+    </div>
   ),
 }
 ```
@@ -95,7 +109,7 @@ In the [live example](#live-example): the `Contact` fieldset.
 
 <RenderDiagram kind="array" />
 
-For `array` fields, `render` receives the full `useArrayField` context — all array helpers and field props — plus `children` as the pre-rendered output of all current items via `renderItems()`. It is used only when no array component is registered in `fieldMapping["array"]` (a registered one renders every array field).
+For `array` fields, `render` receives the full `useArrayField` context — all array helpers and field props — plus `children` as the pre-rendered output of all current items via `renderItems()`. It wins over a component registered in `fieldMapping["array"]`, which stays the default for array fields without `render`.
 ```tsx
 addresses: {
   type: "array",
@@ -163,7 +177,7 @@ import EgRenderForm from '../../../examples/_shared/EgRenderForm';
 | Field type | `render` context | Purpose |
 |---|---|---|
 | `inline` | `FieldResolvedProps` | Define the entire field UI inline |
-| Custom mapped | field metadata (no `value` / `onChange` / `errorMessage`) + `self` | Wrap or decorate the registered component |
+| Custom mapped | read-only field state (`value`, `errorMessage`, …; no `onChange`) + `self` | Wrap or decorate the registered component |
 | `section` | `FieldResolvedProps` + `children` | Wrap the section's inner fields in a container |
 | `array` | `useArrayField` context + `children` | Define the array shell — buttons, errors, item list |
 | `hidden` | — | Not supported |

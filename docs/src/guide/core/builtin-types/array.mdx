@@ -22,7 +22,7 @@ addresses: {
 
 ## Rendering
 
-Array fields require a renderer — either `render` inline or a component registered in `fieldMapping["array"]`. When `fieldMapping["array"]` is registered it renders **every** array field and a field's `render` is not used; use `render` in setups without a mapped array component.
+Array fields require a renderer — either `render` inline or a component registered in `fieldMapping["array"]`. A field's own `render` wins over `fieldMapping["array"]`, so a mapped array component is the default shell and `render` customizes one field.
 
 ### Via `render`
 
@@ -93,7 +93,7 @@ const [Form] = setupForm({
 })
 ```
 
-A registered `fieldMapping["array"]` takes precedence over `render`. If neither is provided, an error is thrown at render time.
+Fields with no `render` use `fieldMapping["array"]`. If neither is provided, an error is thrown at render time.
 
 ## Array-level validation
 

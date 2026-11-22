@@ -12,11 +12,19 @@ Each still works and is marked `@deprecated` (or documented as an alias), so edi
 | Deprecated | Use instead | Since |
 |---|---|---|
 | `onSubmitError` | `onInvalid` (validation errors); `onSubmitFailure` for errors thrown by `onSubmit` | 0.16 |
-| `useArrayField().items` | `fields` | 0.16 |
-| `useArrayField().push` | `append` | 0.16 |
+| `useArrayField().items` | `fields` (marked `@deprecated` in 0.21) | 0.16 |
+| `useArrayField().push` | `append` (marked `@deprecated` in 0.21) | 0.16 |
 | `useField().id` | your own id: `useId()` in the adapter, or the input inside its `<label>` (the lib does not make DOM ids) | 0.20 |
 
 ## Breaking changes
+
+### 0.21
+
+- An array field's own `render` wins over `fieldMapping.array` (before, a mapped array component silently replaced every array's `render`).
+- `render` on a mapped field reads the field state (`value`, `errorMessage`, …) and gets no `onChange` / `onBlur` / `ref`; to control the input, use an `inline` field.
+- Form-level `readOnly` only adds read-only: `<Form readOnly={false}>` no longer unlocks a field declared `readOnly: true`.
+- `formOptions` no longer takes `defaultValues` (it was ignored): use the `defaultValues` prop.
+- `RootRendererArgs.onError` is removed (it was never passed); use `onInvalid` on `<Form>`.
 
 ### 0.20
 
