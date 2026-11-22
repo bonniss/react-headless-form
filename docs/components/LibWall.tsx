@@ -71,19 +71,19 @@ function Tile({ lib, own = false }: { lib: Lib; own?: boolean }) {
 export default function LibWall() {
   return (
     <section className="lib-wall">
-      <h2>Works with any UI library</h2>
+      <h2>Headless, so any UI library just works</h2>
       <div className="lib-wall__grid">
         {uiLibs.map(lib => (
           <Tile key={lib.name} lib={lib} />
         ))}
-        <Tile own lib={{ name: 'Your own', href: `${integration('')}#bring-your-own-library`, mark: '+', color: '' }} />
+        <Tile own lib={{ name: 'Bring your own →', href: `${integration('')}#bring-your-own-library`, mark: '+', color: '' }} />
       </div>
-      <h3>…and any schema library</h3>
+      <h3>…and so does any schema library</h3>
       <div className="lib-wall__grid lib-wall__grid--small">
         {schemaLibs.map(lib => (
           <Tile key={lib.name} lib={lib} />
         ))}
-        <Tile own lib={{ name: 'Any other', href: schema, mark: '+', color: '' }} />
+        <Tile own lib={{ name: 'Plug in another →', href: schema, mark: '+', color: '' }} />
       </div>
     </section>
   )
