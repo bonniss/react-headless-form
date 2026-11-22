@@ -76,7 +76,8 @@ export function compileField({
       type,
       label,
       description: t(field.description),
-      readOnly: Boolean(formReadOnly ?? field.readOnly),
+      // the form can only add read-only: `<Form readOnly={false}>` keeps a field's own
+      readOnly: Boolean(formReadOnly || field.readOnly),
       rules: resolveRules(field.rules ?? {}, validationResolver, label),
       defaultValue: field.defaultValue,
     } as CompiledField["base"],

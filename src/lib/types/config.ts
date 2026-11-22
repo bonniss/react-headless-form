@@ -253,7 +253,7 @@ export type FormFieldConfig<
    * no need to call `useArrayField()` or extract to a separate component.
    *
    * ```tsx
-   * render: ({ children, items, append, remove, label, errorMessage }) => (
+   * render: ({ children, fields, append, remove, label, errorMessage }) => (
    *   <fieldset>
    *     <legend>{label}</legend>
    *     {children}

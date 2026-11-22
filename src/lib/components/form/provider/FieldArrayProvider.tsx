@@ -66,7 +66,8 @@ function useArrayFieldValue({ resolved, config }: FieldArrayProviderParams) {
     config,
 
     fields,
-    items: fields, // alias
+    /** @deprecated Use `fields`. Will be removed in 1.0. */
+    items: fields,
     renderItem,
     renderItems,
 
@@ -79,7 +80,8 @@ function useArrayFieldValue({ resolved, config }: FieldArrayProviderParams) {
     swap,
     replace,
 
-    push: append, // alias
+    /** @deprecated Use `append`. Will be removed in 1.0. */
+    push: append,
     pop,
     duplicate,
     clear,

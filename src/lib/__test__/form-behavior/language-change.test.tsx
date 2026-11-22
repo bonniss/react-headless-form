@@ -15,10 +15,10 @@ function TextField() {
 }
 
 function Rows() {
-  const { items, renderItem, append, errorMessage } = useArrayField();
+  const { fields, renderItem, append, errorMessage } = useArrayField();
   return (
     <div>
-      {items.map((item, i) => (
+      {fields.map((item, i) => (
         <div key={item.id}>{renderItem(item, i)}</div>
       ))}
       {errorMessage && <span data-testid="rows-error">{errorMessage}</span>}

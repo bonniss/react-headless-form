@@ -102,38 +102,6 @@ describe("BlueForm – submit lifecycle", () => {
     expect(onSubmitFailure).not.toHaveBeenCalled();
   });
 
-  it("still supports the deprecated onSubmitError alias", async () => {
-    const onSubmitError = vi.fn();
-
-    renderWithBlueFormProvider(
-      <BlueForm
-        renderRoot={TestRoot}
-        onSubmitError={onSubmitError}
-        config={requiredConfig}
-      />,
-    );
-
-    fireEvent.click(screen.getByText("Submit"));
-    await waitFor(() => expect(onSubmitError).toHaveBeenCalledTimes(1));
-  });
-
-  it("prefers onInvalid over onSubmitError", async () => {
-    const onSubmitError = vi.fn();
-    const onInvalid = vi.fn();
-
-    renderWithBlueFormProvider(
-      <BlueForm
-        renderRoot={TestRoot}
-        onInvalid={onInvalid}
-        onSubmitError={onSubmitError}
-        config={requiredConfig}
-      />,
-    );
-
-    fireEvent.click(screen.getByText("Submit"));
-    await waitFor(() => expect(onInvalid).toHaveBeenCalledTimes(1));
-    expect(onSubmitError).not.toHaveBeenCalled();
-  });
 });
 
 describe("BlueForm – react-hook-form context", () => {

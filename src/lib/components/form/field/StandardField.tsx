@@ -3,7 +3,7 @@ import type { RenderFn } from "@/types/render";
 import { FieldProvider } from "../provider/FieldProvider";
 import HiddenField from "./HiddenField";
 import InlineField from "./InlineField";
-import { FieldSlot } from "./slots";
+import { FieldSlot, MappedRender } from "./slots";
 import type { FieldRendererProps } from "./types";
 
 /** Renderer for `hidden`, `inline` and every `fieldMapping` type. Called as a function by FieldNode: must not use hooks. */
@@ -30,9 +30,7 @@ export default function StandardField({
       );
     }
     const element = <Component {...componentProps} />;
-    node = render
-      ? (render as RenderFn<string>)({ ...resolved, self: element })
-      : element;
+    node = render ? <MappedRender render={render as RenderFn<string>} self={element} /> : element;
   }
 
   return (

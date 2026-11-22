@@ -1,7 +1,7 @@
 import type { RenderFn } from "@/types/render";
 import { FieldArrayProvider } from "../provider";
 import ArrayRenderSlot from "./ArrayRenderSlot";
-import { renderStaticSlot } from "./slots";
+import { ArraySlot } from "./slots";
 import type { FieldRendererProps } from "./types";
 
 /** Core renderer for `type: "array"`. Called as a function by FieldNode: must not use hooks. */
@@ -22,13 +22,14 @@ export default function ArrayField({
 
   return (
     <FieldArrayProvider defaultValue={{ resolved, config: field }}>
-      {renderStaticSlot(slots?.before, resolved)}
-      {ArrayComponent ? (
-        <ArrayComponent {...componentProps} />
-      ) : (
+      <ArraySlot slot={slots?.before} />
+      {/* the field's own `render` wins over the mapped array component */}
+      {render ? (
         <ArrayRenderSlot render={render as RenderFn<"array">} />
+      ) : (
+        ArrayComponent && <ArrayComponent {...componentProps} />
       )}
-      {renderStaticSlot(slots?.after, resolved)}
+      <ArraySlot slot={slots?.after} />
     </FieldArrayProvider>
   );
 }
