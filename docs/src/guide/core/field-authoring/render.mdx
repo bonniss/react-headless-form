@@ -9,11 +9,9 @@ The `render` function receives everything the field needs as arguments, the same
 
 import RenderDiagram from '../../../../components/RenderDiagram';
 
-<RenderDiagram />
-
-What `render` receives depends on the field type: for an `inline` field only values, for a mapped field the rendered component (`self`), for a `section` its fields (`children`), for an `array` the rows (`children` / `renderItem`). A [live example](#live-example) with all four is at the end of this page.
-
 ## `inline` fields
+
+<RenderDiagram kind="inline" />
 
 For one-off fields, `render` receives the full `useField` context:
 ```tsx
@@ -40,6 +38,8 @@ In the [live example](#live-example): the `rating` stars.
 
 ## Custom mapped fields
 
+<RenderDiagram kind="mapped" />
+
 For fields with a registered component in `fieldMapping`, `render` receives the same field props plus `self` — the rendered instance of the registered component. Use it to wrap or decorate the component without replacing it:
 ```tsx
 name: {
@@ -64,6 +64,8 @@ In the [live example](#live-example): `name`, with a hint under the input.
 :::
 
 ## `section` fields
+
+<RenderDiagram kind="section" />
 
 For `section` fields, `render` receives the same field props plus `children` — the rendered output of the section's inner config:
 ```tsx
@@ -90,6 +92,8 @@ Without `render`, the section's fields are rendered directly with no wrapper.
 In the [live example](#live-example): the `Contact` fieldset.
 
 ## `array` fields
+
+<RenderDiagram kind="array" />
 
 For `array` fields, `render` receives the full `useArrayField` context — all array helpers and field props — plus `children` as the pre-rendered output of all current items via `renderItems()`.
 ```tsx
