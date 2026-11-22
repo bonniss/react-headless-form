@@ -87,7 +87,19 @@ label: row.isKey ? row.label : { text: row.label },
 
 ### Switching language
 
-Pass a new `t` when the language changes (for example `t` from `useTranslation()`). Labels and descriptions follow it, and the error messages already shown are validated again, so they switch language too; fields without an error are not validated. Keep `t` stable between renders of the same language (as i18n libraries do): a new function is read as a language change.
+Pass a new `t` when the language changes (for example `t` from `useTranslation()`). Labels, descriptions and the error messages already shown follow it: fields with a validation error are validated again (fields without an error are not), and errors set with `setError()` are kept. Keep `t` stable between renders of the same language (as i18n libraries do): a new function is read as a language change.
+
+### Custom error messages
+
+Every error message goes through `t` when it is displayed (`errorMessage` from `useField()` / `useArrayField()`), like labels. So custom messages can be keys:
+
+```ts
+code: { type: "text", rules: { validate: (v) => v === "ok" || "errors.code.invalid" } },
+// a schema message, a rule message, or a server error
+form.setError("email", { type: "server", message: "errors.email.taken" })
+```
+
+A key is translated, and plain text comes back unchanged through your translator's fallback for unknown keys (i18next and most libraries return the key). Messages read directly from `formState.errors` are the raw keys. For messages with parameters, use `validationTranslation` (`{field}` and the rule value are filled in), or build the message with your own `t` inside a config rebuilt when the language changes: the field is validated again with the new function.
 
 ### Translating props
 

@@ -115,3 +115,54 @@ describe("language change", () => {
     expect(screen.queryByTestId("name-error")).toBeNull();
   });
 });
+
+describe("custom messages go through t", () => {
+  const messages: Record<string, Record<string, string>> = {
+    en: { "code.invalid": "Invalid code", "email.taken": "Email is taken" },
+    ja: { "code.invalid": "コードが無効です", "email.taken": "このメールは使用済みです" },
+  };
+  type Custom = { code: string; email: string; nick: string };
+
+  function CustomDemo({ formRef }: { formRef: { current: any } }) {
+    const [lang, setLang] = useState("en");
+    // falls back to the key, like i18next
+    const t = (key: string) => messages[lang][key] ?? key;
+    return (
+      <>
+        <button type="button" onClick={() => setLang("ja")}>
+          ja
+        </button>
+        <Form<Custom>
+          ref={formRef}
+          i18nConfig={{ t }}
+          defaultValues={{ code: "", email: "a@b.c", nick: "" }}
+          config={{
+            code: { type: "text", rules: { validate: (v) => v === "ok" || "code.invalid" } },
+            email: { type: "text" },
+            nick: { type: "text", rules: { required: "Nickname, please" } },
+          }}
+        />
+      </>
+    );
+  }
+
+  it("translates validate() keys and setError() keys, keeps plain text, and never clears setError() errors", async () => {
+    const formRef = { current: null as any };
+    render(<CustomDemo formRef={formRef} />);
+    await act(async () => {
+      formRef.current.setError("email", { type: "server", message: "email.taken" });
+      await formRef.current.trigger(["code", "nick"]);
+    });
+    expect(screen.getByTestId("code-error").textContent).toBe("Invalid code");
+    expect(screen.getByTestId("email-error").textContent).toBe("Email is taken");
+    expect(screen.getByTestId("nick-error").textContent).toBe("Nickname, please");
+
+    await act(async () => {
+      fireEvent.click(screen.getByText("ja"));
+    });
+    await waitFor(() => expect(screen.getByTestId("code-error").textContent).toBe("コードが無効です"));
+    // a server error survives the language switch, translated
+    expect(screen.getByTestId("email-error").textContent).toBe("このメールは使用済みです");
+    expect(screen.getByTestId("nick-error").textContent).toBe("Nickname, please");
+  });
+});

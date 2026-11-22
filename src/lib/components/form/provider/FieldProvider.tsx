@@ -15,7 +15,7 @@ type FieldProviderParams = {
 
 function useFieldValue({ resolved, config }: FieldProviderParams) {
   const { control } = useFormContext()
-  const { hasResolver } = useBlueFormInternal()
+  const { hasResolver, i18nConfig } = useBlueFormInternal()
 
   const { path, rules, defaultValue: fieldDefaultValue } = resolved
 
@@ -38,7 +38,9 @@ function useFieldValue({ resolved, config }: FieldProviderParams) {
     onChange,
     onBlur,
     ref,
-    errorMessage: fieldState.error?.message,
+    // Messages go through `t` like labels: a key is translated, plain text
+    // comes back as is (the translator's fallback)
+    errorMessage: fieldState.error?.message && i18nConfig.t(fieldState.error.message),
     ...fieldState,
     ...resolved,
   }
