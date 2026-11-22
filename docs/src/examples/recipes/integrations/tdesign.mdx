@@ -16,6 +16,10 @@ The [registration form demo](./index.mdx#live-demos) written with TDesign, self-
 - A wrapping `<label>` names the input, since TDesign `Input` takes no `id`.
 - Import `tdesign-react/es/style/index.css`; `ConfigProvider globalConfig` sets the built-in texts, which default to Chinese.
 
+:::tip
+`main.tsx` only mounts the docs' demo stage (language switch, payload drawer); your app renders `Form` itself. See [Connect your UI kit](./index.mdx#bring-your-own-library).
+:::
+
 import { Tab, Tabs } from '@rspress/core/theme';
 import LiveDemo from '../../../../components/LiveDemo';
 

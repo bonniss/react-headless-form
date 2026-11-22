@@ -16,6 +16,10 @@ The [registration form demo](./index.mdx#live-demos) written with React Native W
 - `TextInput` reports text with `onChangeText`; the select is a row of `Pressable` options; the checkbox is a `Switch`.
 - On the web, alias `react-native` to `react-native-web` in the bundler (see the demos' `vite.config.ts`).
 
+:::tip
+`main.tsx` only mounts the docs' demo stage (language switch, payload drawer); your app renders `Form` itself. See [Connect your UI kit](./index.mdx#bring-your-own-library).
+:::
+
 import { Tab, Tabs } from '@rspress/core/theme';
 import LiveDemo from '../../../../components/LiveDemo';
 

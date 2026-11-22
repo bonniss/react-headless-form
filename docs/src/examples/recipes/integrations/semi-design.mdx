@@ -16,6 +16,10 @@ The [registration form demo](./index.mdx#live-demos) written with Semi Design, s
 - With React 19 use `@douyinfe/semi-ui-19`; import its `dist/css/semi.min.css`.
 - `LocaleProvider` sets the built-in texts (here it follows the language switch).
 
+:::tip
+`main.tsx` only mounts the docs' demo stage (language switch, payload drawer); your app renders `Form` itself. See [Connect your UI kit](./index.mdx#bring-your-own-library).
+:::
+
 import { Tab, Tabs } from '@rspress/core/theme';
 import LiveDemo from '../../../../components/LiveDemo';
 

@@ -16,6 +16,10 @@ The [registration form demo](./index.mdx#live-demos) written with Arco Design, s
 - Arco's `Form.Item` needs Arco's own `Form`, so label and message are plain markup.
 - Import `@arco-design/web-react/dist/css/arco.css`; `ConfigProvider locale` sets the built-in texts (here it follows the language switch).
 
+:::tip
+`main.tsx` only mounts the docs' demo stage (language switch, payload drawer); your app renders `Form` itself. See [Connect your UI kit](./index.mdx#bring-your-own-library).
+:::
+
 import { Tab, Tabs } from '@rspress/core/theme';
 import LiveDemo from '../../../../components/LiveDemo';
 

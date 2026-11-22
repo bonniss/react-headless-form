@@ -15,6 +15,10 @@ The [registration form demo](./index.mdx#live-demos) written with Ant Design, se
 - `Form.Item` is used for **layout only** (label, help, status); values and errors come from `useField()`, so no antd `Form` instance is involved.
 - `Select` passes the value to `onChange`; `Input` / `Checkbox` pass events.
 
+:::tip
+`main.tsx` only mounts the docs' demo stage (language switch, payload drawer); your app renders `Form` itself. See [Connect your UI kit](./index.mdx#bring-your-own-library).
+:::
+
 import { Tab, Tabs } from '@rspress/core/theme';
 import LiveDemo from '../../../../components/LiveDemo';
 

@@ -16,6 +16,10 @@ The [registration form demo](./index.mdx#live-demos) written with animal-island-
 - There is no `TextArea`; long text uses `Input`. Its `Checkbox` is a group (array of values), so a boolean field uses `Switch`.
 - Import `animal-island-ui/style` once.
 
+:::tip
+`main.tsx` only mounts the docs' demo stage (language switch, payload drawer); your app renders `Form` itself. See [Connect your UI kit](./index.mdx#bring-your-own-library).
+:::
+
 import { Tab, Tabs } from '@rspress/core/theme';
 import LiveDemo from '../../../../components/LiveDemo';
 
