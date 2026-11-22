@@ -73,7 +73,12 @@ const preferencesConfig = defineConfig<PreferencesData>({
   },
 });
 
-const STEPS = ["Account", "Profile", "Preferences"];
+// Each step: a label, the section to show, and the paths to validate on "Next".
+const STEPS = [
+  { label: "Account", section: "account", paths: ["account.email", "account.password"] },
+  { label: "Profile", section: "profile", paths: ["profile.fullName", "profile.bio"] },
+  { label: "Preferences", section: "preferences", paths: ["preferences.role", "preferences.newsletter"] },
+] as const;
 
 function AccountStep() {
   return <Section<WizardData["account"]> config={accountConfig} />;
@@ -89,19 +94,16 @@ function PreferencesStep() {
 
 function EgWizardForm() {
   const [step, setStep] = useState(0);
+  const [submitted, setSubmitted] = useState<WizardData>();
 
   return (
     <div>
       {/* Step indicators */}
       <div className="bf-steps">
-        {STEPS.map((label, i) => (
+        {STEPS.map(({ label }, i) => (
           <div
-            key={i}
-            className={[
-              "bf-step",
-              i === step ? "bf-step--active" : "",
-              i < step ? "bf-step--done" : "",
-            ]
+            key={label}
+            className={["bf-step", i === step ? "bf-step--active" : "", i < step ? "bf-step--done" : ""]
               .filter(Boolean)
               .join(" ")}
           >
@@ -113,6 +115,9 @@ function EgWizardForm() {
 
       <Form<WizardData>
         config={{
+          // Step state lives outside the form; each step is a section shown
+          // only on its step. Hidden steps keep their values (shouldUnregister
+          // is false by default).
           account: {
             type: "section",
             visible: () => step === 0,
@@ -129,32 +134,35 @@ function EgWizardForm() {
             props: { nested: true, component: PreferencesStep },
           },
         }}
-        onSubmit={(data) => alert(JSON.stringify(data, null, 2))}
+        onSubmit={(data) => setSubmitted(data)}
       >
-        <div style={{ display: "flex", gap: 8, marginTop: "0.5rem" }}>
-          {step > 0 && (
-            <button type="button" onClick={() => setStep((s) => s - 1)}>
-              ← Back
-            </button>
-          )}
-          {step < STEPS.length - 1 ? (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                setStep((s) => s + 1);
-              }}
-              style={{ marginLeft: "auto" }}
-            >
-              Next →
-            </button>
-          ) : (
-            <button type="submit" style={{ marginLeft: "auto" }}>
-              Submit
-            </button>
-          )}
-        </div>
+        {({ trigger }) => (
+          <div style={{ display: "flex", gap: 8, marginTop: "0.5rem" }}>
+            {step > 0 && (
+              <button type="button" onClick={() => setStep((s) => s - 1)}>
+                ← Back
+              </button>
+            )}
+            {step < STEPS.length - 1 ? (
+              <button
+                type="button"
+                style={{ marginLeft: "auto" }}
+                // Validate only the current step before moving on.
+                onClick={async () => {
+                  if (await trigger([...STEPS[step].paths])) setStep((s) => s + 1);
+                }}
+              >
+                Next →
+              </button>
+            ) : (
+              <button type="submit" style={{ marginLeft: "auto" }}>
+                Submit
+              </button>
+            )}
+          </div>
+        )}
       </Form>
+      {submitted && <pre data-testid="output">{JSON.stringify(submitted, null, 2)}</pre>}
     </div>
   );
 }
