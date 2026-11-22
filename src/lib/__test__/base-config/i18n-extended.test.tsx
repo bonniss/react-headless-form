@@ -75,22 +75,8 @@ describe("i18n – literal text", () => {
   });
 });
 
-describe("i18n – translateProps", () => {
-  it("does not translate props by default", () => {
-    renderWithBlueFormProvider(
-      <BlueForm
-        renderRoot={TestRoot}
-        fieldMapping={{ input: Input }}
-        config={{ name: { type: "input", props: { placeholder: "form.ph" } } }}
-      />,
-      { i18nConfig: { t: (k: string) => `t:${k}` } },
-    );
-    expect(screen.getByTestId("input").getAttribute("placeholder")).toBe(
-      "form.ph",
-    );
-  });
-
-  it("translates only the listed props", () => {
+describe("i18n – placeholder", () => {
+  it("translates the placeholder, and no other prop", () => {
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
@@ -102,20 +88,15 @@ describe("i18n – translateProps", () => {
           },
         }}
       />,
-      {
-        i18nConfig: {
-          t: (k: string) => `t:${k}`,
-          translateProps: ["placeholder", "title"],
-        },
-      },
+      { i18nConfig: { t: (k: string) => `t:${k}` } },
     );
     const input = screen.getByTestId("input");
     expect(input.getAttribute("placeholder")).toBe("t:form.ph");
-    expect(input.getAttribute("title")).toBe("t:form.title");
+    expect(input.getAttribute("title")).toBe("form.title");
     expect(input.getAttribute("data-variant")).toBe("lg");
   });
 
-  it("accepts TranslatableText objects in listed props", () => {
+  it("accepts { message, params } and { text } like a label", () => {
     const Raw = (props: { placeholder?: any }) => (
       <span data-testid="raw">{String(props.placeholder)}</span>
     );
@@ -130,14 +111,23 @@ describe("i18n – translateProps", () => {
           },
         }}
       />,
-      {
-        i18nConfig: {
-          t: (k: string, p?: any) => `t:${k}:${p?.n}`,
-          translateProps: ["placeholder"],
-        },
-      },
+      { i18nConfig: { t: (k: string, p?: any) => `t:${k}:${p?.n}` } },
     );
     expect(screen.getByTestId("raw").textContent).toBe("t:form.n:2");
+  });
+
+  it("shows a { text } placeholder as is", () => {
+    const t = vi.fn((k: string) => `t:${k}`);
+    renderWithBlueFormProvider(
+      <BlueForm
+        renderRoot={TestRoot}
+        fieldMapping={{ input: Input }}
+        config={{ name: { type: "input", props: { placeholder: { text: "Từ CSDL" } as any } } }}
+      />,
+      { i18nConfig: { t } },
+    );
+    expect(screen.getByTestId("input").getAttribute("placeholder")).toBe("Từ CSDL");
+    expect(t).not.toHaveBeenCalled();
   });
 });
 

@@ -109,7 +109,6 @@ function useBlueFormInternalValue(
     i18nConfig: {
       t,
       validationResolver: resolver,
-      translateProps: i18nConfig?.translateProps ?? [],
     } as I18nResolvedConfig,
     fieldMapping,
     hasResolver: Boolean(props.schema || props.formOptions?.resolver),

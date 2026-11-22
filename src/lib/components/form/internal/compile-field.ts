@@ -14,23 +14,13 @@ function isTranslatable(value: unknown): value is TranslatableText {
 }
 
 /**
- * Translates the props listed in `i18nConfig.translateProps`.
- * Returns the original object when nothing needs translating.
+ * Translates `props.placeholder` like a label: a key, `{ message, params }`
+ * or `{ text }`. Returns the original object when there is none.
  */
-function translateComponentProps<T>(
-  props: T,
-  translateProps: string[],
-  t: TranslationResolver,
-): T {
-  if (!props || !translateProps.length) return props;
-  let result: Record<string, unknown> | undefined;
-  for (const name of translateProps) {
-    const value = (props as Record<string, unknown>)[name];
-    if (!isTranslatable(value)) continue;
-    result ??= { ...(props as Record<string, unknown>) };
-    result[name] = t(value);
-  }
-  return (result ?? props) as T;
+function translatePlaceholder<T>(props: T, t: TranslationResolver): T {
+  const placeholder = (props as { placeholder?: unknown } | undefined)?.placeholder;
+  if (!isTranslatable(placeholder)) return props;
+  return { ...props, placeholder: t(placeholder) };
 }
 
 /** The parts of `FieldResolvedProps` that do not depend on form values. */
@@ -51,7 +41,7 @@ export function compileField({
   name,
   field,
   namespace,
-  i18n: { t, validationResolver, translateProps },
+  i18n: { t, validationResolver },
   formReadOnly,
 }: {
   name: string;
@@ -67,7 +57,7 @@ export function compileField({
   return {
     path,
     type,
-    componentProps: translateComponentProps(field.props, translateProps, t),
+    componentProps: translatePlaceholder(field.props, t),
     base: {
       id: path,
       namespace,
