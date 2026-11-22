@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.17.0](https://github.com/bonniss/react-headless-form/compare/v0.16.0...v0.17.0) (2026-11-22)
+
+
+### Features
+
+* **form:** add `schema` prop for Standard Schema validation ([d2a738d](https://github.com/bonniss/react-headless-form/commit/d2a738d17a2ce8a49572b625e3c88f520371426f))
+* **form:** computed fields with `compute` ([efebec8](https://github.com/bonniss/react-headless-form/commit/efebec8e595c9fedd5f283e73b2b3aca1933a1ca))
+* **form:** JSON conditions with type-checked paths and values ([760187a](https://github.com/bonniss/react-headless-form/commit/760187a20c91260bbdd4f50e4690610a2295e978))
+
+
+### Performance Improvements
+
+* **form:** share one value subscription per form ([24ea0a7](https://github.com/bonniss/react-headless-form/commit/24ea0a779c0c6db0ad362b2c5cb97d1aea08e433))
+
 ## [0.16.0](https://github.com/bonniss/react-headless-form/compare/v0.14.0...v0.16.0) (2026-11-21)
 
 
