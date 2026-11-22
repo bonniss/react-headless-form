@@ -77,13 +77,17 @@ html.dark .shiki span {
   line-height: 1.2;
 }
 
-/* "Your own" / "Any other": not a library, an open slot */
-.lib-wall__tile--own {
+/* The last tile of a group: an invitation, not a library */
+.lib-wall__tile--cta {
+  grid-column: span 2;
+  justify-content: center;
   border-style: dashed;
+  border-color: var(--rp-c-brand);
   background: transparent;
+  color: var(--rp-c-brand);
+  font-weight: 600;
 }
-.lib-wall__tile--own .lib-wall__mark {
-  background: transparent;
-  border: 1.5px dashed var(--rp-c-divider);
-  color: var(--rp-c-text-2);
+.lib-wall__tile--cta:hover {
+  background: var(--rp-c-brand);
+  color: #fff;
 }

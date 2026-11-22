@@ -56,13 +56,22 @@ function Mark({ lib }: { lib: Lib }) {
   return <span style={{ color: lib.color }}>{lib.mark}</span>
 }
 
-function Tile({ lib, own = false }: { lib: Lib; own?: boolean }) {
+function Tile({ lib }: { lib: Lib }) {
   return (
-    <a className={own ? 'lib-wall__tile lib-wall__tile--own' : 'lib-wall__tile'} href={withBase(lib.href)}>
+    <a className="lib-wall__tile" href={withBase(lib.href)}>
       <span className="lib-wall__mark" aria-hidden>
-        {own ? lib.mark : <Mark lib={lib} />}
+        <Mark lib={lib} />
       </span>
       <span className="lib-wall__name">{lib.name}</span>
+    </a>
+  )
+}
+
+/** The last tile of a group: an invitation, not a library (text only). */
+function CtaTile({ href, children }: { href: string; children: string }) {
+  return (
+    <a className="lib-wall__tile lib-wall__tile--cta" href={withBase(href)}>
+      {children}
     </a>
   )
 }
@@ -76,14 +85,14 @@ export default function LibWall() {
         {uiLibs.map(lib => (
           <Tile key={lib.name} lib={lib} />
         ))}
-        <Tile own lib={{ name: 'Bring your own →', href: `${integration('')}#bring-your-own-library`, mark: '+', color: '' }} />
+        <CtaTile href={`${integration('')}#bring-your-own-library`}>Another UI kit? Wire it up in 3 steps →</CtaTile>
       </div>
       <h3>…and so does any schema library</h3>
       <div className="lib-wall__grid lib-wall__grid--small">
         {schemaLibs.map(lib => (
           <Tile key={lib.name} lib={lib} />
         ))}
-        <Tile own lib={{ name: 'Plug in another →', href: schema, mark: '+', color: '' }} />
+        <CtaTile href={schema}>Another schema? Plug it in →</CtaTile>
       </div>
     </section>
   )
