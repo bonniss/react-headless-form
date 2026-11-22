@@ -174,6 +174,25 @@ describe("G3 scoped re-renders on large forms", () => {
     expect((screen.getByTestId("k39") as HTMLInputElement).value).toBe("y!");
   });
 
+  it("conditional / computed fields share one value subscription per form", () => {
+    // Every RHF watch subscription copies the form values on each change, so
+    // one per field would make a keystroke cost O(fields × form size).
+    const observers = (config: Record<string, any>) => {
+      const ref = { current: null as any };
+      const { unmount } = render(<Form<any> ref={ref} config={config} />);
+      const count = ref.current.control._subjects.state.observers.length;
+      unmount();
+      return count;
+    };
+    const fields = (make: (i: number) => any) =>
+      Object.fromEntries(Array.from({ length: 40 }, (_, i) => [`f${i}`, make(i)]));
+    const plain = observers(fields(() => ({ type: "text" })));
+    const conditional = observers(fields(() => ({ type: "text", visible: (v: any) => v.f0 !== "x" })));
+    const computed = observers(fields(() => ({ type: "text", readOnly: true, compute: (v: any) => `${v.f0}` })));
+    expect(conditional - plain).toBe(1);
+    expect(computed - plain).toBe(1);
+  });
+
   it("appending to a 200-row array does not re-render existing rows", () => {
     const Rows = () => {
       const { renderItems, append } = useArrayField();

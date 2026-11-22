@@ -4,6 +4,7 @@ import { set, useFormContext } from "react-hook-form";
 
 import { readPath } from "@/components/helper/condition";
 import { isRelatedPath, trackReads } from "@/components/helper/track-reads";
+import { listenToValues } from "@/components/helper/value-listeners";
 import type { ConditionContext, FormFieldConfig } from "@/types";
 
 type FieldPosition = Omit<ConditionContext, "scope">;
@@ -138,10 +139,9 @@ export function useComputedValue(
       }
     };
 
-    // `watch(callback)` receives the raw payload: `name` is the changed path,
-    // or undefined for reset() (subscribe() would merge a stale name).
-    const subscription = watch((_, { name }) => run(name));
+    // `name` is the changed path, or undefined for reset().
+    const unlisten = listenToValues(control, watch, run);
     run();
-    return () => subscription.unsubscribe();
+    return unlisten;
   }, [hasCompute, getValues, watch, setValue, getFieldState, control]);
 }

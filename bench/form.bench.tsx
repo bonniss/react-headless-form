@@ -8,6 +8,10 @@
  * mechanism this library uses — and uncontrolled via `register`) and Formisch.
  * Every library renders the same controlled `<input>`.
  *
+ * Rows marked * replace the 49 conditions with 49 values derived from f0
+ * (`compute: (v) => v.f0 + "!"`, or useWatch + setValue in plain RHF), so
+ * every keystroke in f0 legitimately changes (and re-renders) all 49.
+ *
  * Caveats (read before quoting numbers):
  * - jsdom has no layout/paint; compare libraries relative to each other only.
  * - All libraries share one worker process (JIT/GC state carries over).
@@ -45,7 +49,18 @@ function Input({ name, value, onChange }: any) {
 
 type Lib = { name: string; app: (cond: boolean) => () => any };
 
-function headless(label: string, lib: any, withDeps: boolean): Lib {
+type Variant = "fn" | "deps" | "json" | "compute";
+
+// The 49 "conditional" fields as: a visible function, the same with `deps`,
+// a JSON condition, or (instead of a condition) a computed value of f0.
+const conditional = (variant: Variant) =>
+  variant === "json"
+    ? { type: "text", visible: { when: "f0", neq: "hide" } }
+    : variant === "compute"
+      ? { type: "text", readOnly: true, compute: (x: any) => `${x.f0 ?? ""}!` }
+      : { type: "text", visible: (x: any) => showWhen(x.f0), ...(variant === "deps" ? { deps: ["f0"] } : {}) };
+
+function headless(label: string, lib: any, variant: Variant): Lib {
   const Text = () => {
     const { path, value, onChange } = lib.useField() as any;
     return h(Input, { name: path, value, onChange: (e: any) => onChange(e.target.value) });
@@ -60,11 +75,36 @@ function headless(label: string, lib: any, withDeps: boolean): Lib {
       const config: any = {};
       names.forEach((n, i) => {
         config[n] =
-          cond && isCond(i)
-            ? { type: "text", visible: (x: any) => showWhen(x.f0), ...(withDeps ? { deps: ["f0"] } : {}) }
-            : { type: "text" };
+          cond && isCond(i) ? conditional(variant) : { type: "text" };
       });
       return () => h(Form, { config, defaultValues: emptyValues() });
+    },
+  };
+}
+
+// Plain RHF equivalent of `compute`: watch f0, setValue in an effect.
+function plainRhfComputed(): Lib {
+  const Controlled = ({ name }: any) => {
+    const { field } = rhf.useController({ name });
+    return h(Input, { name, value: field.value, onChange: field.onChange });
+  };
+  const Computed = ({ name }: any) => {
+    const { setValue } = rhf.useFormContext();
+    const f0 = rhf.useWatch({ name: "f0" });
+    React.useEffect(() => {
+      setValue(name, `${f0 ?? ""}!`);
+    }, [f0, name, setValue]);
+    return h(Controlled, { name });
+  };
+  return {
+    name: "RHF, 49 computed (useWatch + setValue)*",
+    app: (cond) => () => {
+      const methods = rhf.useForm({ defaultValues: emptyValues() });
+      return h(
+        rhf.FormProvider as any,
+        methods,
+        h("form", null, names.map((n, i) => h(cond && isCond(i) ? Computed : Controlled, { key: n, name: n }))),
+      );
     },
   };
 }
@@ -117,10 +157,13 @@ function formischLib(): Lib {
 }
 
 const libs: Lib[] = [
-  headless("react-headless-form (this branch)", current, false),
-  headless("react-headless-form 0.14.0", v014, false),
-  headless("react-headless-form 0.14.0 + deps", v014, true),
+  headless("react-headless-form (this branch)", current, "fn"),
+  headless("this branch, JSON conditions", current, "json"),
+  headless("this branch, 49 computed fields*", current, "compute"),
+  headless("react-headless-form 0.14.0", v014, "fn"),
+  headless("react-headless-form 0.14.0 + deps", v014, "deps"),
   plainRhf("RHF useController", "controlled"),
+  plainRhfComputed(),
   plainRhf("RHF register", "register"),
   formischLib(),
 ];

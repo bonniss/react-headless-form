@@ -4,6 +4,7 @@ import { useFormContext } from "react-hook-form";
 
 import { evaluateCondition, readPath } from "@/components/helper/condition";
 import { isRelatedPath, trackReads } from "@/components/helper/track-reads";
+import { listenToValues } from "@/components/helper/value-listeners";
 import type { ConditionContext, FormFieldConfig } from "@/types";
 
 type FieldPosition = Omit<ConditionContext, "scope">;
@@ -92,7 +93,7 @@ export function useFieldConditions(
   field: FormFieldConfig<any, any>,
   position: FieldPosition,
 ): FieldConditions {
-  const { getValues, watch } = useFormContext();
+  const { getValues, watch, control } = useFormContext();
   const [, rerender] = useReducer((n: number) => n + 1, 0);
   const conditional = isConditionalField(field);
 
@@ -125,13 +126,12 @@ export function useFieldConditions(
       else state.deps = next.deps;
     };
 
-    // `watch(callback)` receives the raw payload: `name` is the changed path,
-    // or undefined for reset() (subscribe() would merge a stale name).
-    const subscription = watch((_, { name }) => check(name));
+    // `name` is the changed path, or undefined for reset().
+    const unlisten = listenToValues(control, watch, check);
     // Catch changes made between render and subscription.
     check();
-    return () => subscription.unsubscribe();
-  }, [conditional, watch, getValues]);
+    return unlisten;
+  }, [conditional, watch, getValues, control]);
 
   return current.result;
 }
