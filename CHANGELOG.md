@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.21.0](https://github.com/bonniss/react-headless-form/compare/v0.20.0...v0.21.0) (2026-11-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* a field's `render` now wins over `fieldMapping.array`; form `readOnly={false}` keeps fields' own read-only; `formOptions.defaultValues` and `RootRendererArgs.onError` are removed from the types.
+
+### Bug Fixes
+
+* render context, form readOnly, formOptions defaultValues; deprecations ([c5804b2](https://github.com/bonniss/react-headless-form/commit/c5804b209a38224dfbdd56744416cf444fe400ac))
+
 ## [0.20.0](https://github.com/bonniss/react-headless-form/compare/v0.19.0...v0.20.0) (2026-11-22)
 
 
