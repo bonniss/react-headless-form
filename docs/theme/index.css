@@ -65,7 +65,9 @@ html.dark .shiki span {
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  color: #fff;
+  /* a light chip in both themes, so dark and full-color logos stay visible */
+  background: #fff;
+  border: 1px solid var(--rp-c-divider);
   font-weight: 700;
   font-size: 14px;
 }
@@ -81,6 +83,7 @@ html.dark .shiki span {
   background: transparent;
 }
 .lib-wall__tile--own .lib-wall__mark {
+  background: transparent;
   border: 1.5px dashed var(--rp-c-divider);
   color: var(--rp-c-text-2);
 }

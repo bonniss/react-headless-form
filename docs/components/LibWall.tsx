@@ -12,8 +12,11 @@ import {
   siZod,
 } from 'simple-icons'
 
-/** `icon`: the brand logo (Simple Icons, CC0) when it exists, else the `mark` letters. */
-type Lib = { name: string; href: string; mark: string; color: string; icon?: SimpleIcon }
+/**
+ * The tile shows, in order: `icon` (Simple Icons, CC0), `logo` (an official file in
+ * public/logos, from the library's repository), or the `mark` letters in `color`.
+ */
+type Lib = { name: string; href: string; mark: string; color: string; icon?: SimpleIcon; logo?: string }
 
 const integration = (slug: string) => `/examples/recipes/integrations/${slug}`
 const schema = '/examples/foundational/schema-form'
@@ -26,43 +29,38 @@ const uiLibs: Lib[] = [
   { name: 'Material UI', href: integration('mui'), mark: 'MU', color: '#007fff', icon: siMui },
   { name: 'Chakra UI', href: integration('chakra-ui'), mark: 'Ch', color: '#319795', icon: siChakraui },
   { name: 'PrimeReact', href: integration('prime-react'), mark: 'Pr', color: '#3b82f6', icon: siPrimereact },
-  { name: 'Arco Design', href: integration('arco-design'), mark: 'Ar', color: '#165dff' },
-  { name: 'Semi Design', href: integration('semi-design'), mark: 'Se', color: '#0064fa' },
-  { name: 'TDesign', href: integration('tdesign'), mark: 'TD', color: '#0052d9' },
-  { name: 'animal-island-ui', href: integration('animal-island'), mark: 'ai', color: '#e8a33d' },
+  { name: 'Arco Design', href: integration('arco-design'), mark: 'Ar', color: '#165dff', logo: 'arco.svg' },
+  { name: 'Semi Design', href: integration('semi-design'), mark: 'Se', color: '#0064fa', logo: 'semi.svg' },
+  { name: 'TDesign', href: integration('tdesign'), mark: 'TD', color: '#0052d9', logo: 'tdesign.svg' },
+  { name: 'animal-island-ui', href: integration('animal-island'), mark: 'ai', color: '#e8a33d', logo: 'animal-island.png' },
   { name: 'React Native Web', href: integration('react-native-web'), mark: 'RN', color: '#61dafb', icon: siReact },
 ]
 
 const schemaLibs: Lib[] = [
   { name: 'Zod', href: schema, mark: 'Z', color: '#3068b7', icon: siZod },
-  { name: 'Valibot', href: schema, mark: 'V', color: '#d97706' },
-  { name: 'ArkType', href: schema, mark: 'A', color: '#7c3aed' },
+  { name: 'Valibot', href: schema, mark: 'V', color: '#d97706', logo: 'valibot.svg' },
+  { name: 'ArkType', href: schema, mark: 'A', color: '#7c3aed', logo: 'arktype.svg' },
   { name: 'Yup', href: schema, mark: 'Y', color: '#16a34a' },
   { name: 'Ajv', href: schema, mark: 'J', color: '#dc2626', icon: siAjv },
 ]
 
-/** Dark letters on light brand colors, white on the others. */
-const onColor = (hex: string) => {
-  const [r, g, b] = [0, 2, 4].map(i => Number.parseInt(hex.slice(i, i + 2), 16))
-  return 0.299 * r + 0.587 * g + 0.114 * b > 160 ? '#111' : '#fff'
+function Mark({ lib }: { lib: Lib }) {
+  if (lib.icon) {
+    return (
+      <svg viewBox="0 0 24 24" width="22" height="22" fill={`#${lib.icon.hex}`}>
+        <path d={lib.icon.path} />
+      </svg>
+    )
+  }
+  if (lib.logo) return <img src={withBase(`/logos/${lib.logo}`)} alt="" width={24} height={24} />
+  return <span style={{ color: lib.color }}>{lib.mark}</span>
 }
 
 function Tile({ lib, own = false }: { lib: Lib; own?: boolean }) {
-  const color = lib.icon ? lib.icon.hex : lib.color.replace('#', '')
   return (
     <a className={own ? 'lib-wall__tile lib-wall__tile--own' : 'lib-wall__tile'} href={withBase(lib.href)}>
-      <span
-        className="lib-wall__mark"
-        style={own ? undefined : { background: `#${color}`, color: onColor(color) }}
-        aria-hidden
-      >
-        {lib.icon ? (
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-            <path d={lib.icon.path} />
-          </svg>
-        ) : (
-          lib.mark
-        )}
+      <span className="lib-wall__mark" aria-hidden>
+        {own ? lib.mark : <Mark lib={lib} />}
       </span>
       <span className="lib-wall__name">{lib.name}</span>
     </a>
