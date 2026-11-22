@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.1](https://github.com/bonniss/react-headless-form/compare/v0.17.0...v0.17.1) (2026-11-22)
+
+
+### Performance Improvements
+
+* make the library tree-shakable ([f51c957](https://github.com/bonniss/react-headless-form/commit/f51c9579f0cc260a857aac381b7d062bab7d32b5))
+
 ## [0.17.0](https://github.com/bonniss/react-headless-form/compare/v0.16.0...v0.17.0) (2026-11-22)
 
 

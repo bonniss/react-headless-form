@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "commonjs",
   "sideEffects": false,
-  "version": "0.17.0",
+  "version": "0.17.1",
   "packageManager": "pnpm@10.12.1",
   "repository": {
     "type": "git",
