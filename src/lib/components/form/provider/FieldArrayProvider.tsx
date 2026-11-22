@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { get, useFieldArray, useFormContext, useFormState } from 'react-hook-form'
 import type { FieldResolvedProps, FormFieldConfig } from '@/types'
-import { createProvider } from '../../helper/create-provider'
+import {
+  createConsumerHook,
+  createProviderComponent,
+  createProviderContext,
+} from '../../helper/create-provider'
 import BlueFormEngine from '../internal/BlueFormEngine'
 
 type FieldArrayProviderParams = {
@@ -91,9 +95,16 @@ export type ArrayFieldContext = Partial<UseArrayFieldValue>
  * `useArrayField()` reads the current `array` field context and throws a
  * descriptive error when called outside of it.
  */
-export const [useArrayField, FieldArrayProvider] = createProvider(useArrayFieldValue, {
-  name: 'FieldArrayProvider',
-  errorMessage:
-    '[react-headless-form] useArrayField() must be called inside an `array` field rendered by <Form>' +
+const FieldArrayContext = /* @__PURE__ */ createProviderContext<UseArrayFieldValue>()
+
+export const FieldArrayProvider = /* @__PURE__ */ createProviderComponent(
+  FieldArrayContext,
+  useArrayFieldValue,
+  'FieldArrayProvider',
+)
+
+export const useArrayField = /* @__PURE__ */ createConsumerHook(
+  FieldArrayContext,
+  '[react-headless-form] useArrayField() must be called inside an `array` field rendered by <Form>' +
     ' (a `fieldMapping` component, a `render` function or a slot).',
-})
+)

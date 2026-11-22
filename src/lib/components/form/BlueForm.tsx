@@ -79,6 +79,7 @@ export function BlueFormInner<
   );
 }
 
-const BlueForm = forwardRef(BlueFormInner);
+// Pure: lets bundlers drop the form when an app only imports helpers.
+const BlueForm = /* @__PURE__ */ forwardRef(BlueFormInner);
 
 export default BlueForm;

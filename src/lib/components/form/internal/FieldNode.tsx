@@ -84,4 +84,4 @@ function FieldNode({ name, field, namespace }: FieldNodeProps) {
   }
 }
 
-export default memo(FieldNode);
+export default /* @__PURE__ */ memo(FieldNode);
