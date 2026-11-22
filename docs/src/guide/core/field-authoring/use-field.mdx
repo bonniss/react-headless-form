@@ -35,3 +35,25 @@ The full list of returned props:
 | `visible` | Whether field should render | Resolved from `visible` in field config — when `false`, the field unmounts; see [conditional rendering](../conditional-rendering.mdx) |
 | `controller` | Raw return value of RHF's `useController` | Advanced integrations only |
 | `config` | Original field config object | Meta-driven or dynamic fields only |
+
+## Typing an adapter's props
+
+A field component's props are what a config passes in `props`. When the component wraps a UI library input, take that input's props minus what `useField()` controls, with `AdapterProps`:
+
+```tsx
+import type { TextInputProps } from '@mantine/core'
+import { type AdapterProps, useField } from 'react-headless-form'
+
+// the component's own props, minus value / onChange / label / disabled / … and Mantine's `error`
+type TextFieldProps = AdapterProps<TextInputProps, 'error'>
+
+function TextField(props: TextFieldProps) {
+  const { value, onChange, onBlur, ref, label, errorMessage, disabled, readOnly } = useField()
+  return (
+    <TextInput {...props} ref={ref} label={label} value={value ?? ''} error={errorMessage}
+      onChange={(e) => onChange(e.currentTarget.value)} onBlur={onBlur} disabled={disabled} readOnly={readOnly} />
+  )
+}
+```
+
+The config's `props` then autocompletes the library's props, and rejects the controlled ones: `props: { value: 'x' }` or `props: { disabled: true }` is a type error, since the adapter would override them (use the field's `disabled` / `label` keys instead). The second argument lists extra props the adapter sets itself (Mantine `error`, antd `status`, MUI `inputRef`).
