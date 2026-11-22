@@ -41,9 +41,9 @@ features:
     icon: 🧱
     link: /guide/core/setup-form/form
   - title: Schema Validation
-    details: Works with any schema library supported by @hookform/resolvers — Zod, Yup, Valibot, ArkType, and more.
+    details: Zod, Valibot and ArkType through the schema prop (Standard Schema); Yup, Ajv and others through resolvers.
     icon: 🔒
-    link: /guide/core/schema-validation
+    link: /examples/foundational/schema-form
   - title: Platform Agnostic
     details: No web-specific assumptions. Compatible with React Native and any rendering environment React Hook Form supports.
     icon: 📱

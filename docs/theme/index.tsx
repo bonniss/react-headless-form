@@ -1,4 +1,5 @@
 import { HomeLayout as BasicHomeLayout } from "@rspress/core/theme-original";
+import LibWall from "../components/LibWall";
 import PackageInstall from "../components/PackageInstall";
 import showGif from "../show.gif";
 
@@ -28,6 +29,7 @@ const HomeLayout = () => (
         <img src={showGif} />
       </div>
     }
+    beforeFeatures={<LibWall />}
   />
 );
 
