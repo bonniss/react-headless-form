@@ -48,3 +48,7 @@ const [Form] = setupForm({
 ## Performance
 
 **12. `visible` / `disabled` / `required` functions only react to values read through their `values` argument.** Since v0.16, BlueForm records those reads and re-runs a function only when they change (deps are inferred; `deps` is optional). A function that reads something else, such as `getValues()` from a closure or a mutable external store, is not re-run when that changes. Read form values from the argument, keep other state in React state (so the parent re-renders), or declare `deps`. See [Conditional rendering → deps](../core/conditional-rendering.mdx#performance-deps).
+
+**13. With `shouldUnregister: true`, React StrictMode can drop the values of array rows added with `append()`.** StrictMode's simulated unmount / remount makes react-hook-form register the new row again from `defaultValues`, so its appended values are lost (development only). Keep `shouldUnregister` off for forms with arrays, or test that flow outside StrictMode.
+
+**14. `append()` focuses the new row by default.** If that row has required fields, clicking "Add" again blurs it first: with `mode: "onBlur"` / `"onTouched"` its error appears, the layout shifts and the second click can miss the button. Pass `append(row, { shouldFocus: false })` for repeated adds.
