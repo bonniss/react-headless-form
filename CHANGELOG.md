@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.19.0](https://github.com/bonniss/react-headless-form/compare/v0.18.0...v0.19.0) (2026-11-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* useField().id is no longer the bare path; code reading `ctx.scope.x` needs `ctx.scope?.x`.
+
+### Bug Fixes
+
+* retranslate shown errors on a language change; re-run compute when its function changes ([774858e](https://github.com/bonniss/react-headless-form/commit/774858e70ecf7e4d2ff4651ada3947e9176ef47c))
+* unique field ids per form; ctx.scope may be undefined ([16ebbd5](https://github.com/bonniss/react-headless-form/commit/16ebbd5a51ceddf19f296136f50fd26d33f6bfb2))
+
 ## [0.18.0](https://github.com/bonniss/react-headless-form/compare/v0.17.1...v0.18.0) (2026-11-22)
 
 
