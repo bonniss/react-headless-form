@@ -18,12 +18,17 @@ export default function EgI18nParaglide() {
   const t = useMemo(() => translator(locale), [locale]);
   return (
     <Form
-      i18nConfig={{ t, validationTranslation: { required: "validation_required", minLength: "validation_min_length" } }}
+      i18nConfig={{
+        t,
+        validationTranslation: { required: "validation_required", minLength: "validation_min_length" },
+        translateProps: ["placeholder"],
+      }}
       config={{
         username: {
           type: "text",
           label: "username_label",
           description: "username_description",
+          props: { placeholder: "username_placeholder" },
           rules: { required: true, minLength: 3 },
         },
       }}

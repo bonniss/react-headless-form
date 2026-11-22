@@ -7,7 +7,7 @@ BlueForm translates at the orchestration level: field components receive ready-t
 
 ## Translating labels and descriptions
 
-`t` receives the string from the field config and returns its translation. BlueForm does not dictate a key format.
+`t` receives the string from the field config and returns its translation. BlueForm does not dictate a key format. Field `props` such as `placeholder` pass through untouched unless listed in `i18nConfig.translateProps` (the library examples below translate `placeholder`).
 
 import { Tab, Tabs } from '@rspress/core/theme';
 import EgI18nMessages from '../_shared/EgI18nMessages';

@@ -2,6 +2,7 @@
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "username_label": "Username",
   "username_description": "Your public display name",
+  "username_placeholder": "e.g. ada_lovelace",
   "validation_required": "{field} is required",
   "validation_min_length": "{field} must be at least {minLength} characters"
 }
