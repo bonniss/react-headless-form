@@ -216,7 +216,7 @@ export function setupForm(baseConfig?: BlueFormBaseConfig<ComponentMap>) {
     };
 
     // Same rule for i18nConfig, key by key: setupForm holds what is fixed
-    // (validationTranslation, translateProps), a Form passes what changes
+    // (validationTranslation), a Form passes what changes
     // with the language (`t`). A key set on the Form, even to undefined, wins.
     const mergedI18nConfig = useMemo(
       () => (i18nConfig ? { ...resolvedConfig.i18nConfig, ...i18nConfig } : resolvedConfig.i18nConfig),

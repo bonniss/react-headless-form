@@ -35,7 +35,7 @@ const [Form] = setupForm({
     </form>
   ),
   fieldMapping: defineMapping({ text: TextField }),
-  i18nConfig: { validationTranslation: { required: "required" }, translateProps: ["placeholder"] },
+  i18nConfig: { validationTranslation: { required: "required" } },
 });
 
 const config = {
@@ -43,7 +43,7 @@ const config = {
 } as const;
 
 describe("i18nConfig: setupForm and Form are merged key by key", () => {
-  it("uses setupForm's validationTranslation and translateProps with the Form's t", async () => {
+  it("uses setupForm's validationTranslation with the Form's t", async () => {
     render(<Form i18nConfig={{ t: tEn }} config={config} />);
     expect(screen.getByText("Name")).toBeTruthy();
     expect(screen.getByTestId("name").getAttribute("placeholder")).toBe("Your name");
@@ -77,10 +77,14 @@ describe("i18nConfig: setupForm and Form are merged key by key", () => {
     expect(screen.getByTestId("name").getAttribute("placeholder")).toBe("お名前");
   });
 
-  it("a key set on the Form, even to undefined, replaces setupForm's", () => {
-    render(<Form i18nConfig={{ t: tEn, translateProps: undefined }} config={config} />);
-    expect(screen.getByText("Name")).toBeTruthy();
-    expect(screen.getByTestId("name").getAttribute("placeholder")).toBe("hint");
+  it("a key set on the Form, even to undefined, replaces setupForm's", async () => {
+    const own = { name: { ...config.name, rules: { required: "Fill it in" } } };
+    render(<Form i18nConfig={{ t: tEn, validationTranslation: undefined }} config={own} />);
+    await act(async () => {
+      fireEvent.click(screen.getByText("submit"));
+    });
+    // the field's own message, not setupForm's validation key
+    expect(screen.getByTestId("name-error").textContent).toBe("Fill it in");
   });
 
   it("enabled: false on a Form turns i18n off for that form", () => {
