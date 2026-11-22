@@ -42,6 +42,10 @@ html.dark .shiki span {
 .lib-wall__grid--small {
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
 }
+/* longer names (react-intl, Paraglide JS) stay on one line */
+.lib-wall__grid--wide {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
 .lib-wall__tile {
   display: flex;
   align-items: center;
