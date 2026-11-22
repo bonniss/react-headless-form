@@ -29,7 +29,7 @@ const HomeLayout = () => (
         <img src={showGif} />
       </div>
     }
-    beforeFeatures={<LibWall />}
+    afterFeatures={<LibWall />}
   />
 );
 

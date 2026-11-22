@@ -28,16 +28,13 @@ const schemaLibs: Lib[] = [
   { name: 'Ajv', href: schema, mark: 'J', color: '#dc2626' },
 ]
 
-function Tile({ lib, note }: { lib: Lib; note: string }) {
+function Tile({ lib, own = false }: { lib: Lib; own?: boolean }) {
   return (
-    <a className="lib-wall__tile" href={withBase(lib.href)}>
-      <span className="lib-wall__mark" style={{ background: lib.color }}>
+    <a className={own ? 'lib-wall__tile lib-wall__tile--own' : 'lib-wall__tile'} href={withBase(lib.href)}>
+      <span className="lib-wall__mark" style={own ? undefined : { background: lib.color }}>
         {lib.mark}
       </span>
-      <span>
-        <span className="lib-wall__name">{lib.name}</span>
-        <span className="lib-wall__note">{note}</span>
-      </span>
+      <span className="lib-wall__name">{lib.name}</span>
     </a>
   )
 }
@@ -46,18 +43,21 @@ function Tile({ lib, note }: { lib: Lib; note: string }) {
 export default function LibWall() {
   return (
     <section className="lib-wall">
-      <h2>Works with your UI library</h2>
-      <p>Live, self-hosted examples of the same form: pick one.</p>
+      <h2>Works with any UI library</h2>
+      <p>The same form, built with each of these. Pick one to see it live, or bring your own components.</p>
       <div className="lib-wall__grid">
         {uiLibs.map(lib => (
-          <Tile key={lib.name} lib={lib} note="live demo" />
+          <Tile key={lib.name} lib={lib} />
         ))}
+        <Tile own lib={{ name: 'Your own', href: `${integration('')}#bring-your-own-library`, mark: '+', color: '' }} />
       </div>
-      <h3>…and your schema library</h3>
+      <h3>…and any schema library</h3>
+      <p>Any Standard Schema through the <code>schema</code> prop; anything else through a resolver.</p>
       <div className="lib-wall__grid lib-wall__grid--small">
         {schemaLibs.map(lib => (
-          <Tile key={lib.name} lib={lib} note="example" />
+          <Tile key={lib.name} lib={lib} />
         ))}
+        <Tile own lib={{ name: 'Any other', href: schema, mark: '+', color: '' }} />
       </div>
     </section>
   )
