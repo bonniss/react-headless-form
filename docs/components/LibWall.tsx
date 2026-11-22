@@ -50,9 +50,9 @@ const schemaLibs: Lib[] = [
 
 const i18nLibs: Lib[] = [
   { name: 'i18next', href: i18n, mark: 'i', color: '#26a69a', icon: siI18next },
-  { name: 'react-intl', href: i18n, mark: 'Fj', color: '#0f6ab4' },
-  { name: 'Lingui', href: i18n, mark: 'Li', color: '#e7493c' },
-  { name: 'Paraglide JS', href: i18n, mark: 'Pg', color: '#0ea5e9' },
+  { name: 'react-intl', href: i18n, mark: 'Fj', color: '#6f3c97', logo: 'formatjs.svg' },
+  { name: 'Lingui', href: i18n, mark: 'Li', color: '#ef4242', logo: 'lingui.svg' },
+  { name: 'Paraglide JS', href: i18n, mark: 'Pg', color: '#e8603c', logo: 'paraglide.png' },
 ]
 
 function Mark({ lib }: { lib: Lib }) {
@@ -99,7 +99,7 @@ export default function LibWall() {
         <CtaTile href={`${integration('')}#bring-your-own-library`}>Don't see your library? Start here →</CtaTile>
       </div>
       <h3>…and so does any schema library</h3>
-      <div className="lib-wall__grid lib-wall__grid--small">
+      <div className="lib-wall__grid lib-wall__grid--wide">
         {schemaLibs.map(lib => (
           <Tile key={lib.name} lib={lib} />
         ))}
