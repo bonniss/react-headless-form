@@ -9,7 +9,7 @@ import PackageInstall from '../../../components/PackageInstall'
 
 <PackageInstall />
 
-`react-hook-form` is a peer dependency (v0.14+), so install it alongside BlueForm.
+Peer dependencies: `react-hook-form` `^7.55.0` and `react` / `react-dom` `^16.8 || ^17 || ^18 || ^19`. Install `react-hook-form` alongside BlueForm.
 
 ## Basic usage
 
@@ -24,35 +24,7 @@ type LoginData = {
 
 ### 0. Define a field
 
-```tsx
-import type { InputHTMLAttributes } from "react";
-import { useField } from "react-headless-form";
-
-export default function InputField(props: InputHTMLAttributes<HTMLInputElement>) {
-  const { value, onChange, onBlur, ref, label, description, errorMessage, required, disabled, readOnly } =
-    useField();
-
-  return (
-    <div>
-      {/* the input inside its label: associated without any id */}
-      <label>
-        {label} {required && "*"}
-        <input
-          {...props}
-          ref={ref}
-          value={value ?? ""}
-          onChange={(e) => onChange(e.target.value)}
-          onBlur={onBlur}
-          disabled={disabled}
-          readOnly={readOnly}
-          aria-invalid={Boolean(errorMessage)}
-        />
-      </label>
-      {description && <div>{description}</div>}
-      {errorMessage && <div role="alert">{errorMessage}</div>}
-    </div>
-  );
-}
+```tsx file="../../../components/InputField.tsx"
 ```
 
 Notice that the field receives everything it needs from `useField` hook to be functional without needing to know where those values come from.

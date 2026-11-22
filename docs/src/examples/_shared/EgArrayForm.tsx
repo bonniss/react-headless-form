@@ -39,12 +39,12 @@ const experienceConfig = defineConfig<ExperienceItem>({
 });
 
 function ArrayField() {
-  const { label, items, renderItem, append, remove, duplicate, errorMessage } = useArrayField();
+  const { label, fields, renderItem, append, remove, duplicate, errorMessage } = useArrayField();
 
   return (
     <fieldset>
       <legend>{label}</legend>
-      {items.map((field, index) => (
+      {fields.map((field, index) => (
         <fieldset key={field.id}>
           <legend>#{index + 1}</legend>
           {renderItem(field, index)}

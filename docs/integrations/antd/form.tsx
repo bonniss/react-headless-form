@@ -41,10 +41,10 @@ function Root({ children, onSubmit }: { children: ReactNode; onSubmit: () => voi
 
 function Guests() {
   const t = useT()
-  const { label, items, renderItem, append, remove, errorMessage } = useArrayField()
+  const { label, fields, renderItem, append, remove, errorMessage } = useArrayField()
   return (
     <Card title={label} size="small" style={fullRow}>
-      {items.map((item, index) => (
+      {fields.map((item, index) => (
         <Flex key={item.id} gap={8} align="end">
           <div style={{ flex: 1 }}>{renderItem(item, index)}</div>
           <Button danger type="link" style={{ marginBottom: 12 }} onClick={() => remove(index)}>

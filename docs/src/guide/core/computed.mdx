@@ -53,7 +53,7 @@ In array rows, use `ctx.scope` for the row, and aggregate rows at the top level:
 
 ```tsx
 const lineConfig = defineConfig<Line, Invoice>({
-  total: { type: "number", readOnly: true, compute: (_, { scope }) => (scope.qty ?? 0) * (scope.price ?? 0) },
+  total: { type: "number", readOnly: true, compute: (_, { scope }) => (scope?.qty ?? 0) * (scope?.price ?? 0) },
 });
 
 grandTotal: {
@@ -88,4 +88,4 @@ Computes that depend on each other in a loop (`a` from `b`, `b` from `a`) are st
 ## Examples
 
 - [Computed fields](../../examples/foundational/computed-field.mdx): full name, initials and BMI.
-- [Integration demos](../../examples/recipes/integrations/index.mdx): an editable slug, a BMI chain in a nested section (`ctx.scope`), and invoice line totals with a subtotal → VAT → total chain, in five UI libraries.
+- [Integration demos](../../examples/recipes/integrations/index.mdx): a registration total computed from the ticket and the guest list, in eleven UI libraries.

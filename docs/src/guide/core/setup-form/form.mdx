@@ -92,7 +92,7 @@ onSubmit={(data, formMethods, event) => {
 }}
 ```
 
-Use this for submit-time effects such as API calls, persistence, navigation, or analytics. If you need to derive field values while the user is typing, use `onFieldChange` instead.
+Use this for submit-time effects such as API calls, persistence, navigation, or analytics. To derive a field from others while the user types, use the field's [`compute`](../computed.mdx).
 
 ### `onSubmitSuccess`
 
@@ -133,7 +133,7 @@ Renamed to [`onInvalid`](#oninvalid) because the old name suggested it also hand
 
 ### `defaultValues`
 
-Initial values for the form. These are passed into [RHF `useForm`](https://react-hook-form.com/docs/useform) and always take precedence over `formOptions.defaultValues`.
+Initial values for the form, passed to [RHF `useForm`](https://react-hook-form.com/docs/useform). This is the only place for them: `formOptions` does not accept `defaultValues`.
 
 ```tsx
 <Form defaultValues={{ username: "alice" }} ... />
@@ -146,20 +146,22 @@ Use this for initial edit-state data, server-provided defaults, or sensible empt
 Options passed to [RHF `useForm`](https://react-hook-form.com/docs/useform) for this specific form instance. These merge over `formOptions` defined in `setupForm` and per-form values always win.
 
 ```tsx
-<Form formOptions={{ resolver: zodResolver(schema) }} ... />
+<Form formOptions={{ mode: "onSubmit", shouldUnregister: true }} ... />
 ```
+
+Defaults set by BlueForm (RHF's differ): `mode: "onTouched"` (a field is validated after its first blur, then on every change) and `reValidateMode: "onChange"`.
 
 Common use cases:
 
-- `resolver` for schema validation
 - `mode` to override the default validation trigger
+- `resolver` for a resolver-based library (Ajv, or any `@hookform/resolvers` one); for a Standard Schema, prefer the [`schema` prop](../schema-validation.mdx)
 - `shouldUnregister` to control hidden or unmounted field retention
 
 Use `formOptions` when you want BlueForm to keep handling rendering and field wiring, but still need lower-level RHF behavior control.
 
 ### `readOnly`
 
-When `true`, all fields in the form receive `readOnly: true`.
+When `true`, all fields in the form receive `readOnly: true`. It only adds read-only: with `false` (or omitted), each field keeps its own `readOnly`, so one form serves a view page (`readOnly`) and an edit page (`readOnly={false}`) while fields such as computed totals stay read-only on both.
 
 This is a form-level hint for your field components. BlueForm passes the flag down, but each renderer is still responsible for deciding how read-only mode should look and behave.
 
@@ -174,10 +176,8 @@ This is most useful for autosave, external state sync, analytics, or debugging. 
 Called when a single field value changes. Receives a typed context object plus the full [RHF form methods](https://react-hook-form.com/docs/useform):
 
 ```tsx
-onFieldChange={({ name, value, values, setValue, trigger, formState }, form) => {
-  if (name === "title") {
-    setValue("slug", value?.toLowerCase().replace(/\s+/g, "-") ?? "")
-  }
+onFieldChange={({ name, value }) => {
+  if (name === "country") analytics.track("country_changed", { value })
 }}
 ```
 
@@ -192,7 +192,7 @@ The first argument contains:
 | `trigger` | [RHF `trigger`](https://react-hook-form.com/docs/useform/trigger) helper for revalidation flows |
 | `formState` | Current [RHF `formState`](https://react-hook-form.com/docs/useform/formstate) snapshot |
 
-Derived fields and side effects like `title -> slug` can be handled with this API, but use it carefully once many fields start depending on each other - update loops can shoot you in the foot.
+Use it for side effects (analytics, remote lookups). For a value derived from other fields, use [`compute`](../computed.mdx) instead of `setValue` here: it tracks dependencies, settles chains and keeps the form pristine on mount.
 
 ### `debounceMs`
 
@@ -269,14 +269,15 @@ Each entry in `config` describes a single field. All fields share a common set o
 | `label` | `string \| TranslatableText` | Field label, passed through i18n pipeline |
 | `description` | `string \| TranslatableText` | Helper text, passed through i18n pipeline |
 | `defaultValue` | `any` | Initial value for the field |
-| `rules` | `ValidationRules` | RHF validation rules - disabled when `formOptions.resolver` is provided |
+| `rules` | `ValidationRules` | RHF validation rules - ignored when `schema` or `formOptions.resolver` is set |
 | `props` | `ComponentProps<...>` | Extra props passed to the field component - typed against the component's prop interface |
 | `render` | `RenderFn` | Per-field render override - see [render prop](../field-authoring/render.mdx) |
-| `visible` | `boolean \| (values) => boolean` | Controls field visibility - hidden fields unmount, so state retention depends on whether the field ever mounted and on RHF `shouldUnregister` |
-| `disabled` | `boolean \| (values) => boolean` | Controls disabled state - disabled fields are excluded from the submit payload |
-| `readOnly` | `boolean` | Field-level read-only state - merged with form-level `readOnly` |
-| `required` | `boolean \| (values) => boolean` | UI-only `required` flag (e.g. to show `*`). Defaults to `Boolean(rules.required)`. Does not add validation |
-| `deps` | `Path[]` | Optional (inferred since v0.16). Overrides which paths re-run the `visible` / `disabled` / `required` functions. See [conditional rendering](../conditional-rendering.mdx#performance-deps) |
+| `visible` | `boolean \| Condition \| (values, ctx) => boolean` | Controls field visibility - hidden fields unmount, so state retention depends on whether the field ever mounted and on RHF `shouldUnregister` |
+| `disabled` | `boolean \| Condition \| (values, ctx) => boolean` | Controls disabled state - disabled fields are excluded from the submit payload |
+| `readOnly` | `boolean` | Field-level read-only state; a form-level `readOnly` can only add to it |
+| `required` | `boolean \| Condition \| (values, ctx) => boolean` | UI-only `required` flag (e.g. to show `*`). Defaults to `Boolean(rules.required)`. Does not add validation |
+| `deps` | `Path[]` | Optional (inferred since v0.16). Overrides which paths re-run the `visible` / `disabled` / `required` functions and `compute`. See [conditional rendering](../conditional-rendering.mdx#performance-deps) |
+| `compute` | `(values, ctx) => value` | Derives the field's value from other values. See [computed fields](../computed.mdx) |
 | `slots` | `{ before?, after? }` | Extra UI rendered right before / after the field, inside its field context. See [slots](#slots) |
 
 `visible` and `disabled` can also be functions. In that case they receive the current form values and are re-evaluated when the values they read change:
@@ -294,7 +295,7 @@ confirm: {
 
 For the full runtime behavior - including hidden-from-start fields, `defaultValue`, and `shouldUnregister` - see [conditional rendering](../conditional-rendering.mdx).
 
-`rules` uses standard [React Hook Form validation rules](https://react-hook-form.com/docs/useform/register). `pattern` additionally accepts a string — `"^\\d+$"` or `"/^abc$/i"` — so configs can be stored as plain data. These are automatically disabled when `formOptions.resolver` is provided, so schema-driven forms should keep validation in the resolver instead.
+`rules` uses standard [React Hook Form validation rules](https://react-hook-form.com/docs/useform/register). `pattern` additionally accepts a string — `"^\\d+$"` or `"/^abc$/i"` — so configs can be stored as plain data. They are ignored when `schema` or `formOptions.resolver` is set: keep all validation in the schema.
 
 ```tsx
 username: {
@@ -310,7 +311,7 @@ username: {
 
 _Added in v0.14._
 
-`slots` renders extra UI next to one specific field without replacing it via `render`. Slot content is rendered inside the field's context, so a slot component can call `useField()`, and a function slot receives the live field props (including `value`):
+`slots` renders extra UI next to one specific field without replacing it via `render`. Slot content is rendered inside the field's context, so a slot component can call `useField()`, and a function slot receives the live field props (including `value`). On `array` fields a function slot receives the array's metadata and its `errorMessage`:
 
 ```tsx
 note: {

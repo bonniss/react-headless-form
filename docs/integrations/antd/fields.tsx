@@ -1,10 +1,11 @@
+import { useId } from 'react'
 import { Checkbox, Form, Input, Select } from 'antd'
 import { type AdapterProps, useField } from 'react-headless-form'
 import type { CheckboxProps, InputProps, SelectProps } from 'antd'
 
 // Form.Item is used for layout only; values and errors come from useField().
-function Item({ children }: { children: React.ReactNode }) {
-  const { id, label, errorMessage, required } = useField()
+function Item({ id, children }: { id: string; children: React.ReactNode }) {
+  const { label, errorMessage, required } = useField()
   return (
     <Form.Item
       label={label}
@@ -28,9 +29,10 @@ type Extra = 'id' | 'status'
 export type TextFieldProps = AdapterProps<InputProps, Extra>
 
 function TextField(props: TextFieldProps) {
-  const { id, value, onChange, onBlur, errorMessage, disabled, readOnly } = useField()
+  const id = useId()
+  const { value, onChange, onBlur, errorMessage, disabled, readOnly } = useField()
   return (
-    <Item>
+    <Item id={id}>
       <Input
         {...props}
         id={id}
@@ -50,9 +52,10 @@ function TextField(props: TextFieldProps) {
 export type SelectFieldProps = AdapterProps<SelectProps<string>, Extra>
 
 function SelectField(props: SelectFieldProps) {
-  const { id, value, onChange, onBlur, errorMessage, disabled } = useField()
+  const id = useId()
+  const { value, onChange, onBlur, errorMessage, disabled } = useField()
   return (
-    <Item>
+    <Item id={id}>
       {/* antd passes the value, not an event */}
       <Select
         {...props}

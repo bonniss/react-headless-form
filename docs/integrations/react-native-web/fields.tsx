@@ -30,13 +30,12 @@ function FieldShell({ children }: { children: ReactNode }) {
 export type TextFieldProps = AdapterProps<TextInputProps, 'editable' | 'onChangeText'>
 
 function TextField(props: TextFieldProps) {
-  const { id, value, onChange, onBlur, label, errorMessage, disabled, readOnly } = useField()
+  const { value, onChange, onBlur, label, errorMessage, disabled, readOnly } = useField()
   return (
     <FieldShell>
       <TextInput
         placeholderTextColor="#94a3b8"
         {...props}
-        nativeID={id}
         accessibilityLabel={typeof label === 'string' ? label : undefined}
         value={value == null ? '' : String(value)}
         onChangeText={text => onChange(text)} // the text, not an event

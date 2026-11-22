@@ -38,7 +38,7 @@ initials: {
 - **Multi-source:** `fullName` reads two fields; it re-runs when either changes.
 - **Chained:** `initials` reads the computed `fullName`; chains settle in any config order.
 - **Incomplete inputs:** return `undefined` (BMI stays empty until weight and height are filled).
-- `readOnly: true` fields always follow the computed value. An editable computed field follows it until the user edits it; see the slug in the [integration demos](../recipes/integrations/index.mdx).
+- `readOnly: true` fields always follow the computed value. An editable computed field follows it until the user edits it (clearing it resumes syncing).
 
 :::tip
 Computed values are part of the form state: they are validated, reported to `onFieldChange` and submitted. Before v0.17 this example used `onFieldChange` + `setValue`; `compute` replaces that pattern (chains included).

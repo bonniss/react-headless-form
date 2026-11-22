@@ -26,7 +26,7 @@ import RegistrationForm from '../_shared/EgRegistrationForm';
 
 **`select` field** — `options` is passed via `props`, typed against `SelectField`'s prop interface.
 
-**Cross-field validation** — `password_confirm` uses `validate` in `rules` to compare against the current form value via `getValues`:
+**Cross-field validation** — `password_confirm` uses `validate` in `rules` to compare against the current form values (its second argument):
 
 ```tsx
 rules: {

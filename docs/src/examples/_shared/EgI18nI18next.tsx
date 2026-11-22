@@ -44,18 +44,16 @@ const [Form] = setupForm({
     </div>
   ),
   fieldMapping: defineMapping({ text: InputField }),
-  i18nConfig: {
-    // @ts-ignore
-    t: (key, params) => i18next.t(key, params as object),
-    validationTranslation: {
-      required: "validation.required",
-      minLength: "validation.minLength",
-      pattern: "validation.pattern",
-    },
-  },
 });
 
+const validationTranslation = {
+  required: "validation.required",
+  minLength: "validation.minLength",
+  pattern: "validation.pattern",
+};
+
 export default function EgI18nI18next() {
+  // `t` changes with the language: labels and shown errors follow it
   const { i18n, t } = useTranslation();
 
   const toggleLang = () =>
@@ -70,7 +68,7 @@ export default function EgI18nI18next() {
       </div>
 
       <Form
-        key={i18n.language}
+        i18nConfig={{ t: (key, params) => String(t(key, params)), validationTranslation }}
         config={{
           username: {
             type: "text",

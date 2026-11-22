@@ -136,24 +136,9 @@ export function InputField() {
 }
 ```
 
-### Visibility guard
+### Visibility
 
-Respect `visible` at the top of the component:
-
-```tsx
-export function InputField() {
-  const { value, onChange, visible } = useField()
-
-  if (!visible) return null
-
-  return (
-    <input
-      value={value ?? ''}
-      onChange={(e) => onChange?.(e.target.value)}
-    />
-  )
-}
-```
+A field component never has to check `visible`: a hidden field is not rendered at all, so `useField().visible` is always `true` inside it.
 
 ### Accessibility
 

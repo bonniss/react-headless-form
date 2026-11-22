@@ -34,12 +34,12 @@ function Root({ children, onSubmit }: { children: ReactNode; onSubmit: () => voi
 
 function Guests() {
   const t = useT()
-  const { label, items, renderItem, append, remove, errorMessage } = useArrayField()
+  const { label, fields, renderItem, append, remove, errorMessage } = useArrayField()
   const add = () => append({ name: '' }, { shouldFocus: false })
   return (
     <View style={styles.card}>
       <Text style={styles.cardTitle}>{label}</Text>
-      {items.map((item, index) => (
+      {fields.map((item, index) => (
         <View key={item.id} style={styles.guest}>
           <View style={{ flex: 1 }}>{renderItem(item, index)}</View>
           <Button title={t('action.remove')} color="#dc2626" onPress={() => remove(index)} />

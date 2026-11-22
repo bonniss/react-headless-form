@@ -41,7 +41,7 @@ features:
     icon: 🧱
     link: /guide/core/setup-form/form
   - title: Schema Validation
-    details: Zod, Valibot and ArkType through the schema prop (Standard Schema); Yup, Ajv and others through resolvers.
+    details: Zod, Valibot, ArkType and Yup through the schema prop (Standard Schema); Ajv and others through resolvers.
     icon: 🔒
     link: /examples/foundational/schema-form
   - title: Platform Agnostic

@@ -22,7 +22,7 @@ addresses: {
 
 ## Rendering
 
-Array fields require a renderer — either `render` inline or a component registered in `fieldMapping["array"]`.
+Array fields require a renderer — either `render` inline or a component registered in `fieldMapping["array"]`. A field's own `render` wins over `fieldMapping["array"]`, so a mapped array component is the default shell and `render` customizes one field.
 
 ### Via `render`
 
@@ -31,7 +31,7 @@ The `render` function is responsible for the shell — the container, action but
 ```tsx
 addresses: {
   type: "array",
-  render: ({ label, errorMessage, items, append, renderItems }) => (
+  render: ({ label, errorMessage, fields, append, renderItems }) => (
     <fieldset>
       <legend>{label}</legend>
       {renderItems()}
@@ -47,15 +47,15 @@ addresses: {
 }
 ```
 
-`append`, `insert` and `prepend` are react-hook-form's: they focus the new row unless you pass `{ shouldFocus: false }`, which suits an "Add" button pressed several times (see [pitfall 14](../../start/pitfalls.mdx)).
+`append`, `insert` and `prepend` are react-hook-form's: they focus the new row unless you pass `{ shouldFocus: false }`, which suits an "Add" button pressed several times (see [pitfall 15](../../start/pitfalls.mdx)).
 
-For per-item control — individual remove buttons, item wrappers — use `renderItem` and `items` directly:
+For per-item control — individual remove buttons, item wrappers — use `renderItem` and `fields` directly:
 
 ```tsx
-render: ({ label, items, append, renderItem, remove }) => (
+render: ({ label, fields, append, renderItem, remove }) => (
   <fieldset>
     <legend>{label}</legend>
-    {items.map((field, index) => (
+    {fields.map((field, index) => (
       <div key={field.id}>
         {renderItem(field, index)}
         <button type="button" onClick={() => remove(index)}>Remove</button>
@@ -72,14 +72,14 @@ For a consistent array shell across all forms, register a global component via `
 
 ```tsx
 const ArrayField = () => {
-  const { label, errorMessage, items, renderItems, append, pop } = useArrayField()
+  const { label, errorMessage, fields, renderItems, append, pop } = useArrayField()
 
   return (
     <fieldset>
       <legend>{label}</legend>
       {renderItems()}
       <button type="button" onClick={() => append({})}>Add</button>
-      <button type="button" disabled={!items.length} onClick={pop}>Remove last</button>
+      <button type="button" disabled={!fields.length} onClick={pop}>Remove last</button>
       {errorMessage && <div>{errorMessage}</div>}
     </fieldset>
   )
@@ -93,7 +93,7 @@ const [Form] = setupForm({
 })
 ```
 
-Fields with no `render` automatically fall back to `fieldMapping["array"]`. If neither is provided, an error is thrown at render time.
+Fields with no `render` use `fieldMapping["array"]`. If neither is provided, an error is thrown at render time.
 
 ## Array-level validation
 

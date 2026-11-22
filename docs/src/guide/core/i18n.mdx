@@ -32,14 +32,19 @@ const [Form] = setupForm({
 const [Form] = setupForm({
   i18nConfig: {
     validationTranslation: {
-      required: "validation.required",
+      required: "validation.required", // "{field} is required"
+      minLength: "validation.minLength", // "{field}: at least {minLength} characters"
     },
-    t: (message, params) => `${params?.field} is required`,
+    t: (key, params) => translate(key, params), // your translator
   },
 });
 ```
 
-Validation rules remain standard RHF rules.
+Validation rules remain standard RHF rules. How `validationTranslation` works:
+
+- It covers `required`, `min`, `max`, `minLength`, `maxLength` and `pattern` (not `validate`, whose functions return their own message).
+- `t` receives the key and `{ field, <rule>: value }`: `field` is the translated label, and e.g. `minLength: 3` for `minLength`.
+- It **replaces** the field's own message for that rule (`rules: { required: "Name is needed" }` shows the `validation.required` message). Leave a rule out of `validationTranslation` to keep per-field messages for it.
 
 ### Example: using i18next
 
@@ -48,7 +53,7 @@ import i18next from "i18next";
 
 const [Form] = setupForm({
   i18nConfig: {
-    t: (key, params) => i18next.t(key, params),
+    t: (key, params) => String(i18next.t(key, params)),
     validationTranslation: {
       required: "validation.required",
     },

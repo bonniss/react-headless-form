@@ -47,14 +47,13 @@ const ComplexObjectForm = () => (
     config={{
       account: {
         type: "section", // built in type
-        config: defineConfig<LoginData["account"]>({
-          username: {
-            type: "text",
-          },
-          password: {
-            type: "text",
-          },
-        }),
+        props: {
+          nested: true, // values live under `account`
+          config: defineConfig<LoginData["account"]>({
+            username: { type: "text" },
+            password: { type: "text" },
+          }),
+        },
       },
     }}
   />

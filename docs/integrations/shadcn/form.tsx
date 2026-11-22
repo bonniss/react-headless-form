@@ -37,11 +37,11 @@ function Root({ children, onSubmit }: { children: ReactNode; onSubmit: () => voi
 
 function Guests() {
   const t = useT()
-  const { label, items, renderItem, append, remove, errorMessage } = useArrayField()
+  const { label, fields, renderItem, append, remove, errorMessage } = useArrayField()
   return (
     <Card className="sm:col-span-2">
       <CardTitle>{label}</CardTitle>
-      {items.map((item, index) => (
+      {fields.map((item, index) => (
         <div key={item.id} className="flex items-end gap-2">
           <div className="flex-1">{renderItem(item, index)}</div>
           <Button type="button" variant="ghost" onClick={() => remove(index)}>

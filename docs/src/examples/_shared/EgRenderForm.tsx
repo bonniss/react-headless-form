@@ -79,10 +79,10 @@ function EgRenderForm() {
           type: 'array',
           label: 'Tags (max 3)',
           rules: { maxLength: { value: 3, message: 'At most 3 tags' } },
-          render: ({ label, items, renderItem, append, remove, errorMessage }) => (
+          render: ({ label, fields, renderItem, append, remove, errorMessage }) => (
             <fieldset>
               <legend>{label}</legend>
-              {items.map((item, index) => (
+              {fields.map((item, index) => (
                 <div key={item.id}>
                   {renderItem(item, index)}
                   <button type="button" onClick={() => remove(index)}>

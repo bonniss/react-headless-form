@@ -1,10 +1,11 @@
+import { useId } from 'react'
 import { Checkbox, Input, Select, Typography } from '@douyinfe/semi-ui-19'
 import type { ComponentProps, ReactNode } from 'react'
 import { type AdapterProps, useField } from 'react-headless-form'
 
 // Semi's Form.* fields need Semi's Form: plain markup for label and message
-function FieldShell({ children }: { children: ReactNode }) {
-  const { id, label, errorMessage, required } = useField()
+function FieldShell({ id, children }: { id: string; children: ReactNode }) {
+  const { label, errorMessage, required } = useField()
   return (
     <div style={{ display: 'grid', gap: 4 }}>
       <label htmlFor={id}>
@@ -21,9 +22,10 @@ function FieldShell({ children }: { children: ReactNode }) {
 export type TextFieldProps = AdapterProps<ComponentProps<typeof Input>, 'id' | 'validateStatus' | 'readonly'>
 
 function TextField(props: TextFieldProps) {
-  const { id, value, onChange, onBlur, errorMessage, disabled, readOnly } = useField()
+  const id = useId()
+  const { value, onChange, onBlur, errorMessage, disabled, readOnly } = useField()
   return (
-    <FieldShell>
+    <FieldShell id={id}>
       <Input
         {...props}
         id={id}
@@ -42,9 +44,10 @@ function TextField(props: TextFieldProps) {
 export type SelectFieldProps = AdapterProps<ComponentProps<typeof Select>, 'id' | 'validateStatus'>
 
 function SelectField(props: SelectFieldProps) {
-  const { id, value, onChange, onBlur, errorMessage, disabled } = useField()
+  const id = useId()
+  const { value, onChange, onBlur, errorMessage, disabled } = useField()
   return (
-    <FieldShell>
+    <FieldShell id={id}>
       <Select
         style={{ width: '100%' }}
         {...props}

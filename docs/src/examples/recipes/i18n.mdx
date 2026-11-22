@@ -72,5 +72,5 @@ import EgI18nI18next from '../_shared/EgI18nI18next';
 </Tabs>
 
 :::tip
-The `key={i18n.language}` on `Form` forces a remount when the language changes, ensuring labels and error messages re-resolve through the updated `t` function. Without it, already-rendered fields would keep their previous translated strings until they re-validate.
+Pass `t` from `useTranslation()` in `i18nConfig`: it changes with the language, so labels and the error messages already shown follow it, without remounting the form (values are kept).
 :::

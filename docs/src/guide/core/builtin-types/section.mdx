@@ -15,8 +15,8 @@ __layout: {
   render: ({ children }) => <Card>{children}</Card>,
   props: {
     config: defineConfig({
-      firstName: { type: "inline" },
-      lastName: { type: "inline" },
+      firstName: { type: "text" },
+      lastName: { type: "text" },
     }),
   },
 }
@@ -43,8 +43,8 @@ profile: {
   props: {
     nested: true,
     config: defineConfig({
-      firstName: { type: "inline" },
-      lastName: { type: "inline" },
+      firstName: { type: "text" },
+      lastName: { type: "text" },
     }),
   },
 }

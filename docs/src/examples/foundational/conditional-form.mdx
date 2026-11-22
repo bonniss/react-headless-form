@@ -24,7 +24,7 @@ import ConditionalForm from '../_shared/EgConditionalForm';
 
 ## How it works
 
-**`visible` as a function** — receives the current form values and returns a boolean. BlueForm evaluates it reactively on every value change:
+**`visible` as a function** — receives the current form values and returns a boolean. BlueForm re-evaluates it when a value it reads changes:
 
 ```ts
 email: {

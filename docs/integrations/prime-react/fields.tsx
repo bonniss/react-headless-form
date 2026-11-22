@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { Checkbox, type CheckboxProps } from 'primereact/checkbox'
 import { Dropdown, type DropdownProps } from 'primereact/dropdown'
 import { InputText, type InputTextProps } from 'primereact/inputtext'
@@ -5,8 +6,8 @@ import type { ReactNode } from 'react'
 import { type AdapterProps, useField } from 'react-headless-form'
 
 // PrimeReact inputs carry no label or message: plain markup with its classes
-function FieldShell({ children }: { children: ReactNode }) {
-  const { id, label, errorMessage, required } = useField()
+function FieldShell({ id, children }: { id: string; children: ReactNode }) {
+  const { label, errorMessage, required } = useField()
   return (
     <div style={{ display: 'grid', gap: 6 }}>
       <label htmlFor={id}>
@@ -23,9 +24,10 @@ function FieldShell({ children }: { children: ReactNode }) {
 export type TextFieldProps = AdapterProps<InputTextProps, 'id' | 'invalid'>
 
 function TextField(props: TextFieldProps) {
-  const { id, value, onChange, onBlur, ref, errorMessage, disabled, readOnly } = useField()
+  const id = useId()
+  const { value, onChange, onBlur, ref, errorMessage, disabled, readOnly } = useField()
   return (
-    <FieldShell>
+    <FieldShell id={id}>
       <InputText
         {...props}
         id={id}
@@ -45,9 +47,10 @@ function TextField(props: TextFieldProps) {
 export type SelectFieldProps = AdapterProps<DropdownProps, 'inputId' | 'invalid'>
 
 function SelectField(props: SelectFieldProps) {
-  const { id, value, onChange, onBlur, errorMessage, disabled } = useField()
+  const id = useId()
+  const { value, onChange, onBlur, errorMessage, disabled } = useField()
   return (
-    <FieldShell>
+    <FieldShell id={id}>
       <Dropdown
         optionLabel="label"
         optionValue="value"
@@ -66,7 +69,8 @@ function SelectField(props: SelectFieldProps) {
 export type CheckboxFieldProps = AdapterProps<CheckboxProps, 'inputId' | 'checked'>
 
 function CheckboxField(props: CheckboxFieldProps) {
-  const { id, value, onChange, label, disabled } = useField()
+  const id = useId()
+  const { value, onChange, label, disabled } = useField()
   return (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
       <Checkbox {...props} inputId={id} checked={Boolean(value)} onChange={e => onChange(Boolean(e.checked))} disabled={disabled} />
