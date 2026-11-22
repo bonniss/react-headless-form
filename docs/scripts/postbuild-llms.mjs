@@ -63,10 +63,11 @@ const rank = (mdUrl) => {
 const absolutize = (text) =>
   text.replace(/\]\((\/react-headless-form\/[^)]*)\)/g, (_, url) => `](${origin}${url})`)
 const stripNotation = (text) => text.replace(/[ \t]*(\/\/|#|<!--)\s*\[!code [^\]]+\](\s*-->)?/g, '')
-// A rendered preview / live demo tab is only flattened UI text ("Full Name *+ Add…"):
-// drop it up to the next tab label or heading; the code tabs stay.
+// A rendered preview / live demo tab is only flattened UI text ("Full Name *+ Add…"),
+// and an integration's main.tsx only mounts the demo stage: drop them up to the
+// next tab label or heading; the other code tabs stay.
 const stripPreviews = (text) =>
-  text.replace(/^\*\*(Preview|Live demo)\*\*\n[\s\S]*?(?=^\*\*[^*\n]+\*\*$|^#{1,6} |^---\nurl: |(?![\s\S]))/gm, '')
+  text.replace(/^\*\*(Preview|Live demo|main\.tsx)\*\*\n[\s\S]*?(?=^\*\*[^*\n]+\*\*$|^#{1,6} |^---\nurl: |(?![\s\S]))/gm, '')
 const clean = (text) => stripPreviews(stripNotation(text))
 
 // llms.txt: sort the bullet list inside every "## Section"

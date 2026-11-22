@@ -99,12 +99,6 @@ export function mountDemo({ Form, buildConfig, defaultValues }: DemoForm, shells
     const config = useMemo(() => buildConfig(t), [t])
     const formRef = useFormRef()
 
-    // Messages are stored when a field is validated: after a language switch,
-    // validate the failing fields again to get them in the new language.
-    // biome-ignore lint/correctness/useExhaustiveDependencies: only on language change
-    useEffect(() => {
-      if (formRef.current && errorList.length) void formRef.current.trigger(errorList.map(e => e.path) as never)
-    }, [t])
 
     const onValid = (data: Record<string, unknown>) => {
       setPayload(data)

@@ -25,10 +25,10 @@ import ArrayForm from '../_shared/EgArrayForm';
 **`render` as the array shell** — the `render` function is responsible for the container, item wrappers, and action buttons. It does not render individual fields directly. `renderItem(field, index)` handles each item using `props.config` as the field definition:
 
 ```tsx
-{items.map((field, index) => (
+{fields.map((field, index) => (
   <div key={field.id}>
     {renderItem(field, index)}
-    <button onClick={() => remove(index)}>Remove</button>
+    <button type="button" onClick={() => remove(index)}>Remove</button>
   </div>
 ))}
 ```

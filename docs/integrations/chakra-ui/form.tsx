@@ -41,13 +41,13 @@ function Root({ children, onSubmit }: { children: ReactNode; onSubmit: () => voi
 
 function Guests() {
   const t = useT()
-  const { label, items, renderItem, append, remove, errorMessage } = useArrayField()
+  const { label, fields, renderItem, append, remove, errorMessage } = useArrayField()
   const add = () => append({ name: '' }, { shouldFocus: false })
   return (
     <Card.Root gridColumn="1 / -1">
       <Card.Body gap="3">
         <Card.Title>{label}</Card.Title>
-        {items.map((item, index) => (
+        {fields.map((item, index) => (
           <HStack key={item.id} align="end">
             <Box flex="1">{renderItem(item, index)}</Box>
             <Button variant="ghost" colorPalette="red" onClick={() => remove(index)}>

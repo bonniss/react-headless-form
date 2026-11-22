@@ -1,11 +1,12 @@
+import { useId } from 'react'
 import type { ReactNode } from 'react'
 import { type AdapterProps, useField } from 'react-headless-form'
 import type { ComponentProps } from 'react'
 import { Checkbox, Input, Label, NativeSelect } from './ui'
 
 // Label + control + message, like shadcn's <FormItem>.
-function FieldItem({ children }: { children: ReactNode }) {
-  const { id, label, errorMessage, required } = useField()
+function FieldItem({ id, children }: { id: string; children: ReactNode }) {
+  const { label, errorMessage, required } = useField()
   return (
     <div className="grid gap-2">
       <Label htmlFor={id}>
@@ -25,9 +26,10 @@ type Extra = 'id'
 export type TextFieldProps = AdapterProps<ComponentProps<typeof Input>, Extra>
 
 function TextField(props: TextFieldProps) {
-  const { id, value, onChange, onBlur, ref, errorMessage, disabled, readOnly } = useField()
+  const id = useId()
+  const { value, onChange, onBlur, ref, errorMessage, disabled, readOnly } = useField()
   return (
-    <FieldItem>
+    <FieldItem id={id}>
       <Input
         {...props}
         id={id}
@@ -48,9 +50,10 @@ function TextField(props: TextFieldProps) {
 export type SelectFieldProps = AdapterProps<ComponentProps<typeof NativeSelect>, Extra>
 
 function SelectField(props: SelectFieldProps) {
-  const { id, value, onChange, onBlur, disabled } = useField()
+  const id = useId()
+  const { value, onChange, onBlur, disabled } = useField()
   return (
-    <FieldItem>
+    <FieldItem id={id}>
       <NativeSelect
         {...props}
         id={id}
@@ -66,7 +69,8 @@ function SelectField(props: SelectFieldProps) {
 export type CheckboxFieldProps = AdapterProps<ComponentProps<typeof Checkbox>, Extra | 'checked' | 'type'>
 
 function CheckboxField(props: CheckboxFieldProps) {
-  const { id, value, onChange, label, disabled } = useField()
+  const id = useId()
+  const { value, onChange, label, disabled } = useField()
   return (
     <div className="flex items-center gap-2">
       <Checkbox

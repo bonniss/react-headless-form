@@ -1,0 +1,30 @@
+---
+title: Migration and deprecations
+description: "Breaking changes and deprecated APIs across 0.x releases, and what to use instead before 1.0 removes them."
+---
+
+# Migration and deprecations
+
+## Deprecated, removed in 1.0
+
+Each still works and is marked `@deprecated` (or documented as an alias), so editors flag it.
+
+| Deprecated | Use instead | Since |
+|---|---|---|
+| `onSubmitError` | `onInvalid` (validation errors); `onSubmitFailure` for errors thrown by `onSubmit` | 0.16 |
+| `useArrayField().items` | `fields` | 0.16 |
+| `useArrayField().push` | `append` | 0.16 |
+| `useField().id` | your own id: `useId()` in the adapter, or the input inside its `<label>` (the lib does not make DOM ids) | 0.20 |
+
+## Breaking changes
+
+### 0.20
+
+- `useField().id` is the field path again, and the `idPrefix` prop (added in 0.19) is removed: 0.19 generated ids with React's `useId`, which does not exist before React 18. Associate labels in the adapter: see [Accessibility](../core/field-authoring/index.mdx#accessibility).
+
+### 0.19
+
+- `ctx.scope` (second argument of `compute`, and of `visible` / `disabled` / `required` functions) is typed `Partial<T> | undefined`: it is `undefined` while a row is gone (right after `remove()`, or with `shouldUnregister`). Read it as `scope?.x`.
+- Error messages go through `t` at display (`errorMessage`), like labels; fields with a validation error are validated again when `t` changes, and errors from `setError()` are kept.
+
+Every release, with all changes: [changelog](https://github.com/bonniss/react-headless-form/blob/main/CHANGELOG.md).

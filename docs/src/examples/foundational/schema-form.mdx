@@ -1,14 +1,14 @@
 ---
 title: Schema
-description: "The same sign-up form validated with Zod, Valibot, ArkType (the schema prop, Standard Schema), Yup and Ajv (formOptions.resolver); onSubmit receives the parsed output."
+description: "The same sign-up form validated with Zod, Valibot, ArkType, Yup (the schema prop, Standard Schema) and Ajv (formOptions.resolver); onSubmit receives the parsed output."
 ---
 
 The same sign-up form, validated by five schema libraries. In each, the inputs hold strings and `onSubmit` receives the parsed output: the name trimmed, the age a number. See [Schema validation](../../guide/core/schema-validation.mdx).
 
-- **Zod, Valibot, ArkType** implement [Standard Schema](https://standardschema.dev): pass the schema to the `schema` prop. No resolver package; `onSubmit` is typed by the schema output.
-- **Yup, Ajv** (JSON Schema): pass a resolver from `@hookform/resolvers` to `formOptions.resolver`.
+- **Zod, Valibot, ArkType, Yup (1.7+)** implement [Standard Schema](https://standardschema.dev): pass the schema to the `schema` prop. No resolver package; `onSubmit` is typed by the schema output.
+- **Ajv** (JSON Schema): pass a resolver from `@hookform/resolvers` to `formOptions.resolver`.
 
-Field `rules` are not used with a schema: all validation, messages included, lives in the schema.
+Field `rules` are not used with a schema: all validation, messages included, lives in the schema. The `*` marker comes from `rules.required`, so set `required: true` on a field to show it.
 
 import { Tab, Tabs } from '@rspress/core/theme';
 import ZodForm from '../_shared/schema/zod';
@@ -43,7 +43,7 @@ import AjvForm from '../_shared/schema/ajv';
     ```
   </Tab>
   <Tab label="Yup">
-    `pnpm add yup @hookform/resolvers`. Yup casts while validating, so `onSubmit` gets the cast values.
+    `pnpm add yup`. Yup casts while validating, so `onSubmit` gets the cast values.
 
     <YupForm />
 

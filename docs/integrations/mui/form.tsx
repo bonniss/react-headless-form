@@ -43,7 +43,7 @@ function Root({ children, onSubmit }: { children: ReactNode; onSubmit: () => voi
 
 function Guests() {
   const t = useT()
-  const { label, items, renderItem, append, remove, errorMessage } = useArrayField()
+  const { label, fields, renderItem, append, remove, errorMessage } = useArrayField()
   return (
     <Card variant="outlined" sx={fullRow}>
       <CardContent>
@@ -51,7 +51,7 @@ function Guests() {
           {label}
         </Typography>
         <Stack spacing={1.5}>
-          {items.map((item, index) => (
+          {fields.map((item, index) => (
             <Stack key={item.id} direction="row" spacing={1} alignItems="start">
               {renderItem(item, index)}
               <Button color="error" onClick={() => remove(index)}>

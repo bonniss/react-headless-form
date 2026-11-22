@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { Input, Select, Switch } from 'animal-island-ui'
 import type { CSSProperties, ReactNode } from 'react'
 import { type AdapterProps, useField } from 'react-headless-form'
@@ -6,8 +7,8 @@ import type { InputProps, SelectProps, SwitchProps } from 'animal-island-ui'
 const stack: CSSProperties = { display: 'grid', gap: 12 }
 
 // animal-island-ui has no form-field wrapper: label and error are plain markup.
-function FieldRow({ children }: { children: ReactNode }) {
-  const { id, label, errorMessage, required } = useField()
+function FieldRow({ id, children }: { id: string; children: ReactNode }) {
+  const { label, errorMessage, required } = useField()
   return (
     <div style={{ display: 'grid', gap: 4 }}>
       <label htmlFor={id}>
@@ -28,9 +29,10 @@ type Extra = 'id' | 'status'
 export type TextFieldProps = AdapterProps<InputProps, Extra>
 
 function TextField(props: TextFieldProps) {
-  const { id, value, onChange, onBlur, errorMessage, disabled, readOnly } = useField()
+  const id = useId()
+  const { value, onChange, onBlur, errorMessage, disabled, readOnly } = useField()
   return (
-    <FieldRow>
+    <FieldRow id={id}>
       <Input
         {...props}
         id={id}
@@ -50,9 +52,10 @@ function TextField(props: TextFieldProps) {
 export type SelectFieldProps = AdapterProps<SelectProps, 'aria-label'>
 
 function SelectField(props: SelectFieldProps) {
+  const id = useId() // its Select takes no id: the label names it through aria-label
   const { value, onChange, label, disabled } = useField()
   return (
-    <FieldRow>
+    <FieldRow id={id}>
       {/* onChange passes the key, not an event */}
       <Select
         {...props}

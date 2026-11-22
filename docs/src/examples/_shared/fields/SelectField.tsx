@@ -6,12 +6,12 @@ type SelectFieldProps = SelectHTMLAttributes<HTMLSelectElement> & {
 }
 
 export default function SelectField({ options, ...props }: SelectFieldProps) {
-  const { value, onChange, ref, label, errorMessage, disabled } = useField()
+  const { value, onChange, onBlur, ref, label, errorMessage, disabled } = useField()
   return (
     <div>
       <label>
         {label}
-        <select {...props} ref={ref} value={value ?? ''} onChange={e => onChange(e.target.value)} disabled={disabled}>
+        <select {...props} ref={ref} value={value ?? ''} onChange={e => onChange(e.target.value)} onBlur={onBlur} disabled={disabled}>
           {options.map(opt => (
             <option key={opt.value} value={opt.value}>
               {opt.label}

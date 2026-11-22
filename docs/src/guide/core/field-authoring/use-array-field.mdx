@@ -1,12 +1,12 @@
 ---
 title: useArrayField
-description: "useArrayField: the hook for array field components — items, append, remove, duplicate and renderItems on top of RHF useFieldArray."
+description: "useArrayField: the hook for array field components — fields, append, remove, duplicate and renderItems on top of RHF useFieldArray."
 ---
 
 `useArrayField` is the hook for array field components. Under the hood, it combines RHF's [`useFieldArray`](https://react-hook-form.com/docs/usefieldarray) with the same field metadata layer as `useField` — giving array components access to both mutation methods and resolved field props in one place.
 
 ```ts
-const { label, errorMessage, items, renderItems, append, ... } = useArrayField()
+const { label, errorMessage, fields, renderItems, append, ... } = useArrayField()
 ```
 
 ## Field props
@@ -20,15 +20,15 @@ The same field props as `useField` are available directly, scoped to the array f
 | `errorMessage` | Array-level validation error | e.g. from `rules.minLength` or `rules.required` — not item errors |
 | `required` | Whether the array is required | Derived from `rules.required` |
 | `disabled` | Whether the array is disabled | Resolved for UI logic; does not by itself remove the array from submit payload |
-| `visible` | Whether the array should render | When `false`, the array field unmounts; see [conditional rendering](../conditional-rendering.mdx) |
+| `visible` | Whether the array is visible | Always `true` here: a hidden array is not rendered; see [conditional rendering](../conditional-rendering.mdx) |
 
 ## Array state
 
 | Prop | Description | Notes |
 |---|---|---|
-| `items` | Current list of array items | Alias of `fields` from RHF's `useFieldArray` — use `item.id` as React key |
+| `fields` | Current list of array items | From RHF's `useFieldArray` — use `field.id` as React key. `items` is a deprecated alias (removed in 1.0) |
 | `renderItem(field, index)` | Render a single item | Scoped automatically to the correct namespace (e.g. `addresses.0`) |
-| `renderItems()` | Render all items | Shorthand for `items.map(renderItem)` |
+| `renderItems()` | Render all items | Shorthand for `fields.map(renderItem)` |
 
 ## Array methods
 
@@ -49,7 +49,7 @@ Convenience helpers added by BlueForm:
 
 | Helper | Description | Notes |
 |---|---|---|
-| `push(value)` | Add item at the end | Alias of `append` |
+| `push(value)` | Deprecated alias of `append` | Removed in 1.0 |
 | `pop()` | Remove the last item | No-op when array is empty |
 | `clear()` | Remove all items | Equivalent to `remove()` with no index |
 | `duplicate(index)` | Append a copy of the item at `index` | Uses current form values — reflects user edits. No-op when index does not exist |
@@ -72,9 +72,8 @@ addresses: {
       country: { type: "text", label: "Country" },
     }),
   },
-  render: () => {
-    const { items, renderItems, append, duplicate, pop, clear, label, errorMessage } = useArrayField()
-
+  // everything useArrayField() returns arrives as the render argument
+  render: ({ fields, renderItems, append, duplicate, pop, clear, label, errorMessage }) => {
     return (
       <fieldset>
         <legend>{label}</legend>
@@ -90,21 +89,21 @@ addresses: {
           </button>
           <button
             type="button"
-            disabled={!items.length}
-            onClick={() => duplicate(items.length - 1)}
+            disabled={!fields.length}
+            onClick={() => duplicate(fields.length - 1)}
           >
             Duplicate last
           </button>
           <button
             type="button"
-            disabled={!items.length}
+            disabled={!fields.length}
             onClick={pop}
           >
             Remove last
           </button>
           <button
             type="button"
-            disabled={!items.length}
+            disabled={!fields.length}
             onClick={clear}
           >
             Clear all

@@ -56,12 +56,11 @@ Multi-step forms are a natural fit for `section` composition. Each step maps to 
 />
 ```
 
-Each step component is rendered *as the section* — meaning it receives section-level props like `label` and `visible` via `useField()`. Inside, it uses `Section` to render its own typed config fragment:
+Each step component is rendered *as the section* — meaning it receives section-level props like `label` via `useField()` (it is only rendered while visible). Inside, it uses `Section` to render its own typed config fragment:
 
 ```tsx title="wizard/AccountStep.tsx"
 function AccountStep() {
-  const { visible, label } = useField()
-  if (!visible) return null
+  const { label } = useField()
 
   return (
     <fieldset>

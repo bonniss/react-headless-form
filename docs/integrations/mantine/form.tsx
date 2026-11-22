@@ -40,13 +40,13 @@ function Root({ children, onSubmit }: { children: ReactNode; onSubmit: () => voi
 
 function Guests() {
   const t = useT()
-  const { label, items, renderItem, append, remove, errorMessage } = useArrayField()
+  const { label, fields, renderItem, append, remove, errorMessage } = useArrayField()
   return (
     <Card withBorder style={fullRow}>
       <Text fw={600} mb="xs">
         {label}
       </Text>
-      {items.map((item, index) => (
+      {fields.map((item, index) => (
         <Group key={item.id} align="end" mb="xs">
           <div style={{ flex: 1 }}>{renderItem(item, index)}</div>
           <Button variant="subtle" color="red" onClick={() => remove(index)}>
