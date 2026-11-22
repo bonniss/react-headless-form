@@ -4,20 +4,31 @@
  * logic with plain HTML adapters, so CI covers it without the UI libraries.
  */
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import type { Root } from "react-dom/client";
 import { useArrayField, useField } from "react-headless-form";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mountDemo } from "../../../../docs/integrations/shared/mount";
-import type { Fields, Shells } from "../../../../docs/integrations/shared/types";
+import type { Translator } from "../../../../docs/integrations/shared/i18n";
+import {
+  type Profile,
+  logic,
+  roleOptions,
+  themeOptions,
+} from "../../../../docs/integrations/shared/logic";
+import { setupDemo } from "../../../../docs/integrations/shared/setup";
+import type { Shells } from "../../../../docs/integrations/shared/types";
 
-function Control({ type }: { type?: string }) {
+type InputProps = Omit<ComponentProps<"input">, "value" | "onChange">;
+
+function Control(props: InputProps) {
   const { path, label, value, onChange, disabled, readOnly, errorMessage } = useField();
   return (
     <label>
       {label}
       <input
+        {...props}
         data-testid={path}
-        type={type}
         value={value ?? ""}
         disabled={disabled}
         readOnly={readOnly}
@@ -28,30 +39,25 @@ function Control({ type }: { type?: string }) {
   );
 }
 
-function SelectControl({ options }: { options: { value: string; label: string }[] }) {
+function SelectControl(props: Omit<ComponentProps<"select">, "value" | "onChange">) {
+  const { path, value, onChange } = useField();
+  return <select {...props} data-testid={path} value={value ?? ""} onChange={(e) => onChange(e.target.value)} />;
+}
+
+function CheckboxControl(props: Omit<InputProps, "type" | "checked">) {
   const { path, value, onChange } = useField();
   return (
-    <select data-testid={path} value={value ?? ""} onChange={(e) => onChange(e.target.value)}>
-      {options.map((o) => (
-        <option key={o.value} value={o.value}>
-          {o.label}
-        </option>
-      ))}
-    </select>
+    <input
+      {...props}
+      type="checkbox"
+      data-testid={path}
+      checked={Boolean(value)}
+      onChange={(e) => onChange(e.target.checked)}
+    />
   );
 }
 
-function CheckboxControl() {
-  const { path, value, onChange } = useField();
-  return <input type="checkbox" data-testid={path} checked={Boolean(value)} onChange={(e) => onChange(e.target.checked)} />;
-}
-
-const fields = {
-  text: Control,
-  longText: Control,
-  select: SelectControl,
-  checkbox: CheckboxControl,
-} as unknown as Fields;
+const fields = { text: Control, longText: Control, select: SelectControl, checkbox: CheckboxControl };
 
 const shells: Shells = {
   Root: ({ id, children, onSubmit }) => (
@@ -100,11 +106,71 @@ const shells: Shells = {
   },
 };
 
+// The same logic as every library demo; only `type` and the plain-HTML props differ.
+const [Form, defineConfig] = setupDemo(fields, shells);
+const options = (list: { value: string; label: string }[]) =>
+  list.map((o) => (
+    <option key={o.value} value={o.value}>
+      {o.label}
+    </option>
+  ));
+const buildConfig = (t: Translator) =>
+  defineConfig<Profile>({
+    name: { type: "text", ...logic.name },
+    slug: { type: "text", ...logic.slug },
+    email: { type: "text", ...logic.email, props: { type: "email" } },
+    role: { type: "select", ...logic.role, props: { children: options(roleOptions(t)) } },
+    adminCode: { type: "text", ...logic.adminCode },
+    bio: { type: "longText", ...logic.bio },
+    health: {
+      type: "section",
+      ...logic.health,
+      render: ({ label, children }) => <shells.Section title={label}>{children}</shells.Section>,
+      props: {
+        nested: true,
+        config: {
+          weight: { type: "text", ...logic.weight },
+          height: { type: "text", ...logic.height },
+          bmi: { type: "text", ...logic.bmi },
+          bmiClass: { type: "text", ...logic.bmiClass },
+        },
+      },
+    },
+    settings: {
+      type: "section",
+      ...logic.settings,
+      render: ({ label, children }) => <shells.Section title={label}>{children}</shells.Section>,
+      props: {
+        nested: true,
+        config: {
+          newsletter: { type: "checkbox", ...logic.newsletter },
+          theme: { type: "select", ...logic.theme, props: { children: options(themeOptions(t)) } },
+        },
+      },
+    },
+    lines: {
+      type: "array",
+      ...logic.lines,
+      render: () => <shells.LinesList />,
+      props: {
+        config: {
+          item: { type: "text", ...logic.item },
+          qty: { type: "text", ...logic.qty },
+          price: { type: "text", ...logic.price },
+          total: { type: "text", ...logic.total },
+        },
+      },
+    },
+    subtotal: { type: "text", ...logic.subtotal },
+    vat: { type: "text", ...logic.vat },
+    grandTotal: { type: "text", ...logic.grandTotal },
+  });
+
 let root: Root;
 beforeEach(() => {
   document.body.innerHTML = '<div id="root"></div>';
   act(() => {
-    root = mountDemo(fields, shells);
+    root = mountDemo({ Form, buildConfig }, shells);
   });
 });
 afterEach(() => act(() => root.unmount()));

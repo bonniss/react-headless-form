@@ -1,13 +1,7 @@
 import { Button, Card, Checkbox, Flex, Form, Input, Segmented, Select, Typography } from 'antd'
 import { useArrayField, useField } from 'react-headless-form'
-import type {
-  CheckboxFieldProps,
-  Fields,
-  LongTextFieldProps,
-  SelectFieldProps,
-  Shells,
-  TextFieldProps,
-} from '../shared/types'
+import type { CheckboxProps, GetProps, InputProps, SelectProps } from 'antd'
+import type { Shells } from '../shared/types'
 import { useT } from '../shared/i18n'
 
 // Form.Item is used for layout only; values and errors come from useField().
@@ -28,18 +22,23 @@ function Item({ children }: { children: React.ReactNode }) {
   )
 }
 
-function TextField({ type, placeholder }: TextFieldProps) {
-  const { id, value, onChange, onBlur, disabled, readOnly } = useField()
-  const Component = type === 'password' ? Input.Password : Input
+// Each adapter takes the library's own props, minus what useField() controls,
+// so `props` in the config is typed (and autocompleted) as Ant Design's props.
+type Controlled = 'id' | 'value' | 'defaultValue' | 'onChange' | 'onBlur' | 'status' | 'disabled' | 'readOnly'
+
+export type TextFieldProps = Omit<InputProps, Controlled>
+
+function TextField(props: TextFieldProps) {
+  const { id, value, onChange, onBlur, errorMessage, disabled, readOnly } = useField()
   return (
     <Item>
-      <Component
+      <Input
+        {...props}
         id={id}
-        type={type === 'password' ? undefined : type}
-        placeholder={placeholder}
         value={value ?? ''}
         onChange={e => onChange(e.target.value)}
         onBlur={onBlur}
+        status={errorMessage ? 'error' : undefined}
         disabled={disabled}
         readOnly={readOnly}
       />
@@ -47,51 +46,60 @@ function TextField({ type, placeholder }: TextFieldProps) {
   )
 }
 
-function LongTextField({ rows }: LongTextFieldProps) {
-  const { id, value, onChange, onBlur, disabled } = useField()
+export type LongTextFieldProps = Omit<GetProps<typeof Input.TextArea>, Controlled>
+
+function LongTextField(props: LongTextFieldProps) {
+  const { id, value, onChange, onBlur, errorMessage, disabled } = useField()
   return (
     <Item>
       <Input.TextArea
+        {...props}
         id={id}
-        rows={rows}
         value={value ?? ''}
         onChange={e => onChange(e.target.value)}
         onBlur={onBlur}
+        status={errorMessage ? 'error' : undefined}
         disabled={disabled}
       />
     </Item>
   )
 }
 
-function SelectField({ options }: SelectFieldProps) {
-  const { id, value, onChange, onBlur, disabled } = useField()
+/** `options` come from the config, in antd's own shape. */
+export type SelectFieldProps = Omit<SelectProps<string>, Controlled>
+
+function SelectField(props: SelectFieldProps) {
+  const { id, value, onChange, onBlur, errorMessage, disabled } = useField()
   return (
     <Item>
       {/* antd passes the value, not an event */}
       <Select
+        {...props}
         id={id}
-        options={options}
         value={value}
         onChange={next => onChange(next)}
         onBlur={onBlur}
+        status={errorMessage ? 'error' : undefined}
         disabled={disabled}
       />
     </Item>
   )
 }
 
-function CheckboxField(_: CheckboxFieldProps) {
+export type CheckboxFieldProps = Omit<CheckboxProps, Controlled | 'checked'>
+
+function CheckboxField(props: CheckboxFieldProps) {
   const { value, onChange, label, disabled } = useField()
   return (
     <Form.Item style={{ marginBottom: 12 }}>
-      <Checkbox checked={Boolean(value)} onChange={e => onChange(e.target.checked)} disabled={disabled}>
+      <Checkbox {...props} checked={Boolean(value)} onChange={e => onChange(e.target.checked)} disabled={disabled}>
         {label}
       </Checkbox>
     </Form.Item>
   )
 }
 
-export const fields: Fields = {
+export const fields = {
   text: TextField,
   longText: LongTextField,
   select: SelectField,

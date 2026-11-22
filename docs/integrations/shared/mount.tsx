@@ -2,9 +2,10 @@ import { type ComponentType, type ReactNode, useEffect, useMemo, useState } from
 import { createRoot } from 'react-dom/client'
 import { useFormRef, useFormState } from 'react-headless-form'
 import type { FieldErrors } from 'react-hook-form'
-import { type Profile, computedPaths, createDemoForm, defaultValues } from './config'
+import { type Profile, computedPaths, defaultValues } from './logic'
 import { type Lang, TranslatorContext, createTranslator, languageOptions, useT } from './i18n'
-import type { Fields, Shells } from './types'
+import { FORM_ID } from './setup'
+import type { DemoForm, Shells } from './types'
 
 /*
  * The demo stage: a fixed header (language switch, status, submit), the form,
@@ -17,7 +18,6 @@ type Options = {
   Wrapper?: ComponentType<{ children: ReactNode }>
 }
 
-const FORM_ID = 'demo-form'
 const Passthrough = ({ children }: { children: ReactNode }) => <>{children}</>
 
 type FieldError = { path: string; message: string }
@@ -83,8 +83,7 @@ function PayloadTree({ value, path = '' }: { value: unknown; path?: string }) {
 }
 
 /** Renders the shared demo form with one library's adapters inside the demo stage. */
-export function mountDemo(fields: Fields, shells: Shells, { Wrapper = Passthrough }: Options = {}) {
-  const { Form, buildConfig } = createDemoForm(fields, shells)
+export function mountDemo({ Form, buildConfig }: DemoForm, shells: Shells, { Wrapper = Passthrough }: Options = {}) {
   const { LanguageSwitch, SubmitButton } = shells
 
   function Demo() {
@@ -160,7 +159,7 @@ export function mountDemo(fields: Fields, shells: Shells, { Wrapper = Passthroug
               }}
               // hidden fields (adminCode) leave the payload
               formOptions={{ shouldUnregister: true }}
-              onSubmit={data => {
+              onSubmit={(data: Profile) => {
                 setPayload(data)
                 setDrawerOpen(true)
               }}

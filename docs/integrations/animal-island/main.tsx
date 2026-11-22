@@ -1,5 +1,6 @@
 import 'animal-island-ui/style'
 import { mountDemo } from '../shared/mount'
-import { fields, shells } from './fields'
+import { demo } from './config'
+import { shells } from './fields'
 
-mountDemo(fields, shells)
+mountDemo(demo, shells)

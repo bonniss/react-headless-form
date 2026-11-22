@@ -1,11 +1,11 @@
 ---
 title: Integrations
-description: "One shared form config, five UI libraries (Mantine, shadcn/ui, Ant Design, Material UI, animal-island-ui): all form logic is written once; libraries differ only in a thin adapter layer."
+description: "One shared form logic, five UI libraries (Mantine, shadcn/ui, Ant Design, Material UI, animal-island-ui): logic is written once; each library's config passes its own component props, typed by that library."
 ---
 
 # Integrations
 
-BlueForm renders no UI of its own. **All form logic lives in one config**: rules, conditions, computed values, arrays, i18n. A UI library only provides the components that display it. Swapping libraries means rewriting a small adapter file, never the logic.
+BlueForm renders no UI of its own. **All form logic is written once** (rules, conditions, computed values, labels) and each UI library only displays it. Field `props` are typed by the component you map, so a config written for Mantine takes Mantine's props, with autocomplete and type errors. Swapping libraries means rewriting the adapters and the `props`, never the logic.
 
 import IntegrationDiagram from '../../../../components/IntegrationDiagram';
 import LogicVsUi from '../../../../components/LogicVsUi';
@@ -14,7 +14,7 @@ import LogicVsUi from '../../../../components/LogicVsUi';
 
 ## Live demos
 
-Each demo renders **the same config** with a different library: [Mantine](./mantine.mdx) · [shadcn/ui](./shadcn.mdx) · [Ant Design](./antd.mdx) · [Material UI](./mui.mdx) · [animal-island-ui](./animal-island.mdx). They are built from [`docs/integrations`](https://github.com/bonniss/react-headless-form/tree/main/docs/integrations) with these docs and served from this site.
+Each demo renders **the same logic** with a different library: [Mantine](./mantine.mdx) · [shadcn/ui](./shadcn.mdx) · [Ant Design](./antd.mdx) · [Material UI](./mui.mdx) · [animal-island-ui](./animal-island.mdx). They are built from [`docs/integrations`](https://github.com/bonniss/react-headless-form/tree/main/docs/integrations) with these docs and served from this site.
 
 In every demo: switch the language in the header, submit with the header button (it targets the form by `form="demo-form"`), click the error count to jump to a field, and read the submitted payload in the drawer, where computed values are tagged.
 
@@ -32,18 +32,19 @@ In every demo: switch the language in the header, submit with the header button 
 | `lines` | array with `maxLength: 3`; required row fields, with each error on its own row (`lines.1.price`) |
 | `lines.*.total` → `subtotal` → `vat` → `grandTotal` | per-row computed values and an aggregate chain |
 | language switch | labels, option labels, validation messages (also those already shown) |
+| `props` of every field | the library's own API, typed by its components: Mantine `leftSection` / `description`, antd `prefix` / `suffix` / `showCount`, MUI `helperText` / `slotProps`, native attributes for shadcn |
 
 ## One logic, UI-only differences
 
-The numbers below are counted from the demo sources when the docs are built. Every rule, condition and computed value sits in the shared config, and **every adapter file has none**: what differs between libraries is only which component displays a value.
+The numbers below are counted from the demo sources when the docs are built. Every rule, condition and computed value sits in `shared/logic.ts`; **each library's files have none**. A library's `config.tsx` only spreads that logic and adds `type` and its own `props`:
 
 <LogicVsUi />
 
 import { Tab, Tabs } from '@rspress/core/theme';
 
 <Tabs>
-  <Tab label="shared/config.tsx">
-    ```tsx file="../../../../integrations/shared/config.tsx"
+  <Tab label="shared/logic.ts">
+    ```ts file="../../../../integrations/shared/logic.ts"
     ```
   </Tab>
   <Tab label="shared/types.ts">
@@ -52,7 +53,45 @@ import { Tab, Tabs } from '@rspress/core/theme';
   </Tab>
 </Tabs>
 
-`shared/types.ts` is the contract every library implements: four field types (`text`, `longText`, `select`, `checkbox`) and the layout pieces (`Root`, `SubmitButton`, `LanguageSwitch`, `Section`, `LinesList`). The demo stage around them (header, error list, payload drawer) is shared too.
+`shared/types.ts` is the contract for the demo layout only (`Root`, `SubmitButton`, `LanguageSwitch`, `Section`, `LinesList`). Field props are **not** a shared type: each library's adapters take that library's own props. The demo stage around them (header, error list, payload drawer) is shared too.
+
+## Props typed by the UI library
+
+An adapter takes the library's component props, minus what `useField()` controls:
+
+```tsx
+// mantine/fields.tsx
+export type TextFieldProps = Omit<TextInputProps, 'value' | 'onChange' | 'onBlur' | 'error' | 'label' | ...>
+function TextField(props: TextFieldProps) {
+  const { value, onChange, ...field } = useField()
+  return <TextInput {...props} value={value ?? ''} onChange={e => onChange(e.currentTarget.value)} ... />
+}
+```
+
+`props` in the config is then `ComponentProps` of the mapped component, so each library's config uses its own API, with autocomplete and type errors:
+
+<Tabs>
+  <Tab label="Mantine">
+    ```tsx
+    email: { type: 'text', ...logic.email, props: { type: 'email', leftSection: '@' } },
+    role: { type: 'select', ...logic.role, props: { data: roleOptions(t), searchable: true } },
+    ```
+  </Tab>
+  <Tab label="Ant Design">
+    ```tsx
+    email: { type: 'text', ...logic.email, props: { type: 'email', prefix: '@' } },
+    role: { type: 'select', ...logic.role, props: { options: roleOptions(t), showSearch: true } },
+    ```
+  </Tab>
+  <Tab label="Material UI">
+    ```tsx
+    weight: { type: 'text', ...logic.weight, props: { slotProps: { input: { endAdornment: <InputAdornment position="end">kg</InputAdornment> } } } },
+    role: { type: 'select', ...logic.role, props: { children: roleOptions(t).map(o => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>) } },
+    ```
+  </Tab>
+</Tabs>
+
+A prop the component does not have, or a wrong value, is a type error. [`type-checks.tsx`](https://github.com/bonniss/react-headless-form/blob/main/docs/integrations/type-checks.tsx) asserts this for each library (`// @ts-expect-error`), and the docs build type-checks it.
 
 ## Event signatures
 

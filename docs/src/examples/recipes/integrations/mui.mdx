@@ -6,7 +6,10 @@ outline: false
 
 # Material UI
 
-The [shared demo form](./index.mdx#what-each-field-shows) (rules, JSON conditions, computed values, nested sections, an invoice array with per-row errors, i18n) rendered with Material UI. Only the adapters below are library-specific; the logic is in [`shared/config.tsx`](./index.mdx#one-logic-ui-only-differences).
+The [shared demo form](./index.mdx#what-each-field-shows) (rules, JSON conditions, computed values, nested sections, an invoice array with per-row errors, i18n) rendered with Material UI. The logic comes from [`shared/logic.ts`](./index.mdx#one-logic-ui-only-differences). This library adds two files:
+
+- `fields.tsx`: adapters typed with Material UI's own props (`TextFieldProps` minus what `useField()` controls).
+- `config.tsx`: the config. Each field spreads its logic (`...logic.email`) and sets `props` with Material UI's API, typed and autocompleted as Material UI's props.
 
 - One small hook (`useTextFieldProps`) maps `useField()` to `TextField` props; text, long text and select reuse it (`select` + `MenuItem`).
 - Pass the field `ref` as `inputRef` so `setFocus` / focus on error work.
@@ -17,6 +20,10 @@ import LiveDemo from '../../../../components/LiveDemo';
 <Tabs>
   <Tab label="Live demo">
     <LiveDemo lib="mui" />
+  </Tab>
+  <Tab label="config.tsx">
+    ```tsx file="../../../../integrations/mui/config.tsx"
+    ```
   </Tab>
   <Tab label="fields.tsx">
     ```tsx file="../../../../integrations/mui/fields.tsx"

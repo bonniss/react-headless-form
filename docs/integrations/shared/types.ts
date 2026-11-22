@@ -1,18 +1,6 @@
 import type { ComponentType, FormEvent, ReactNode } from 'react'
-
-/** The props every library's field adapters accept, so the shared config type-checks the same way for all of them. */
-export type TextFieldProps = { type?: 'text' | 'email' | 'password' | 'number'; placeholder?: string }
-export type LongTextFieldProps = { rows?: number }
-export type SelectFieldProps = { options: { value: string; label: string }[] }
-export type CheckboxFieldProps = Record<string, never>
-
-/** Field components, keyed by field `type`. */
-export type Fields = {
-  text: ComponentType<TextFieldProps>
-  longText: ComponentType<LongTextFieldProps>
-  select: ComponentType<SelectFieldProps>
-  checkbox: ComponentType<CheckboxFieldProps>
-}
+import type { Translator } from './i18n'
+import type { Profile } from './logic'
 
 export type LanguageOption = { value: string; label: string }
 
@@ -32,3 +20,15 @@ export type Shells = {
   /** The invoice lines array: rows, add / remove and the array-level error. */
   LinesList: ComponentType
 }
+
+/**
+ * What a library's demo provides: its form (from `setupDemo`) and a config
+ * builder typed by its own components. Typed loosely here: the strict typing
+ * happens in each library's `config.tsx`.
+ */
+export type DemoForm = {
+  // biome-ignore lint/suspicious/noExplicitAny: each library's Form has its own config type
+  Form: ComponentType<any>
+  buildConfig: (t: Translator) => unknown
+}
+export type { Profile }

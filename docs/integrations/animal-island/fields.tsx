@@ -1,14 +1,8 @@
 import { Button, Card, Input, Select, Switch, Title } from 'animal-island-ui'
 import type { CSSProperties, ReactNode } from 'react'
 import { useArrayField, useField } from 'react-headless-form'
-import type {
-  CheckboxFieldProps,
-  Fields,
-  LongTextFieldProps,
-  SelectFieldProps,
-  Shells,
-  TextFieldProps,
-} from '../shared/types'
+import type { InputProps, SelectProps, SwitchProps } from 'animal-island-ui'
+import type { Shells } from '../shared/types'
 import { useT } from '../shared/i18n'
 
 const stack: CSSProperties = { display: 'grid', gap: 12 }
@@ -28,14 +22,19 @@ function FieldRow({ children }: { children: ReactNode }) {
   )
 }
 
-function TextField({ type, placeholder }: TextFieldProps) {
+// Each adapter takes the library's own props, minus what useField() controls,
+// so `props` in the config is typed (and autocompleted) as animal-island-ui's.
+type Controlled = 'id' | 'value' | 'defaultValue' | 'onChange' | 'onBlur' | 'status' | 'disabled' | 'readOnly'
+
+export type TextFieldProps = Omit<InputProps, Controlled>
+
+function TextField(props: TextFieldProps) {
   const { id, value, onChange, onBlur, errorMessage, disabled, readOnly } = useField()
   return (
     <FieldRow>
       <Input
+        {...props}
         id={id}
-        type={type}
-        placeholder={placeholder}
         value={value ?? ''}
         onChange={e => onChange(e.target.value)}
         onBlur={onBlur}
@@ -47,43 +46,43 @@ function TextField({ type, placeholder }: TextFieldProps) {
   )
 }
 
-// No TextArea in animal-island-ui: a single-line Input stands in.
-function LongTextField(_: LongTextFieldProps) {
-  const { id, value, onChange, onBlur, disabled } = useField()
-  return (
-    <FieldRow>
-      <Input id={id} value={value ?? ''} onChange={e => onChange(e.target.value)} onBlur={onBlur} disabled={disabled} />
-    </FieldRow>
-  )
-}
+// No TextArea in animal-island-ui: its Input stands in, with the same props.
+export type LongTextFieldProps = TextFieldProps
+const LongTextField = TextField
 
-function SelectField({ options }: SelectFieldProps) {
-  const { value, onChange, label } = useField()
+/** `options` come from the config, in animal-island-ui's shape (`key`). */
+export type SelectFieldProps = Omit<SelectProps, 'value' | 'defaultValue' | 'onChange' | 'disabled' | 'aria-label'>
+
+function SelectField(props: SelectFieldProps) {
+  const { value, onChange, label, disabled } = useField()
   return (
     <FieldRow>
-      {/* options use `key`; onChange passes the key, not an event */}
+      {/* onChange passes the key, not an event */}
       <Select
+        {...props}
         aria-label={typeof label === 'string' ? label : undefined}
-        options={options.map(option => ({ key: option.value, label: option.label }))}
         value={value}
         onChange={key => onChange(key)}
+        disabled={disabled}
       />
     </FieldRow>
   )
 }
 
 // Its Checkbox is a group (array of values); a Switch fits a boolean.
-function CheckboxField(_: CheckboxFieldProps) {
+export type CheckboxFieldProps = Omit<SwitchProps, 'checked' | 'defaultChecked' | 'onChange' | 'disabled'>
+
+function CheckboxField(props: CheckboxFieldProps) {
   const { value, onChange, label, disabled } = useField()
   return (
     <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <Switch checked={Boolean(value)} onChange={checked => onChange(checked)} disabled={disabled} />
+      <Switch {...props} checked={Boolean(value)} onChange={checked => onChange(checked)} disabled={disabled} />
       {label}
     </label>
   )
 }
 
-export const fields: Fields = {
+export const fields = {
   text: TextField,
   longText: LongTextField,
   select: SelectField,

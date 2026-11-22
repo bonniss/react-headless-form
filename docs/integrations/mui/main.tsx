@@ -1,7 +1,8 @@
 import { CssBaseline } from '@mui/material'
 import type { ReactNode } from 'react'
 import { mountDemo } from '../shared/mount'
-import { fields, shells } from './fields'
+import { demo } from './config'
+import { shells } from './fields'
 
 const Wrapper = ({ children }: { children: ReactNode }) => (
   <>
@@ -10,4 +11,4 @@ const Wrapper = ({ children }: { children: ReactNode }) => (
   </>
 )
 
-mountDemo(fields, shells, { Wrapper })
+mountDemo(demo, shells, { Wrapper })

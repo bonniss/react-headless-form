@@ -1,13 +1,7 @@
 import type { ReactNode } from 'react'
 import { useArrayField, useField } from 'react-headless-form'
-import type {
-  CheckboxFieldProps,
-  Fields,
-  LongTextFieldProps,
-  SelectFieldProps,
-  Shells,
-  TextFieldProps,
-} from '../shared/types'
+import type { ComponentProps } from 'react'
+import type { Shells } from '../shared/types'
 import { useT } from '../shared/i18n'
 import { Button, Card, CardTitle, Checkbox, Input, Label, NativeSelect, Textarea } from './ui'
 
@@ -25,6 +19,12 @@ function FieldItem({ children }: { children: ReactNode }) {
     </div>
   )
 }
+
+// Each adapter takes the component's own props, minus what useField()
+// controls, so `props` in the config is typed as the shadcn component's props.
+type Controlled = 'id' | 'ref' | 'value' | 'defaultValue' | 'onChange' | 'onBlur' | 'disabled' | 'readOnly'
+
+export type TextFieldProps = Omit<ComponentProps<typeof Input>, Controlled>
 
 function TextField(props: TextFieldProps) {
   const { id, value, onChange, onBlur, ref, errorMessage, disabled, readOnly } = useField()
@@ -45,11 +45,33 @@ function TextField(props: TextFieldProps) {
   )
 }
 
+export type LongTextFieldProps = Omit<ComponentProps<typeof Textarea>, Controlled>
+
 function LongTextField(props: LongTextFieldProps) {
-  const { id, value, onChange, onBlur, disabled } = useField()
+  const { id, value, onChange, onBlur, errorMessage, disabled } = useField()
   return (
     <FieldItem>
       <Textarea
+        {...props}
+        id={id}
+        value={value ?? ''}
+        onChange={e => onChange(e.target.value)}
+        onBlur={onBlur}
+        aria-invalid={Boolean(errorMessage)}
+        disabled={disabled}
+      />
+    </FieldItem>
+  )
+}
+
+/** A native select: the `<option>` children come from the config. */
+export type SelectFieldProps = Omit<ComponentProps<typeof NativeSelect>, Controlled>
+
+function SelectField(props: SelectFieldProps) {
+  const { id, value, onChange, onBlur, disabled } = useField()
+  return (
+    <FieldItem>
+      <NativeSelect
         {...props}
         id={id}
         value={value ?? ''}
@@ -61,38 +83,25 @@ function LongTextField(props: LongTextFieldProps) {
   )
 }
 
-function SelectField({ options }: SelectFieldProps) {
-  const { id, value, onChange, onBlur, disabled } = useField()
-  return (
-    <FieldItem>
-      <NativeSelect
-        id={id}
-        value={value ?? ''}
-        onChange={e => onChange(e.target.value)}
-        onBlur={onBlur}
-        disabled={disabled}
-      >
-        {options.map(option => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </NativeSelect>
-    </FieldItem>
-  )
-}
+export type CheckboxFieldProps = Omit<ComponentProps<typeof Checkbox>, Controlled | 'checked' | 'type'>
 
-function CheckboxField(_: CheckboxFieldProps) {
+function CheckboxField(props: CheckboxFieldProps) {
   const { id, value, onChange, label, disabled } = useField()
   return (
     <div className="flex items-center gap-2">
-      <Checkbox id={id} checked={Boolean(value)} onChange={e => onChange(e.target.checked)} disabled={disabled} />
+      <Checkbox
+        {...props}
+        id={id}
+        checked={Boolean(value)}
+        onChange={e => onChange(e.target.checked)}
+        disabled={disabled}
+      />
       <Label htmlFor={id}>{label}</Label>
     </div>
   )
 }
 
-export const fields: Fields = {
+export const fields = {
   text: TextField,
   longText: LongTextField,
   select: SelectField,

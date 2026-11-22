@@ -1,66 +1,69 @@
 import { Box, Button, Card, CardContent, CardHeader, Checkbox, FormControlLabel, MenuItem, Stack, TextField as MuiTextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import { useArrayField, useField } from 'react-headless-form'
-import type {
-  CheckboxFieldProps,
-  Fields,
-  LongTextFieldProps,
-  SelectFieldProps,
-  Shells,
-  TextFieldProps,
-} from '../shared/types'
+import type { CheckboxProps, TextFieldProps as MuiTextFieldProps } from '@mui/material'
+import type { Shells } from '../shared/types'
 import { useT } from '../shared/i18n'
 
 /** Props shared by every MUI TextField-based adapter. */
-function useTextFieldProps() {
+// Each adapter takes the library's own props, minus what useField() controls,
+// so `props` in the config is typed (and autocompleted) as Material UI's props.
+type Controlled = 'value' | 'defaultValue' | 'onChange' | 'onBlur' | 'error' | 'label' | 'required' | 'disabled' | 'inputRef'
+
+export type TextFieldProps = Omit<MuiTextFieldProps, Controlled>
+
+/** Merges the config's `slotProps` with the read-only flag from useField(). */
+function Field({ slotProps, helperText, ...props }: TextFieldProps) {
   const { value, onChange, onBlur, ref, label, errorMessage, required, disabled, readOnly } = useField()
-  return {
-    inputRef: ref,
-    label,
-    value: value ?? '',
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value),
-    onBlur,
-    error: Boolean(errorMessage),
-    helperText: errorMessage,
-    required,
-    disabled,
-    slotProps: { htmlInput: { readOnly } },
-    fullWidth: true,
-    size: 'small' as const,
-  }
-}
-
-function TextField({ type, placeholder }: TextFieldProps) {
-  return <MuiTextField {...useTextFieldProps()} type={type} placeholder={placeholder} />
-}
-
-function LongTextField({ rows }: LongTextFieldProps) {
-  return <MuiTextField {...useTextFieldProps()} multiline minRows={rows} />
-}
-
-function SelectField({ options }: SelectFieldProps) {
   return (
-    <MuiTextField {...useTextFieldProps()} select>
-      {options.map(option => (
-        <MenuItem key={option.value} value={option.value}>
-          {option.label}
-        </MenuItem>
-      ))}
-    </MuiTextField>
+    <MuiTextField
+      fullWidth
+      size="small"
+      {...props}
+      inputRef={ref}
+      label={label}
+      value={value ?? ''}
+      onChange={e => onChange(e.target.value)}
+      onBlur={onBlur}
+      error={Boolean(errorMessage)}
+      helperText={errorMessage ?? helperText}
+      required={required}
+      disabled={disabled}
+      slotProps={{ ...slotProps, htmlInput: { ...(slotProps?.htmlInput as object), readOnly } }}
+    />
   )
 }
 
-function CheckboxField(_: CheckboxFieldProps) {
+function TextField(props: TextFieldProps) {
+  return <Field {...props} />
+}
+
+export type LongTextFieldProps = Omit<TextFieldProps, 'multiline'>
+
+function LongTextField(props: LongTextFieldProps) {
+  return <Field {...props} multiline />
+}
+
+/** The options are `MenuItem` children from the config, as in MUI itself. */
+export type SelectFieldProps = Omit<TextFieldProps, 'select'>
+
+function SelectField(props: SelectFieldProps) {
+  return <Field {...props} select />
+}
+
+export type CheckboxFieldProps = Omit<CheckboxProps, 'checked' | 'onChange' | 'disabled'>
+
+function CheckboxField(props: CheckboxFieldProps) {
   const { value, onChange, label, disabled } = useField()
   return (
     <FormControlLabel
       label={label}
       disabled={disabled}
-      control={<Checkbox checked={Boolean(value)} onChange={e => onChange(e.target.checked)} />}
+      control={<Checkbox {...props} checked={Boolean(value)} onChange={e => onChange(e.target.checked)} />}
     />
   )
 }
 
-export const fields: Fields = {
+export const fields = {
   text: TextField,
   longText: LongTextField,
   select: SelectField,

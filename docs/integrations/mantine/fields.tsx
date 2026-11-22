@@ -1,14 +1,14 @@
 import { Button, Card, Checkbox, Group, SegmentedControl, Select, SimpleGrid, Stack, Text, Textarea, TextInput, Title } from '@mantine/core'
 import { useArrayField, useField } from 'react-headless-form'
-import type {
-  CheckboxFieldProps,
-  Fields,
-  LongTextFieldProps,
-  SelectFieldProps,
-  Shells,
-  TextFieldProps,
-} from '../shared/types'
+import type { CheckboxProps, SelectProps, TextareaProps, TextInputProps } from '@mantine/core'
+import type { Shells } from '../shared/types'
 import { useT } from '../shared/i18n'
+
+// Each adapter takes the library's own props, minus what useField() controls,
+// so `props` in the config is typed (and autocompleted) as Mantine's props.
+type Controlled = 'value' | 'defaultValue' | 'onChange' | 'onBlur' | 'error' | 'label' | 'disabled' | 'readOnly'
+
+export type TextFieldProps = Omit<TextInputProps, Controlled | 'withAsterisk'>
 
 function TextField(props: TextFieldProps) {
   const { value, onChange, onBlur, ref, label, errorMessage, required, disabled, readOnly } = useField()
@@ -28,6 +28,8 @@ function TextField(props: TextFieldProps) {
   )
 }
 
+export type LongTextFieldProps = Omit<TextareaProps, Controlled>
+
 function LongTextField(props: LongTextFieldProps) {
   const { value, onChange, onBlur, ref, label, errorMessage, disabled } = useField()
   return (
@@ -44,26 +46,32 @@ function LongTextField(props: LongTextFieldProps) {
   )
 }
 
-function SelectField({ options }: SelectFieldProps) {
+/** `data` (the options) comes from the config, in Mantine's own shape. */
+export type SelectFieldProps = Omit<SelectProps, Controlled>
+
+function SelectField(props: SelectFieldProps) {
   const { value, onChange, onBlur, label, errorMessage, disabled } = useField()
   return (
     <Select
-      data={options}
+      allowDeselect={false}
+      {...props}
       label={label}
       value={value ?? null}
       onChange={next => onChange(next)} // value, not an event
       onBlur={onBlur}
       error={errorMessage}
       disabled={disabled}
-      allowDeselect={false}
     />
   )
 }
 
-function CheckboxField(_: CheckboxFieldProps) {
+export type CheckboxFieldProps = Omit<CheckboxProps, Controlled | 'checked'>
+
+function CheckboxField(props: CheckboxFieldProps) {
   const { value, onChange, label, disabled } = useField()
   return (
     <Checkbox
+      {...props}
       label={label}
       checked={Boolean(value)}
       onChange={e => onChange(e.currentTarget.checked)}
@@ -72,7 +80,7 @@ function CheckboxField(_: CheckboxFieldProps) {
   )
 }
 
-export const fields: Fields = {
+export const fields = {
   text: TextField,
   longText: LongTextField,
   select: SelectField,
