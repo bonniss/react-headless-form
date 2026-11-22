@@ -21,12 +21,12 @@ html.dark .shiki span {
 .lib-wall h2 {
   font-size: 1.75rem;
   font-weight: 700;
-  margin: 0 0 0.25rem;
+  margin: 0 0 1.25rem;
 }
 .lib-wall h3 {
   font-size: 1rem;
   font-weight: 600;
-  margin: 2rem 0 0.75rem;
+  margin: 2rem 0 1rem;
   color: var(--rp-c-text-2);
 }
 .lib-wall p {
