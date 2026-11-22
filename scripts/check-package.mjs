@@ -2,7 +2,9 @@
 // Fails (exit 1) when a guarantee is broken. Do not raise a budget or extend an
 // allowlist just to make a PR pass; discuss it first.
 import { existsSync, readFileSync, readdirSync } from "node:fs";
+import path from "node:path";
 import { gzipSync } from "node:zlib";
+import { build } from "esbuild";
 
 // 7 → 8 KB in 0.17 (schema prop, JSON conditions, compute: +1.26 KB minified).
 // Deliberate; see the 0.17 commit and DEVNOTE.
@@ -71,6 +73,35 @@ check(
   `bundle ${(gz / 1024).toFixed(2)} KB gzip (budget ${BUNDLE_BUDGET_GZIP / 1024} KB)`,
   `bundle is ${(gz / 1024).toFixed(2)} KB gzip, over the ${BUNDLE_BUDGET_GZIP / 1024} KB budget`,
 );
+
+// G6 tree-shakable: an app that imports only helpers or react-hook-form
+// re-exports must not pull in the form engine. Measured with esbuild (stricter
+// than Rollup), minified + gzip, peers external.
+const TREE_SHAKE_BUDGET_GZIP = 0.75 * 1024;
+const treeShakeEntries = {
+  "react-hook-form re-exports": "export { useForm, useFormContext, Controller } from",
+  helpers: "export { defineMapping, defineDynamicConfig } from",
+};
+for (const [label, statement] of Object.entries(treeShakeEntries)) {
+  const result = await build({
+    stdin: {
+      contents: `${statement} ${JSON.stringify(path.resolve("dist/react-headless-form.mjs"))};`,
+      resolveDir: process.cwd(),
+    },
+    bundle: true,
+    minify: true,
+    format: "esm",
+    write: false,
+    logLevel: "silent",
+    external: ALLOWED_RUNTIME_IMPORTS,
+  });
+  const size = gzipSync(result.outputFiles[0].contents).length;
+  check(
+    size <= TREE_SHAKE_BUDGET_GZIP,
+    `tree-shaking: ${label} only → ${(size / 1024).toFixed(2)} KB (budget ${TREE_SHAKE_BUDGET_GZIP / 1024} KB)`,
+    `tree-shaking: importing ${label} only bundles ${(size / 1024).toFixed(2)} KB (budget ${TREE_SHAKE_BUDGET_GZIP / 1024} KB); a module-level call is missing /* @__PURE__ */`,
+  );
+}
 
 for (const line of ok) console.log(`  ✓ ${line}`);
 for (const line of failures) console.error(`  ✗ ${line}`);

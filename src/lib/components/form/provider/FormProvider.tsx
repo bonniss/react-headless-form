@@ -1,11 +1,23 @@
 import type { BlueFormProviderOptions } from '@/types/form-provider'
 import type { FunctionComponent, PropsWithChildren } from 'react'
-import { createProvider } from '../../helper/create-provider'
+import {
+  createConsumerHook,
+  createProviderComponent,
+  createProviderContext,
+} from '../../helper/create-provider'
 
-const [useContextValue, Provider] = createProvider((x: BlueFormProviderOptions) => x, {
-  name: 'BlueFormProvider',
-  errorMessage: '[react-headless-form] BlueFormProvider is missing.',
-})
+const ProviderOptionsContext = /* @__PURE__ */ createProviderContext<BlueFormProviderOptions>()
+
+const Provider = /* @__PURE__ */ createProviderComponent(
+  ProviderOptionsContext,
+  (x: BlueFormProviderOptions) => x,
+  'BlueFormProvider',
+)
+
+const useContextValue = /* @__PURE__ */ createConsumerHook(
+  ProviderOptionsContext,
+  '[react-headless-form] BlueFormProvider is missing.',
+)
 
 export const BlueFormProvider: FunctionComponent<BlueFormProviderOptions & PropsWithChildren> = ({
   children,
