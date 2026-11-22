@@ -11,6 +11,10 @@ import { defineConfig as shadcnConfig } from './shadcn/form'
 
 type Model = { email: string; role: string }
 
+mantineConfig<{ email: string }>({
+  // @ts-expect-error `value` is controlled by useField() (AdapterProps removes it)
+  email: { type: 'text', props: { value: 'x' } },
+})
 mantineConfig<Model>({
   email: { type: 'text', props: { leftSection: '@', description: 'Mantine TextInput props' } },
   // @ts-expect-error `options` is not a Mantine Select prop (Mantine uses `data`)

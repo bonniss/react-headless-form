@@ -1,5 +1,5 @@
 import { Checkbox, Form, Input, Select } from 'antd'
-import { useField } from 'react-headless-form'
+import { type AdapterProps, useField } from 'react-headless-form'
 import type { CheckboxProps, InputProps, SelectProps } from 'antd'
 
 // Form.Item is used for layout only; values and errors come from useField().
@@ -20,11 +20,12 @@ function Item({ children }: { children: React.ReactNode }) {
   )
 }
 
-// Each adapter takes the library's own props, minus what useField() controls,
-// so `props` in the config is typed (and autocompleted) as Ant Design's props.
-type Controlled = 'id' | 'value' | 'defaultValue' | 'onChange' | 'onBlur' | 'status' | 'disabled' | 'readOnly'
+// AdapterProps: the library's own props minus what useField() controls (value,
+// onChange, label, disabled, ...) and `Extra`, the props this adapter also sets.
+// So `props` in the config is typed (and autocompleted) as Ant Design's props.
+type Extra = 'id' | 'status'
 
-export type TextFieldProps = Omit<InputProps, Controlled>
+export type TextFieldProps = AdapterProps<InputProps, Extra>
 
 function TextField(props: TextFieldProps) {
   const { id, value, onChange, onBlur, errorMessage, disabled, readOnly } = useField()
@@ -46,7 +47,7 @@ function TextField(props: TextFieldProps) {
 
 
 /** `options` come from the config, in antd's own shape. */
-export type SelectFieldProps = Omit<SelectProps<string>, Controlled>
+export type SelectFieldProps = AdapterProps<SelectProps<string>, Extra>
 
 function SelectField(props: SelectFieldProps) {
   const { id, value, onChange, onBlur, errorMessage, disabled } = useField()
@@ -66,7 +67,7 @@ function SelectField(props: SelectFieldProps) {
   )
 }
 
-export type CheckboxFieldProps = Omit<CheckboxProps, Controlled | 'checked'>
+export type CheckboxFieldProps = AdapterProps<CheckboxProps, Extra | 'checked'>
 
 function CheckboxField(props: CheckboxFieldProps) {
   const { value, onChange, label, disabled } = useField()

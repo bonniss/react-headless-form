@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useField } from 'react-headless-form'
+import { type AdapterProps, useField } from 'react-headless-form'
 import type { ComponentProps } from 'react'
 import { Checkbox, Input, Label, NativeSelect } from './ui'
 
@@ -18,11 +18,11 @@ function FieldItem({ children }: { children: ReactNode }) {
   )
 }
 
-// Each adapter takes the component's own props, minus what useField()
-// controls, so `props` in the config is typed as the shadcn component's props.
-type Controlled = 'id' | 'ref' | 'value' | 'defaultValue' | 'onChange' | 'onBlur' | 'disabled' | 'readOnly'
+// AdapterProps: the component's own props minus what useField() controls (value,
+// onChange, label, disabled, ...) and `Extra`, the props this adapter also sets.
+type Extra = 'id'
 
-export type TextFieldProps = Omit<ComponentProps<typeof Input>, Controlled>
+export type TextFieldProps = AdapterProps<ComponentProps<typeof Input>, Extra>
 
 function TextField(props: TextFieldProps) {
   const { id, value, onChange, onBlur, ref, errorMessage, disabled, readOnly } = useField()
@@ -45,7 +45,7 @@ function TextField(props: TextFieldProps) {
 
 
 /** A native select: the `<option>` children come from the config. */
-export type SelectFieldProps = Omit<ComponentProps<typeof NativeSelect>, Controlled>
+export type SelectFieldProps = AdapterProps<ComponentProps<typeof NativeSelect>, Extra>
 
 function SelectField(props: SelectFieldProps) {
   const { id, value, onChange, onBlur, disabled } = useField()
@@ -63,7 +63,7 @@ function SelectField(props: SelectFieldProps) {
   )
 }
 
-export type CheckboxFieldProps = Omit<ComponentProps<typeof Checkbox>, Controlled | 'checked' | 'type'>
+export type CheckboxFieldProps = AdapterProps<ComponentProps<typeof Checkbox>, Extra | 'checked' | 'type'>
 
 function CheckboxField(props: CheckboxFieldProps) {
   const { id, value, onChange, label, disabled } = useField()

@@ -1,6 +1,6 @@
 import { Input, Select, Switch } from 'animal-island-ui'
 import type { CSSProperties, ReactNode } from 'react'
-import { useField } from 'react-headless-form'
+import { type AdapterProps, useField } from 'react-headless-form'
 import type { InputProps, SelectProps, SwitchProps } from 'animal-island-ui'
 
 const stack: CSSProperties = { display: 'grid', gap: 12 }
@@ -20,11 +20,12 @@ function FieldRow({ children }: { children: ReactNode }) {
   )
 }
 
-// Each adapter takes the library's own props, minus what useField() controls,
-// so `props` in the config is typed (and autocompleted) as animal-island-ui's.
-type Controlled = 'id' | 'value' | 'defaultValue' | 'onChange' | 'onBlur' | 'status' | 'disabled' | 'readOnly'
+// AdapterProps: the library's own props minus what useField() controls (value,
+// onChange, label, disabled, ...) and `Extra`, the props this adapter also sets.
+// So `props` in the config is typed (and autocompleted) as animal-island-ui's.
+type Extra = 'id' | 'status'
 
-export type TextFieldProps = Omit<InputProps, Controlled>
+export type TextFieldProps = AdapterProps<InputProps, Extra>
 
 function TextField(props: TextFieldProps) {
   const { id, value, onChange, onBlur, errorMessage, disabled, readOnly } = useField()
@@ -46,7 +47,7 @@ function TextField(props: TextFieldProps) {
 
 
 /** `options` come from the config, in animal-island-ui's shape (`key`). */
-export type SelectFieldProps = Omit<SelectProps, 'value' | 'defaultValue' | 'onChange' | 'disabled' | 'aria-label'>
+export type SelectFieldProps = AdapterProps<SelectProps, 'aria-label'>
 
 function SelectField(props: SelectFieldProps) {
   const { value, onChange, label, disabled } = useField()
@@ -65,7 +66,7 @@ function SelectField(props: SelectFieldProps) {
 }
 
 // Its Checkbox is a group (array of values); a Switch fits a boolean.
-export type CheckboxFieldProps = Omit<SwitchProps, 'checked' | 'defaultChecked' | 'onChange' | 'disabled'>
+export type CheckboxFieldProps = AdapterProps<SwitchProps, 'checked' | 'defaultChecked'>
 
 function CheckboxField(props: CheckboxFieldProps) {
   const { value, onChange, label, disabled } = useField()

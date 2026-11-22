@@ -1,13 +1,14 @@
 import { Checkbox, FormControlLabel, MenuItem, TextField as MuiTextField } from '@mui/material'
-import { useField } from 'react-headless-form'
+import { type AdapterProps, useField } from 'react-headless-form'
 import type { CheckboxProps, TextFieldProps as MuiTextFieldProps } from '@mui/material'
 
 /** Props shared by every MUI TextField-based adapter. */
-// Each adapter takes the library's own props, minus what useField() controls,
-// so `props` in the config is typed (and autocompleted) as Material UI's props.
-type Controlled = 'value' | 'defaultValue' | 'onChange' | 'onBlur' | 'error' | 'label' | 'required' | 'disabled' | 'inputRef'
+// AdapterProps: the library's own props minus what useField() controls (value,
+// onChange, label, disabled, ...) and `Extra`, the props this adapter also sets.
+// So `props` in the config is typed (and autocompleted) as Material UI's props.
+type Extra = 'error' | 'inputRef'
 
-export type TextFieldProps = Omit<MuiTextFieldProps, Controlled>
+export type TextFieldProps = AdapterProps<MuiTextFieldProps, Extra>
 
 /** Merges the config's `slotProps` with the read-only flag from useField(). */
 function Field({ slotProps, helperText, ...props }: TextFieldProps) {
@@ -43,7 +44,7 @@ function SelectField(props: SelectFieldProps) {
   return <Field {...props} select />
 }
 
-export type CheckboxFieldProps = Omit<CheckboxProps, 'checked' | 'onChange' | 'disabled'>
+export type CheckboxFieldProps = AdapterProps<CheckboxProps, 'checked'>
 
 function CheckboxField(props: CheckboxFieldProps) {
   const { value, onChange, label, disabled } = useField()

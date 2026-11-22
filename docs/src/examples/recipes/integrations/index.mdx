@@ -30,11 +30,11 @@ In every demo: switch the language in the header, submit with the header button 
 
 ## Props typed by the UI library
 
-An adapter takes the library's component props, minus what `useField()` controls:
+An adapter takes the library's component props, minus what `useField()` controls, with [`AdapterProps`](../../../guide/core/field-authoring/use-field.mdx#typing-an-adapters-props):
 
 ```tsx
-// mantine/fields.tsx
-export type TextFieldProps = Omit<TextInputProps, 'value' | 'onChange' | 'onBlur' | 'error' | 'label' | ...>
+// mantine/fields.tsx: Mantine's TextInput props minus value / onChange / label / disabled / … and `error`
+export type TextFieldProps = AdapterProps<TextInputProps, 'error' | 'withAsterisk'>
 function TextField(props: TextFieldProps) {
   const { value, onChange, ...field } = useField()
   return <TextInput {...props} value={value ?? ''} onChange={e => onChange(e.currentTarget.value)} ... />
