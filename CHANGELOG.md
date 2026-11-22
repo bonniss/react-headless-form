@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.23.0](https://github.com/bonniss/react-headless-form/compare/v0.22.0...v0.23.0) (2026-11-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* **i18n:** `i18nConfig.translateProps` is removed. Placeholders are translated without it; translate other props (title, aria-label, option labels) with your `t` where you build the config.
+
+### Features
+
+* **i18n:** translate the placeholder like label and description; remove translateProps ([1291e95](https://github.com/bonniss/react-headless-form/commit/1291e95e5ad1fc3239277eb81a80781761de20b2))
+
 ## [0.22.0](https://github.com/bonniss/react-headless-form/compare/v0.21.0...v0.22.0) (2026-11-22)
 
 
