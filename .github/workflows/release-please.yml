@@ -33,12 +33,21 @@ jobs:
       # PRs opened with GITHUB_TOKEN do not trigger `pull_request` workflows,
       # so the release PR would have no checks. workflow_dispatch is allowed:
       # run CI on the release branch, its checks show up on the PR.
+      # `pr` is empty when no release PR was opened or updated (e.g. when the
+      # release PR itself is merged). Parse it in the shell: GitHub evaluates
+      # step `env` expressions even when `if` is false, so fromJSON('') failed.
       - name: Run CI on the release PR
-        if: ${{ steps.release.outputs.pr }}
+        if: ${{ steps.release.outputs.pr != '' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
-        run: gh workflow run ci.yml --repo "${{ github.repository }}" --ref "$BRANCH"
+          PR_JSON: ${{ steps.release.outputs.pr }}
+        run: |
+          BRANCH=$(printf '%s' "$PR_JSON" | jq -r '.headBranchName // empty' 2>/dev/null || true)
+          if [ -z "$BRANCH" ]; then
+            echo "No release PR to check."
+            exit 0
+          fi
+          gh workflow run ci.yml --repo "${{ github.repository }}" --ref "$BRANCH"
 
   publish:
     needs: release-please
