@@ -105,15 +105,15 @@ describe("BlueForm – onSubmit", () => {
     })
   })
 
-  it("calls onSubmitError when validation fails", async () => {
+  it("calls onInvalid when validation fails", async () => {
     const onSubmit = vi.fn()
-    const onSubmitError = vi.fn()
+    const onInvalid = vi.fn()
 
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
         onSubmit={onSubmit}
-        onSubmitError={onSubmitError}
+        onInvalid={onInvalid}
         config={{
           name: {
             type: "inline",
@@ -129,20 +129,20 @@ describe("BlueForm – onSubmit", () => {
     fireEvent.click(screen.getByText("Submit"))
 
     await waitFor(() => {
-      expect(onSubmitError).toHaveBeenCalled()
+      expect(onInvalid).toHaveBeenCalled()
     })
 
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
-  it("does not call onSubmitError when form is valid", async () => {
-    const onSubmitError = vi.fn()
+  it("does not call onInvalid when form is valid", async () => {
+    const onInvalid = vi.fn()
 
     renderWithBlueFormProvider(
       <BlueForm
         renderRoot={TestRoot}
         onSubmit={() => {}}
-        onSubmitError={onSubmitError}
+        onInvalid={onInvalid}
         config={{
           name: {
             type: "inline",
@@ -155,7 +155,7 @@ describe("BlueForm – onSubmit", () => {
     fireEvent.click(screen.getByText("Submit"))
 
     await waitFor(() => {
-      expect(onSubmitError).not.toHaveBeenCalled()
+      expect(onInvalid).not.toHaveBeenCalled()
     })
   })
 

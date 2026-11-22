@@ -44,10 +44,10 @@ function Checkbox() {
 }
 
 function Guests() {
-  const { items, renderItem, append, remove, errorMessage } = useArrayField();
+  const { fields, renderItem, append, remove, errorMessage } = useArrayField();
   return (
     <div>
-      {items.map((item, index) => (
+      {fields.map((item, index) => (
         <div key={item.id}>
           {renderItem(item, index)}
           <button type="button" onClick={() => remove(index)}>

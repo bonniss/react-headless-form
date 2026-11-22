@@ -53,7 +53,6 @@ export type ExposedFormMethods<TModel extends FieldValues> = Pick<
 export type RootRendererArgs<TModel extends FieldValues = FieldValues> = {
   children: ReactNode;
   onSubmit: (e?: BaseSyntheticEvent) => Promise<void>;
-  onError?: (errors: FieldErrors) => void;
 } & ExposedFormMethods<TModel>;
 
 /**
@@ -207,12 +206,13 @@ export interface BlueFormProps<
 
   /**
    * Options passed to RHF's `useForm` for this specific form instance.
-   * Merges over `formOptions` from `setupForm`. `defaultValues` always wins.
-   * Unlike `setupForm`, per-form `formOptions` also accepts `resolver`, `context`, etc.
+   * Merges over `formOptions` from `setupForm`. Initial values go in the
+   * `defaultValues` prop (not accepted here). Unlike `setupForm`, per-form
+   * `formOptions` also accepts `resolver`, `context`, etc.
    *
    * @see https://react-hook-form.com/docs/useform
    */
-  formOptions?: UseFormProps<TModel, any, TOutput>;
+  formOptions?: Omit<UseFormProps<TModel, any, TOutput>, "defaultValues">;
 
   /**
    * Called with the form values once validation passes.

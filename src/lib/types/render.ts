@@ -21,8 +21,11 @@ export type InlineRenderContext = FieldResolvedProps &
 //
 // `self` is already wrapped in FieldProvider and ready to render.
 // There are no children — custom fields do not have nested field config.
+// The field's state is readable (`value`, `errorMessage`, `isDirty`, …) but not
+// writable: no `onChange` / `onBlur` / `ref`. Writing belongs to the component
+// (`self`); to draw and control the input yourself, use an `inline` field.
 
-export type CustomRenderContext = FieldResolvedProps & {
+export type CustomRenderContext = Omit<FieldResolvedProps, "onChange" | "onBlur" | "ref"> & {
   self: ReactNode;
 };
 

@@ -275,7 +275,7 @@ describe("BlueForm - field array", () => {
           users: {
             type: "array",
             render: () => {
-              const { items, append, renderItems } = useArrayField();
+              const { fields, append, renderItems } = useArrayField();
               return (
                 <>
                   <button
@@ -449,10 +449,10 @@ describe("BlueForm - field array", () => {
             users: {
               type: "array",
               render: () => {
-                const { items, append, clear } = useArrayField();
+                const { fields, append, clear } = useArrayField();
                 return (
                   <>
-                    <div data-testid="count">{items.length}</div>
+                    <div data-testid="count">{fields.length}</div>
 
                     <button type="button" onClick={() => append({ name: "" })}>
                       Add
@@ -500,10 +500,10 @@ describe("BlueForm - field array", () => {
             users: {
               type: "array",
               render: () => {
-                const { items, append, pop } = useArrayField();
+                const { fields, append, pop } = useArrayField();
                 return (
                   <>
-                    <div data-testid="count">{items.length}</div>
+                    <div data-testid="count">{fields.length}</div>
 
                     <button type="button" onClick={() => append({ name: "" })}>
                       Add
@@ -550,10 +550,10 @@ describe("BlueForm - field array", () => {
             users: {
               type: "array",
               render: () => {
-                const { append, renderItems, items } = useArrayField();
+                const { append, renderItems, fields } = useArrayField();
                 return (
                   <>
-                    <div data-testid="count">{items.length}</div>
+                    <div data-testid="count">{fields.length}</div>
                     <button type="button" onClick={() => append({ name: "" })}>
                       Add
                     </button>
@@ -722,28 +722,28 @@ describe("BlueForm - field array", () => {
   });
 
   describe("useArrayField - idAt()", () => {
-    it("returns stable ids for items (matches items[i].id)", async () => {
+    it("returns stable ids for items (matches fields[i].id)", async () => {
       renderWithBlueFormProvider(
         <BlueForm
           renderRoot={TestRoot}
           config={{
             users: {
               type: "array",
-              render: ({ append, items, idAt }) => (
+              render: ({ append, fields, idAt }) => (
                 <>
                   <button type="button" onClick={() => append({ name: "" })}>
                     Add
                   </button>
 
                   <div data-testid="id0">
-                    {items[0] ? String(idAt(0)) : "none"}
+                    {fields[0] ? String(idAt(0)) : "none"}
                   </div>
                   <div data-testid="id1">
-                    {items[1] ? String(idAt(1)) : "none"}
+                    {fields[1] ? String(idAt(1)) : "none"}
                   </div>
 
-                  <div data-testid="raw0">{items[0]?.id ?? "none"}</div>
-                  <div data-testid="raw1">{items[1]?.id ?? "none"}</div>
+                  <div data-testid="raw0">{fields[0]?.id ?? "none"}</div>
+                  <div data-testid="raw1">{fields[1]?.id ?? "none"}</div>
                 </>
               ),
               props: {
@@ -826,10 +826,10 @@ describe("BlueForm - field array", () => {
         config={{
           users: {
             type: "array",
-            render: ({ errorMessage, append, remove, items }) => (
+            render: ({ errorMessage, append, remove, fields }) => (
               <>
                 {errorMessage && <div data-testid="error">{errorMessage}</div>}
-                {items.map((_: unknown, index: number) => (
+                {fields.map((_: unknown, index: number) => (
                   <button
                     key={index}
                     type="button"
@@ -1109,10 +1109,10 @@ describe("useArrayField - duplicate() edge cases", () => {
           users: {
             type: "array",
             render: () => {
-              const { items, duplicate } = useArrayField();
+              const { fields, duplicate } = useArrayField();
               return (
                 <>
-                  <div data-testid="count">{items.length}</div>
+                  <div data-testid="count">{fields.length}</div>
                   <button type="button" onClick={() => duplicate(99)}>
                     Duplicate 99
                   </button>

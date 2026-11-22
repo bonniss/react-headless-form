@@ -68,7 +68,7 @@ describe("BlueForm i18n", () => {
           name: {
             type: "inline",
             label: {
-              message: "items.count",
+              message: "fields.count",
               params: { count: 3 },
             },
             render: ({ label }: any) => (
@@ -84,7 +84,7 @@ describe("BlueForm i18n", () => {
       },
     );
 
-    expect(screen.getByTestId("label").textContent).toBe("items.count:3");
+    expect(screen.getByTestId("label").textContent).toBe("fields.count:3");
   });
 
   it("uses fallback when translation returns undefined", () => {
