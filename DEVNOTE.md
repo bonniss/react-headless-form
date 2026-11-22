@@ -117,7 +117,24 @@ Thời gian: ngang RHF `useController` ở cả ba kịch bản gõ phím, nhanh
 
 **Còn mở:** nếu `renderRoot` đọc `formState` (ví dụ `isDirty`), `BlueForm` re-render và `FormProvider` của RHF tạo context mới, nên mọi `useController` re-render. RHF thuần cũng như vậy; muốn tránh phải memo context của RHF, mà điều đó làm `useFormContext().formState` bị stale. Chưa làm.
 
-### 0.17 — API cho form chạy bằng dữ liệu
+### ✅ 0.17 — API cho form chạy bằng dữ liệu
+
+**Kết quả `pnpm bench`** (form 500 trường, 49 trường phụ thuộc `f0`; số trong ngoặc là số input re-render mỗi keystroke):
+
+| | Gõ trường không liên quan | Gõ `f0`, kết quả không đổi | Bật/tắt 49 trường |
+|---|---|---|---|
+| Điều kiện dạng hàm | ~0.9 ms (1) | ~1.1 ms (1) | ~5.1 ms (25.5) |
+| Điều kiện JSON | ~1.1 ms (1) | ~1.1 ms (1) | ~5.5 ms (25.5) |
+| RHF `useController` (mốc) | ~0.9 ms (1) | ~1.3 ms (50) | ~4.5 ms (25.5) |
+| 49 trường `compute` | ~1.1 ms (1) | ~42 ms (50)* | |
+| RHF `useWatch` + `setValue` viết tay (mốc) | ~0.7 ms (1) | ~30 ms (50)* | |
+
+\* Cả 49 giá trị đều thực sự đổi, nên cả 49 lần `setValue` là bắt buộc; chi phí chủ yếu nằm ở bên trong `setValue` của RHF.
+
+**Bug hiệu năng bench bắt được trước khi phát hành:** mỗi field có điều kiện/computed giữ một `watch(callback)` riêng, mà RHF sao chép toàn bộ giá trị form cho từng subscription ở mỗi lần thay đổi (gõ field không liên quan mất ~4 ms; 49 field computed mất ~297 ms). Đã chuyển sang một hub cho mỗi form (`helper/value-listeners.ts`); G3 kiểm tra mỗi form chỉ thêm đúng 1 subscription.
+
+**Thay đổi về type:** ở config lồng nhau viết bằng `defineConfig<Row, Root>`, `values` của hàm điều kiện/compute có type theo root, `ctx.scope` theo `Row`. Trước đây `values` bị khai báo nhầm là `Partial<Row>` dù lúc chạy là toàn bộ form. Ở cấp ngoài cùng, hai type này trùng nhau.
+
 
 6. ✅ **Suy ra `TModel` từ schema:** prop `schema` (Standard Schema; interface chép theo spec, không thêm dependency). Input của schema quy định type cho `config` / `defaultValues` / ref; output quy định type cho `onSubmit`, giống `TTransformedValues` của RHF. Có overload cho `<Form>`. Không kết hợp được với `formOptions.resolver`.
 7. ✅ **Điều kiện khai báo bằng JSON:** `visible/disabled/required: { when, from?, ...ops }` cùng `and/or/not`; toán tử `eq neq in notIn empty notEmpty gt gte lt lte matches`, nhiều toán tử trong một object nghĩa là AND. `when` là path tương đối theo scope; `from: "root"` để trỏ từ gốc form, được kiểm type cả khi config lồng nhau viết inline (`TRoot` truyền qua `FormConfig`; `defineConfig<Row, Root>()`; kiểu trả về của `defineConfig` bỏ root để config tương thích ngược). Dùng chung tracker với điều kiện dạng hàm. Chi phí type: model 40 field cùng 80 điều kiện JSON làm thời gian typecheck tăng khoảng 0.2 giây (+10k instantiation).
