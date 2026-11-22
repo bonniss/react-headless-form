@@ -85,7 +85,7 @@ export default function LibWall() {
         {uiLibs.map(lib => (
           <Tile key={lib.name} lib={lib} />
         ))}
-        <CtaTile href={`${integration('')}#bring-your-own-library`}>Another UI kit? Wire it up in 3 steps →</CtaTile>
+        <CtaTile href="/guide/core/field-authoring/">Another UI kit? Learn to write its fields →</CtaTile>
       </div>
       <h3>…and so does any schema library</h3>
       <div className="lib-wall__grid lib-wall__grid--small">
