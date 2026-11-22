@@ -12,7 +12,7 @@ i18next.use(initReactI18next).init({
       translation: {
         "username.label": "Username",
         "username.description": "Your public display name",
-        "username.placeholder": "e.g. ada_lovelace",
+        "username.placeholder": "Translated by i18next",
         "validation.required": "{{field}} is required",
         "validation.minLength": "{{field}} must be at least {{minLength}} characters",
       },
@@ -21,7 +21,7 @@ i18next.use(initReactI18next).init({
       translation: {
         "username.label": "Tên người dùng",
         "username.description": "Tên hiển thị công khai của bạn",
-        "username.placeholder": "ví dụ: ada_lovelace",
+        "username.placeholder": "Dịch bởi i18next",
         "validation.required": "{{field}} là bắt buộc",
         "validation.minLength": "{{field}} phải có ít nhất {{minLength}} ký tự",
       },

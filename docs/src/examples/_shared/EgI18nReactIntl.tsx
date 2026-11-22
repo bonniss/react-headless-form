@@ -7,14 +7,14 @@ const messages = {
   en: {
     "username.label": "Username",
     "username.description": "Your public display name",
-    "username.placeholder": "e.g. ada_lovelace",
+    "username.placeholder": "Translated by react-intl",
     "validation.required": "{field} is required",
     "validation.minLength": "{field} must be at least {minLength} characters",
   },
   vi: {
     "username.label": "Tên người dùng",
     "username.description": "Tên hiển thị công khai của bạn",
-    "username.placeholder": "ví dụ: ada_lovelace",
+    "username.placeholder": "Dịch bởi react-intl",
     "validation.required": "{field} là bắt buộc",
     "validation.minLength": "{field} phải có ít nhất {minLength} ký tự",
   },

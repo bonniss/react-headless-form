@@ -12,14 +12,14 @@ i18n.load({
   en: {
     "username.label": "Username",
     "username.description": "Your public display name",
-    "username.placeholder": "e.g. ada_lovelace",
+    "username.placeholder": "Translated by Lingui",
     "validation.required": "{field} is required",
     "validation.minLength": "{field} must be at least {minLength} characters",
   },
   vi: {
     "username.label": "Tên người dùng",
     "username.description": "Tên hiển thị công khai của bạn",
-    "username.placeholder": "ví dụ: ada_lovelace",
+    "username.placeholder": "Dịch bởi Lingui",
     "validation.required": "{field} là bắt buộc",
     "validation.minLength": "{field} phải có ít nhất {minLength} ký tự",
   },
