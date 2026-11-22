@@ -4,7 +4,9 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { gzipSync } from "node:zlib";
 
-const BUNDLE_BUDGET_GZIP = 7 * 1024; // bytes, ESM bundle
+// 7 → 8 KB in 0.17 (schema prop, JSON conditions, compute: +1.26 KB minified).
+// Deliberate; see the 0.17 commit and DEVNOTE.
+const BUNDLE_BUDGET_GZIP = 8 * 1024; // bytes, ESM bundle (unminified)
 const ALLOWED_RUNTIME_IMPORTS = ["react", "react/jsx-runtime", "react-hook-form"];
 const ALLOWED_TYPE_IMPORTS = ["react", "react/jsx-runtime", "react-hook-form"];
 const REQUIRED_PEERS = ["react", "react-dom", "react-hook-form"];

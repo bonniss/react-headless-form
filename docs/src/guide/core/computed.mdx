@@ -1,0 +1,93 @@
+---
+title: Computed fields
+description: Derive a field's value from other values with compute — type-checked, dependency-tracked, chainable, and safe for editable fields like slugs.
+---
+
+_Added in v0.17._
+
+`compute` derives a field's value from other values. It is re-run when a value it reads changes, and its return type is checked against the field's type.
+
+```tsx
+const config = defineConfig<Checkup>({
+  weight: { type: "number" },
+  height: { type: "number" },
+  bmi: {
+    type: "number",
+    readOnly: true,
+    compute: (v) => (v.weight && v.height ? v.weight / (v.height / 100) ** 2 : undefined),
+  },
+});
+```
+
+The computed value is written into the form state like any other value: it is displayed by the field component, validated by `rules` or `schema`, reported to `onFieldChange`, and submitted.
+
+## Arguments
+
+`compute(values, ctx)` receives the same arguments as [condition functions](./conditional-rendering.mdx#conditions-inside-array-rows-and-sections):
+
+| Argument | Type | Description |
+|---|---|---|
+| `values` | root model | All form values |
+| `ctx.scope` | config model | Values of the field's array row / nested section (all values at the top level) |
+| `ctx.path`, `ctx.name`, `ctx.namespace` | `string` | The field's position |
+
+Return `undefined` when the inputs are incomplete. Returning a value of another type is a type error:
+
+```tsx
+bmi: { type: "number", compute: (v) => String(v.weight) }, // ✗ bmi is a number
+```
+
+## Dependencies
+
+Like conditions, the paths read through `values` / `ctx.scope` are recorded on every run, so a compute re-runs only when one of them changes. Typing in an unrelated field neither runs the function nor re-renders anything. Declare `deps` to override the inferred paths.
+
+## Chains and aggregates
+
+A computed field can read other computed fields: each one re-runs when its inputs change, in any config order.
+
+```tsx
+bmiClass: { type: "text", readOnly: true, compute: (v) => (v.bmi === undefined ? undefined : v.bmi < 23 ? "Normal" : "Overweight") },
+```
+
+In array rows, use `ctx.scope` for the row, and aggregate rows at the top level:
+
+```tsx
+const lineConfig = defineConfig<Line, Invoice>({
+  total: { type: "number", readOnly: true, compute: (_, { scope }) => (scope.qty ?? 0) * (scope.price ?? 0) },
+});
+
+grandTotal: {
+  type: "number",
+  readOnly: true,
+  compute: (v) => (v.lines ?? []).reduce((sum, line) => sum + (line.total ?? 0), 0),
+},
+```
+
+Typing in one row re-runs only that row's `total` and the aggregate. Appending, removing and moving rows re-run what depends on them.
+
+## Editable vs read-only fields
+
+There is no option to configure. The behavior follows whether the user can edit the field:
+
+- **`readOnly` / `disabled`** (field or form level): the field always shows the computed value, even over a stale saved value (e.g. BMI).
+- **Editable** (e.g. a slug): the field follows the computed value until the user changes it, then keeps the user's value. Clearing the field resumes syncing on the next change. On an edit form, a saved value that differs from the computed one counts as a user change and is kept.
+
+## Pristine forms
+
+Values computed on mount and after `reset()` become the field's default value, so the form is not dirty just because a computed field was filled in.
+
+## Cycles
+
+Computes that depend on each other in a loop (`a` from `b`, `b` from `a`) are stopped, with a `[react-headless-form] compute cycle detected` error listing the paths. Mutually dependent computes that settle on a stable value are fine.
+
+## Notes
+
+- `compute` is synchronous. Fetch remote data elsewhere and store it in a field that `compute` reads.
+- A field hidden with `visible` keeps computing (its value stays current and is submitted unless `shouldUnregister` is set). Fields inside a hidden section are unmounted and do not compute.
+
+## Examples
+
+- [Computed fields](../../examples/foundational/computed-field.mdx): full name, initials and BMI.
+- [Slug](../../examples/recipes/slug.mdx): an editable slug, with Vietnamese diacritics.
+- [Medical checkup](../../examples/recipes/medical-indices.mdx): BMI, class, BSA, eGFR, and alerts.
+- [Invoice](../../examples/recipes/invoice.mdx): line totals, subtotal, VAT and total.

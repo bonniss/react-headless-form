@@ -12,6 +12,7 @@
     "name": "field-authoring"
   },
   "conditional-rendering",
+  "computed",
   "type-safety",
   "i18n",
   "schema-validation",

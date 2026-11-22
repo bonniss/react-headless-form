@@ -27,7 +27,7 @@ const InputField: FunctionComponent<InputFieldProps> = (props) => {
         {...props}
         ref={ref}
         name={name}
-        value={value}
+        value={value ?? ""}
         onChange={onChange}
         disabled={disabled}
         readOnly={readOnly}

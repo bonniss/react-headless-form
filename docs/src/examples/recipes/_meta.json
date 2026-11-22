@@ -1,6 +1,9 @@
 [
   "devtools",
   "i18n",
+  "slug",
+  "medical-indices",
+  "invoice",
   {
     "type": "dir",
     "name": "integrations",

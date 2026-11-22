@@ -1,0 +1,21 @@
+---
+title: Schema
+description: "Validate with a Standard Schema (Zod) through the schema prop; onSubmit receives the parsed output."
+---
+
+`onSubmit` receives the schema output: the name is trimmed and the age is a number. See [Schema validation](../../guide/core/schema-validation.mdx).
+
+## Preview & Code
+
+import { Tab, Tabs } from '@rspress/core/theme';
+import EgSchemaForm from '../_shared/EgSchemaForm';
+
+<Tabs>
+  <Tab label="Preview">
+    <EgSchemaForm />
+  </Tab>
+  <Tab label="Code">
+    ```tsx lineNumbers file="../_shared/EgSchemaForm.tsx"
+    ```
+  </Tab>
+</Tabs>

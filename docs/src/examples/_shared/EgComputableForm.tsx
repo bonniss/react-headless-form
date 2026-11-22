@@ -1,49 +1,53 @@
 import { Form, defineConfig } from "./form.setup";
 
 type ProfileData = {
-  title: string;
-  slug: string;
   firstName: string;
   lastName: string;
   fullName: string;
-  weight: number;
-  height: number;
+  initials: string;
+  weight: string;
+  height: string;
   bmi: number;
 };
 
 export default function EgComputableForm() {
   return (
     <Form<ProfileData>
-      onFieldChange={({ name, value, values, setValue }) => {
-        if (name === "title") {
-          setValue("slug", (value as string)?.toLowerCase().replace(/\s+/g, "-") ?? "")
-        }
-
-        if (name === "firstName" || name === "lastName") {
-          const { firstName, lastName } = values
-          setValue("fullName", [firstName, lastName].filter(Boolean).join(" "))
-        }
-
-        if (name === "weight" || name === "height") {
-          const { weight, height } = values
-          if (weight && height) {
-            const h = height / 100
-            setValue("bmi", Math.round((weight / (h * h)) * 10) / 10)
-          }
-        }
-      }}
       config={defineConfig<ProfileData>({
-        title: { type: "text", label: "Title" },
-        slug: { type: "text", label: "Slug", readOnly: true },
-
         firstName: { type: "text", label: "First name" },
         lastName: { type: "text", label: "Last name" },
-        fullName: { type: "text", label: "Full name", readOnly: true },
+        fullName: {
+          type: "text",
+          label: "Full name",
+          readOnly: true,
+          compute: (v) => [v.firstName, v.lastName].filter(Boolean).join(" "),
+        },
+        // computed from a computed field
+        initials: {
+          type: "text",
+          label: "Initials",
+          readOnly: true,
+          compute: (v) =>
+            (v.fullName ?? "")
+              .split(" ")
+              .filter(Boolean)
+              .map((part) => part[0].toUpperCase())
+              .join(""),
+        },
 
         weight: { type: "text", label: "Weight (kg)" },
         height: { type: "text", label: "Height (cm)" },
-        bmi: { type: "text", label: "BMI", readOnly: true },
+        bmi: {
+          type: "text",
+          label: "BMI",
+          readOnly: true,
+          compute: (v) => {
+            const weight = Number(v.weight);
+            const height = Number(v.height) / 100;
+            return weight > 0 && height > 0 ? Math.round((weight / height ** 2) * 10) / 10 : undefined;
+          },
+        },
       })}
     />
-  )
+  );
 }

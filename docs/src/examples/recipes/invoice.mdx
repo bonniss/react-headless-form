@@ -1,0 +1,21 @@
+---
+title: Invoice
+description: "Line totals per array row, subtotal, VAT and total with compute."
+---
+
+Row totals use `ctx.scope` (the row); the subtotal aggregates the computed row totals, VAT and total chain from it. Typing in one row only re-runs that row and the aggregates.
+
+## Preview & Code
+
+import { Tab, Tabs } from '@rspress/core/theme';
+import EgInvoiceForm from '../_shared/EgInvoiceForm';
+
+<Tabs>
+  <Tab label="Preview">
+    <EgInvoiceForm />
+  </Tab>
+  <Tab label="Code">
+    ```tsx lineNumbers file="../_shared/EgInvoiceForm.tsx"
+    ```
+  </Tab>
+</Tabs>

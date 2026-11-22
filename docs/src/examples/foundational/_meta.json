@@ -3,7 +3,9 @@
   "registration-form",
   "nested-form",
   "array-form",
+  "schema-form",
   "conditional-form",
+  "json-conditions",
   "computed-field",
   "wizard-form"
 ]
