@@ -106,7 +106,7 @@ email: {
 },
 ```
 
-Only top-level props are translated (not nested objects such as select options).
+Only top-level props are translated, not nested values such as select options: each UI library shapes options differently (`data`, `options`, `<option>` children), so translate their labels where you build them, with your `t`, and let the adapter pass them to the library's prop.
 
 ### Type-checked keys
 
