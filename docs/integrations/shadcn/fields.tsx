@@ -100,6 +100,17 @@ export const fields: Fields = {
 }
 
 export const shells: Shells = {
+  LanguageButton: ({ active, onClick, children }) => (
+    <Button
+      type="button"
+      variant={active ? 'default' : 'outline'}
+      className="h-8 px-3"
+      aria-pressed={active}
+      onClick={onClick}
+    >
+      {children}
+    </Button>
+  ),
   Root: ({ children, onSubmit }) => {
     const t = useT()
     return (

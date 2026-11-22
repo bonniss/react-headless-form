@@ -14,8 +14,9 @@ export type Fields = {
   checkbox: ComponentType<CheckboxFieldProps>
 }
 
-/** Layout pieces: the form root, a section card and the address list. */
+/** Layout pieces: the form root, a section card, the address list and the language toggle button. */
 export type Shells = {
+  LanguageButton: ComponentType<{ active: boolean; onClick: () => void; children: ReactNode }>
   Root: ComponentType<{ children: ReactNode; onSubmit: (e?: FormEvent) => void }>
   Section: ComponentType<{ title: ReactNode; children: ReactNode }>
   AddressList: ComponentType

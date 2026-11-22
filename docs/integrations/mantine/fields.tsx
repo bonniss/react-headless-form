@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, Group, Select, Stack, TextInput, Textarea, Title } from '@mantine/core'
+import { Button, Card, Checkbox, Group, Select, SimpleGrid, Stack, TextInput, Textarea, Title } from '@mantine/core'
 import { useArrayField, useField } from 'react-headless-form'
 import type {
   CheckboxFieldProps,
@@ -80,6 +80,11 @@ export const fields: Fields = {
 }
 
 export const shells: Shells = {
+  LanguageButton: ({ active, onClick, children }) => (
+    <Button size="xs" variant={active ? 'filled' : 'default'} aria-pressed={active} onClick={onClick}>
+      {children}
+    </Button>
+  ),
   Root: ({ children, onSubmit }) => {
     const t = useT()
     return (
@@ -109,8 +114,10 @@ export const shells: Shells = {
         </Title>
         <Stack>
           {items.map((item, index) => (
-            <Group key={item.id} align="end" grow>
-              {renderItem(item, index)}
+            <Group key={item.id} align="end" wrap="nowrap">
+              <SimpleGrid cols={2} style={{ flex: 1 }}>
+                {renderItem(item, index)}
+              </SimpleGrid>
               <Button variant="subtle" color="red" onClick={() => remove(index)}>
                 {t('action.remove')}
               </Button>
