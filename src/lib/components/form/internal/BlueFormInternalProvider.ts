@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { createConsumerHook, createProviderComponent, createProviderContext } from '@/components/helper/create-provider'
 import { identity } from '@/components/helper/identity'
 import { typedKeys } from '@/components/helper/typed-keys'
@@ -17,6 +18,8 @@ function useBlueFormInternalValue(
   const { renderRoot: _renderRoot, fieldMapping: _fieldMapping, i18nConfig: _i18nConfig } = useBlueFormProvider()
 
   const fieldMapping = fieldMapping_ ?? _fieldMapping
+  // Unique per form, so field ids do not collide between forms on one page
+  const generatedId = useId()
   const renderRoot = renderRoot_ ?? _renderRoot
   const i18nConfig = i18nConfig_ ?? _i18nConfig
 
@@ -114,6 +117,7 @@ function useBlueFormInternalValue(
     fieldMapping,
     hasResolver: Boolean(props.schema || props.formOptions?.resolver),
     ...props,
+    idPrefix: props.idPrefix ?? generatedId,
   }
 }
 

@@ -67,8 +67,10 @@ export type ConditionContext<TScope = any> = {
    * Values at `namespace` (the current array row or nested section), or the
    * whole form values at the top level. Reads are tracked like `values`.
    * Typed by the config's model (e.g. the row model in `defineConfig<Row, Root>`).
+   * `undefined` while the row is gone (e.g. right after `remove()`, or with
+   * `shouldUnregister`): read it with `scope?.x`.
    */
-  scope: Partial<TScope>;
+  scope: Partial<TScope> | undefined;
 };
 
 /**

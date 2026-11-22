@@ -40,7 +40,9 @@ const lineConfig = defineConfig<Line, Invoice>({
     compute: (values, ctx) => {
       assert<Eq<typeof ctx, ConditionContext<Line>>>();
       assert<Eq<typeof values.title, string | undefined>>();
-      return (ctx.scope.qty ?? 0) * (ctx.scope.price ?? 0);
+      // undefined while the row is gone (e.g. right after remove())
+      assert<Eq<typeof ctx.scope, Partial<Line> | undefined>>();
+      return (ctx.scope?.qty ?? 0) * (ctx.scope?.price ?? 0);
     },
   },
 });

@@ -23,7 +23,7 @@ The full list of returned props:
 | `isDirty` | `true` after value changes from its default | From RHF `fieldState.isDirty` |
 | `isTouched` | `true` after `onBlur` is called | From RHF `fieldState.isTouched` |
 | `isValidating` | `true` during async validation | From RHF `fieldState.isValidating` |
-| `id` | Field identifier | Resolved from field path — use as `id` on input, `htmlFor` on label |
+| `id` | Field identifier | `<idPrefix>-<path>`, unique per form (set `idPrefix` on `Form` for stable ids) — use as `id` on input, `htmlFor` on label |
 | `name` | Field key within its immediate scope | e.g. `"email"`, not `"profile.email"` |
 | `path` | Full dot-notation path | e.g. `"profile.email"` — use with RHF APIs directly |
 | `namespace` | Parent section path | `undefined` for top-level fields |

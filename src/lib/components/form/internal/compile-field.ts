@@ -53,12 +53,15 @@ export function compileField({
   namespace,
   i18n: { t, validationResolver, translateProps },
   formReadOnly,
+  idPrefix,
 }: {
   name: string;
   field: FormFieldConfig<any, any>;
   namespace?: string;
   i18n: I18nResolvedConfig;
   formReadOnly?: boolean;
+  /** Per-form prefix, so ids are unique across forms on a page. */
+  idPrefix?: string;
 }): CompiledField {
   const path = namespace ? `${namespace}.${name}` : name;
   const type = field.type as string;
@@ -69,7 +72,7 @@ export function compileField({
     type,
     componentProps: translateComponentProps(field.props, translateProps, t),
     base: {
-      id: path,
+      id: idPrefix ? `${idPrefix}-${path}` : path,
       namespace,
       path,
       name,

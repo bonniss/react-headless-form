@@ -258,6 +258,14 @@ export interface BlueFormProps<
   readOnly?: boolean;
 
   /**
+   * Prefix for the `id` that `useField()` gives each field: `<idPrefix>-<path>`.
+   * Defaults to a unique value per form (React `useId`), so two forms with the
+   * same field names on one page never share ids. Set it for stable ids
+   * (e.g. in tests or CSS): `idPrefix="signup"` → `signup-email`.
+   */
+  idPrefix?: string;
+
+  /**
    * Called when a single field value changes.
    */
   onFieldChange?: OnFieldChange<TModel>;
