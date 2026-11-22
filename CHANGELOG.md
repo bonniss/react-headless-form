@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.20.0](https://github.com/bonniss/react-headless-form/compare/v0.19.0...v0.20.0) (2026-11-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* the `idPrefix` prop (0.19.0) is removed, and field ids are the bare path again.
+
+### Bug Fixes
+
+* no generated DOM ids (fixes React 16/17); deprecate useField().id ([54a5e21](https://github.com/bonniss/react-headless-form/commit/54a5e219971b79f940ae20cac8be5f9524787cab))
+* translate error messages on display; keep setError() errors on a language change ([f5b2864](https://github.com/bonniss/react-headless-form/commit/f5b2864504748b979a71d894afd659c4bcd392eb))
+
 ## [0.19.0](https://github.com/bonniss/react-headless-form/compare/v0.18.0...v0.19.0) (2026-11-22)
 
 
