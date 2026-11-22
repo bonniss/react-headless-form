@@ -1,0 +1,7 @@
+/* Tailwind v4, scanning this demo only (its preflight stays in this page). */
+@import "tailwindcss" source("./");
+
+body {
+  background: var(--color-zinc-50);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}

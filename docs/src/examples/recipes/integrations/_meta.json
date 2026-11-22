@@ -1,7 +1,9 @@
 [
   "mantine",
-  "antd",
   "shadcn",
+  "antd",
+  "mui",
+  "animal-island",
   "prime-react",
   "chakra-ui",
   "arco-design",

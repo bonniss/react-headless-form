@@ -1,18 +1,9 @@
 import { useState } from "react";
 import { Form, defineConfig } from "./form.setup";
 
-/** Lowercase ASCII slug; strips diacritics (Vietnamese "đ" included). */
-export function slugify(text: string) {
-  return text
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/đ/g, "d")
-    .replace(/Đ/g, "D")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+import { slugify } from "./slugify";
+
+export { slugify };
 
 type Post = { title: string; slug: string };
 

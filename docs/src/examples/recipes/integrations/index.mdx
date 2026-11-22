@@ -1,118 +1,85 @@
 ---
 title: Integrations
-description: "How BlueForm works with any UI library or schema validator: the shared sample config, what changes per library, and onChange signature differences."
+description: "The same form rendered with Mantine, shadcn/ui, Ant Design, Material UI and animal-island-ui: one shared config, one adapter file per library, live demos hosted with the docs."
 ---
 
 # Integrations
 
-BlueForm is fully headless — it ships no styles and has no opinion on how your fields look. This makes it compatible with **any React UI library** without adapters, plugins, or special configuration.
+BlueForm renders no UI of its own, so it works with **any React UI library**: a library is wired in by writing one small adapter per field type, each reading everything from `useField()`.
+
+## Live demos
+
+Each demo below renders **the same form config** with a different library. Only `fields.tsx` changes. They are built from [`docs/integrations`](https://github.com/bonniss/react-headless-form/tree/main/docs/integrations) together with these docs, and served from the docs site itself.
+
+| Library | Demo |
+|---|---|
+| [Mantine](./mantine.mdx) | Mantine v8 |
+| [shadcn/ui](./shadcn.mdx) | Tailwind v4, shadcn-style primitives |
+| [Ant Design](./antd.mdx) | antd v6, `Form.Item` for layout only |
+| [Material UI](./mui.mdx) | MUI v7 |
+| [animal-island-ui](./animal-island.mdx) | a cozy island-style UI |
+
+Static recipes (no live demo yet): [Chakra UI](./chakra-ui.mdx), [PrimeReact](./prime-react.mdx), [Arco Design](./arco-design.mdx), [Semi Design](./semi-design.mdx), [TDesign](./tdesign.mdx), [React Native Web](./react-native-web.mdx).
 
 ## Sample form
 
-Every recipe in this section builds the same form: four field types (`text`, `longText`, `select`, `checkbox`), a nested `settings` section, and an `addresses` array field.
+The shared config shows most of the API in one form:
 
-```tsx
-// This config is identical across every integration in this section
-config={{
-  name:     { type: 'text',     label: 'Name',     rules: { required: 'Required' } },
-  password: { type: 'text',     label: 'Password', props: { type: 'password' } },
-  bio:      { type: 'longText', label: 'Bio' },
-  role:     { type: 'select',   label: 'Role',     props: { options: [...] } },
-  settings: {
-    type: 'section',
-    label: 'Settings',
-    render: ({ label, children }) => <SomeCard title={label}>{children}</SomeCard>,
-    props: {
-      nested: true,
-      config: defineConfig<UserProfile['settings']>({
-        newsletter: { type: 'checkbox', label: 'Newsletter' },
-        theme:      { type: 'select',   label: 'Theme', props: { options: [...] } },
-      }),
-    },
-  },
-  addresses: {
-    type: 'array',
-    label: 'Address book',
-    render: () => <AddressArrayField />,
-    props: {
-      config: defineConfig<UserProfile['addresses'][number]>({
-        street: { type: 'text', label: 'Street' },
-        city:   { type: 'text', label: 'City' },
-      }),
-    },
-  },
-}}
-```
+- `rules` with translated messages (`required`, `pattern`)
+- JSON conditions: `adminCode` is **visible** only for admins, `bio` is **disabled** for viewers
+- computed fields: an editable `slug` from the name, a read-only `addressCount` aggregate
+- a nested `section` and an `array` field
+- i18n (English / 日本語): labels are translation keys resolved by `i18nConfig.t`
 
-This config describes _what_ the form collects. It has zero knowledge of the UI library — swapping libraries almost never touches it.
+import { Tab, Tabs } from '@rspress/core/theme';
+
+<Tabs>
+  <Tab label="shared/config.tsx">
+    ```tsx file="../../../../integrations/shared/config.tsx"
+    ```
+  </Tab>
+  <Tab label="shared/types.ts">
+    ```ts file="../../../../integrations/shared/types.ts"
+    ```
+  </Tab>
+  <Tab label="shared/mount.tsx">
+    ```tsx file="../../../../integrations/shared/mount.tsx"
+    ```
+  </Tab>
+</Tabs>
+
+`shared/types.ts` is the contract every library's adapters implement: the same props for `text`, `longText`, `select` and `checkbox`, plus three layout shells (`Root`, `Section`, `AddressList`). That is why the config type-checks identically for all of them.
 
 ## What changes, what doesn't
 
-Migrating from one UI library to another basically means rewriting field components and nothing else.
+|                           | Changes                                          | Stays the same                            |
+| ------------------------- | ------------------------------------------------ | ----------------------------------------- |
+| **Field components**      | UI library imports, prop names, event signatures | `useField` call, destructuring            |
+| **Section / array shell** | Layout component (`Card`, `Fieldset`, …)         | `render` prop pattern, `useArrayField`    |
+| **Form config**           | Nothing                                          | Everything (rules, conditions, computes)  |
 
-|                           | Changes                                          | Stays the same                           |
-| ------------------------- | ------------------------------------------------ | ---------------------------------------- |
-| **Field components**      | UI library imports, prop names, event signatures | `useField` call, destructuring           |
-| **Section / array shell** | Layout component (`Card`, `Fieldset`, `View`...) | `render` prop pattern, `useArrayField`   |
-| **App**                   | Button styles, visual grouping                   | Form config, `defineConfig`, submit logic |
-| **`form.setup.ts`**       | Nothing                                          | Everything                               |
+## Event signatures
 
-## Adapting event signatures
+`onChange` from `useField()` accepts a value or a native event, but passing the value explicitly is clearer:
 
-Different libraries expose different `onChange` signatures — some return the value directly, others wrap it in an event object, others use a custom object. BlueForm doesn't impose any convention. `onChange` comes from RHF's `useController`, which accepts both a native event and a plain value:
-
-```tsx
-// Both work — RHF handles either
-onChange(e);             // RHF unwraps e.target.value internally
-onChange(e.target.value) // explicit clean value passed directly
-```
-
-For better maintainability, always pass a clean value explicitly:
-
-```tsx
-// ✅ Recommended — explicit, readable, no reliance on RHF internals
-
-// Value returned directly — Arco, TDesign, Semi, Mantine Select...
-<Input onChange={(val) => onChange?.(val)} />
-
-// Value wrapped in a native event — shadcn, Chakra Input, React Native Web...
-<Input onChange={(e) => onChange?.(e.target.value)} />
-
-// Value in a custom object — Chakra Checkbox...
-<Checkbox onCheckedChange={({ checked }) => onChange?.(checked)} />
-
-// ⚠️ Also works, but implicit — depends on RHF unwrapping the event
-<Input onChange={onChange} />
-```
+| Library | Text input | Select | Boolean |
+|---|---|---|---|
+| Mantine | event → `e.currentTarget.value` | value | event → `e.currentTarget.checked` |
+| shadcn/ui (native) | event → `e.target.value` | event (native `<select>`); `onValueChange` with Radix | event; `onCheckedChange` with Radix |
+| Ant Design | event → `e.target.value` | value | event → `e.target.checked` |
+| Material UI | event → `e.target.value` | event (`TextField select`) | event → `e.target.checked` |
+| animal-island-ui | event → `e.target.value` | key (options use `key`) | `Switch` → checked |
 
 ## Bring your own library
 
-Don't see your library here? The pattern is always the same:
-
-1. Call `useField` inside your field component and destructure what you need
-2. Map `value` → the library's value prop, call `onChange?.(value)` inside the library's change handler
-3. Use `errorMessage`, `label`, `disabled`, `visible` to wire up the rest
-
-If you can render an input, you can integrate with BlueForm.
+1. Call `useField()` in a field component and destructure what you need.
+2. Map `value` to the library's value prop and call `onChange(value)` from its change handler.
+3. Wire `label`, `errorMessage`, `required`, `disabled`, `readOnly` and `id` (for label association).
 
 ## Validation libraries
 
-BlueForm delegates validation entirely to React Hook Form's resolver system, which means any library supported by [`@hookform/resolvers`](https://github.com/react-hook-form/resolvers) works without any changes to your field components or form config. Define your schema using your preferred library, then pass its resolver via `formOptions`:
+Any [Standard Schema](https://standardschema.dev) works directly with the `schema` prop, no resolver package needed: see [Zod](./zod.mdx), [Valibot](./valibot.mdx) and [ArkType](./arktype.mdx). Other libraries use a resolver through `formOptions.resolver`: see [Yup](./yup.mdx) and [Ajv](./ajv.mdx), and [Schema validation](../../../guide/core/schema-validation.mdx).
 
-```tsx
-// 1. define schema (and infer type)
-const schema = z.object({
-  name: z.string().min(1, 'Required'),
-  age:  z.number().min(18),
-})
-type FormData = z.infer<typeof schema>
+## Running the demos locally
 
-// 2. pass resolver via formOptions
-<Form<FormData>
-  formOptions={{ resolver: zodResolver(schema) }}
-/>
-```
-
-When a resolver is provided, validation is fully handled by the schema — no `rules` needed on any field. Your config becomes purely structural: field type, label, and props only.
-
-Schema-level defaults (e.g. `.default()` in Zod) are not picked up by React Hook Form at initialization — the resolver only runs at validation time, not at mount. Always set initial values via `defaultValues` or the `defaultValue` prop on individual fields.
+`pnpm dev` serves the docs; run `pnpm dev:demos` alongside to serve the demos (Vite, port 5180). `pnpm build` builds both.

@@ -1,0 +1,30 @@
+---
+title: animal-island-ui
+description: "animal-island-ui (a cozy island-style React UI) wired to BlueForm field types with useField."
+outline: false
+---
+
+# animal-island-ui
+
+The [shared sample form](./index.mdx#sample-form) (rules, a JSON condition, a computed slug, a nested section and an array) rendered with animal-island-ui. Only the field adapters below are library-specific.
+
+- `Select` options use `key` (not `value`) and `onChange` receives the key.
+- There is no `TextArea`; long text uses `Input`. Its `Checkbox` is a group (array of values), so a boolean field uses `Switch`.
+- Import `animal-island-ui/style` once.
+
+import { Tab, Tabs } from '@rspress/core/theme';
+import LiveDemo from '../../../../components/LiveDemo';
+
+<Tabs>
+  <Tab label="Live demo">
+    <LiveDemo lib="animal-island" />
+  </Tab>
+  <Tab label="fields.tsx">
+    ```tsx file="../../../../integrations/animal-island/fields.tsx"
+    ```
+  </Tab>
+  <Tab label="main.tsx">
+    ```tsx file="../../../../integrations/animal-island/main.tsx"
+    ```
+  </Tab>
+</Tabs>
