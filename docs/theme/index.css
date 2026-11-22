@@ -39,8 +39,12 @@ html.dark .shiki span {
   gap: 12px;
   text-align: left;
 }
-.lib-wall__grid--small {
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+/* schema and i18n groups: names stay on one line, the invitation on a row of its own */
+.lib-wall__grid--wide {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+.lib-wall__grid--wide .lib-wall__tile--cta {
+  grid-column: 1 / span 2;
 }
 .lib-wall__tile {
   display: flex;

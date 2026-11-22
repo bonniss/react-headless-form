@@ -20,6 +20,7 @@ const pages = [
   'semi-design',
   'tdesign',
   'react-native-web',
+  'react-bootstrap',
 ]
 
 export default defineConfig({

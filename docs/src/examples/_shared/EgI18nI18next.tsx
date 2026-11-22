@@ -1,101 +1,59 @@
-import { setupForm, defineMapping } from "react-headless-form";
 import i18next from "i18next";
+import { useCallback } from "react";
 import { initReactI18next, useTranslation } from "react-i18next";
-import InputField from "./fields/InputField";
+import { Form } from "./form.setup";
 
-// Initialize i18next with inline translations for demo purposes.
-// In a real app this would live in your i18n bootstrap file.
+// In an app this lives in your i18n bootstrap file
 i18next.use(initReactI18next).init({
   lng: "en",
+  interpolation: { escapeValue: false },
   resources: {
     en: {
       translation: {
-        "form.username.label": "Username",
-        "form.username.description": "Your public display name",
-        "form.email.label": "Email",
-        "form.password.label": "Password",
+        "username.label": "Username",
+        "username.description": "Your public display name",
+        "username.placeholder": "Translated by i18next",
         "validation.required": "{{field}} is required",
-        "validation.minLength":
-          "{{field}} must be at least {{minLength}} characters",
-        "validation.pattern": "{{field}} format is invalid",
-        "switch.language": "Switch to Vietnamese",
+        "validation.minLength": "{{field}} must be at least {{minLength}} characters",
       },
     },
     vi: {
       translation: {
-        "form.username.label": "Tên người dùng",
-        "form.username.description": "Tên hiển thị công khai của bạn",
-        "form.email.label": "Email",
-        "form.password.label": "Mật khẩu",
+        "username.label": "Tên người dùng",
+        "username.description": "Tên hiển thị công khai của bạn",
+        "username.placeholder": "Dịch bởi i18next",
         "validation.required": "{{field}} là bắt buộc",
         "validation.minLength": "{{field}} phải có ít nhất {{minLength}} ký tự",
-        "validation.pattern": "{{field}} không đúng định dạng",
-        "switch.language": "Chuyển sang tiếng Anh",
       },
     },
   },
-  interpolation: { escapeValue: false },
 });
-
-const [Form] = setupForm({
-  renderRoot: ({ children, onSubmit }) => (
-    <div className="blueform-example">
-      <form onSubmit={onSubmit}>{children}</form>
-    </div>
-  ),
-  fieldMapping: defineMapping({ text: InputField }),
-});
-
-const validationTranslation = {
-  required: "validation.required",
-  minLength: "validation.minLength",
-  pattern: "validation.pattern",
-};
 
 export default function EgI18nI18next() {
   // `t` changes with the language: labels and shown errors follow it
-  const { i18n, t } = useTranslation();
-
-  const toggleLang = () =>
-    i18n.changeLanguage(i18n.language === "en" ? "vi" : "en");
-
+  const { i18n, t: translate } = useTranslation();
+  const t = useCallback((key: string, params?: Record<string, unknown>) => String(translate(key, params)), [translate]);
   return (
-    <div>
-      <div>
-        <button type="button" onClick={toggleLang}>
-          {t("switch.language")}
-        </button>
-      </div>
-
-      <Form
-        i18nConfig={{ t: (key, params) => String(t(key, params)), validationTranslation }}
-        config={{
-          username: {
-            type: "text",
-            label: "form.username.label",
-            description: "form.username.description",
-            rules: { required: true, minLength: 3 },
-          },
-          email: {
-            type: "text",
-            label: "form.email.label",
-            props: { type: "email" },
-            rules: {
-              required: true,
-              pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-            },
-          },
-          password: {
-            type: "text",
-            label: "form.password.label",
-            props: { type: "password" },
-            rules: { required: true, minLength: 6 },
-          },
-        }}
-        onSubmit={(data) => alert(JSON.stringify(data, null, 2))}
-      >
-        <button type="submit">Submit</button>
-      </Form>
-    </div>
+    <Form
+      i18nConfig={{
+        t,
+        validationTranslation: { required: "validation.required", minLength: "validation.minLength" },
+        translateProps: ["placeholder"],
+      }}
+      config={{
+        username: {
+          type: "text",
+          label: "username.label",
+          description: "username.description",
+          props: { placeholder: "username.placeholder" },
+          rules: { required: true, minLength: 3 },
+        },
+      }}
+    >
+      <button type="button" onClick={() => i18n.changeLanguage(i18n.language === "en" ? "vi" : "en")}>
+        {i18n.language === "en" ? "Tiếng Việt" : "English"}
+      </button>
+      <button type="submit">Submit</button>
+    </Form>
   );
 }

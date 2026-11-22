@@ -1,21 +1,13 @@
 ---
-title: Internationalization (i18n)
-description: "Live i18n example with i18next: translated labels, descriptions and validation messages, switching language at runtime."
+title: i18n
+description: "BlueForm with i18n: translated labels, descriptions and validation messages; live examples with i18next, react-intl, Lingui and Paraglide JS, switching language at runtime."
 ---
 
-BlueForm handles i18n at the **orchestration level**, not inside field components. Labels, descriptions, and validation messages are translated before they reach fields — field components always receive ready-to-render strings and never need to know about locales or translation libraries.
-
-```ts
-label        // already translated
-description  // already translated
-errorMessage // already translated
-```
-
-i18n is configured once in `setupForm` via `i18nConfig` and is entirely optional — if omitted, all text values are treated as plain strings.
+BlueForm translates at the orchestration level: field components receive ready-to-render strings (`label`, `description`, `errorMessage`) and never deal with locales. One function, `i18nConfig.t(key, params)`, connects any i18n library. Put `i18nConfig` in `setupForm`, or on `<Form>` when `t` changes with the language. All options: [i18n guide](../../guide/core/i18n.mdx).
 
 ## Translating labels and descriptions
 
-The `t` function receives whatever string is in field config and returns the translated value. BlueForm does not dictate key format — use any convention your app already has.
+`t` receives the string from the field config and returns its translation. BlueForm does not dictate a key format. Field `props` such as `placeholder` pass through untouched unless listed in `i18nConfig.translateProps` (the library examples below translate `placeholder`).
 
 import { Tab, Tabs } from '@rspress/core/theme';
 import EgI18nMessages from '../_shared/EgI18nMessages';
@@ -32,16 +24,9 @@ import EgI18nMessages from '../_shared/EgI18nMessages';
 
 ## Translating validation messages
 
-`validationTranslation` maps RHF rule names to translation keys. When a field fails a rule, BlueForm looks up the key and passes it through `t` along with contextual params — `field` (the translated label), and rule-specific values like `minLength`.
+`validationTranslation` maps the built-in rules (`required`, `min`, `max`, `minLength`, `maxLength`, `pattern`) to keys. `t` receives the key with `field` (the translated label) and the rule's value (e.g. `minLength: 3`), so the rules stay plain: `required: true`, `minLength: 3`. It replaces a field's own message for that rule.
 
-This means validation rules stay as plain RHF rules — no translation keys inside `rules`:
-
-```ts
-rules: {
-  required: true,      // not "validation.required"
-  minLength: 3,        // not a message string
-}
-```
+Other messages — from `validate`, a schema or `setError()` — go through `t` too, so they can be keys as well: see [Custom error messages](../../guide/core/i18n.mdx#custom-error-messages).
 
 import EgI18nValidation from '../_shared/EgI18nValidation';
 
@@ -55,22 +40,46 @@ import EgI18nValidation from '../_shared/EgI18nValidation';
   </Tab>
 </Tabs>
 
-## With i18next
+## With an i18n library
 
-Wire `i18next.t` directly into `i18nConfig.t`. The example below includes a language toggle to demonstrate that the form re-renders correctly when the locale changes.
+Pass the library's translate function as `t` on `<Form>`: it changes with the language, so labels and the error messages already shown follow it, and the values are kept. Each example is one field: submit it empty, then switch the language.
 
 import EgI18nI18next from '../_shared/EgI18nI18next';
+import EgI18nReactIntl from '../_shared/EgI18nReactIntl';
+import EgI18nLingui from '../_shared/EgI18nLingui';
+import EgI18nParaglide from '../_shared/EgI18nParaglide';
 
 <Tabs>
-  <Tab label="Preview">
+  <Tab label="i18next">
+    `t` from `useTranslation()`; messages use `{{field}}`.
+
     <EgI18nI18next />
-  </Tab>
-  <Tab label="Code">
+
     ```tsx file="../_shared/EgI18nI18next.tsx"
     ```
   </Tab>
-</Tabs>
+  <Tab label="react-intl">
+    `intl.formatMessage({ id: key }, params)`; ICU messages use `{field}`.
 
-:::tip
-Pass `t` from `useTranslation()` in `i18nConfig`: it changes with the language, so labels and the error messages already shown follow it, without remounting the form (values are kept).
-:::
+    <EgI18nReactIntl />
+
+    ```tsx file="../_shared/EgI18nReactIntl.tsx"
+    ```
+  </Tab>
+  <Tab label="Lingui">
+    `_(key, params)` from `useLingui()`; ICU messages.
+
+    <EgI18nLingui />
+
+    ```tsx file="../_shared/EgI18nLingui.tsx"
+    ```
+  </Tab>
+  <Tab label="Paraglide JS">
+    Messages compile to functions (`m.username_label()`), not string keys: config labels use message names and `t` looks them up.
+
+    <EgI18nParaglide />
+
+    ```tsx file="../_shared/EgI18nParaglide.tsx"
+    ```
+  </Tab>
+</Tabs>

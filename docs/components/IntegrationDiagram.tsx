@@ -21,7 +21,7 @@ export default function IntegrationDiagram() {
     <svg
       viewBox="0 0 720 350"
       role="img"
-      aria-label="A form config (labels, rules, conditions, computed values, typed props) connected through fieldMapping adapters to eleven UI libraries"
+      aria-label="A form config (labels, rules, conditions, computed values, typed props) connected through fieldMapping adapters to any UI library"
       style={{ width: '100%', height: 'auto', maxWidth: 760, margin: '16px 0' }}
       fontFamily="inherit"
     >

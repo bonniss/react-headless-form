@@ -13,7 +13,13 @@
     }
   },
   "include": ["src", ".ladle", "docs/src/examples", "docs/integrations/shared"],
-  // Needs packages installed only in docs/ (i18next, react-i18next); CI installs
+  // Need packages installed only in docs/ (i18next, react-intl, Lingui, Paraglide output); CI installs
   // the root dependencies only.
-  "exclude": ["docs/src/examples/_shared/EgI18nI18next.tsx"]
+  "exclude": [
+    "docs/src/examples/_shared/EgI18nI18next.tsx",
+    "docs/src/examples/_shared/EgI18nReactIntl.tsx",
+    "docs/src/examples/_shared/EgI18nLingui.tsx",
+    "docs/src/examples/_shared/EgI18nParaglide.tsx",
+    "docs/src/examples/_shared/paraglide"
+  ]
 }
