@@ -1,48 +1,83 @@
 ---
 title: i18n
-description: "BlueForm with i18n: translated labels, descriptions and validation messages; live examples with i18next, react-intl, Lingui and Paraglide JS, switching language at runtime."
+description: "BlueForm i18n in practice: a hand-written t, messages in JSON, shared setup with per-form t, your own language store, and live examples with i18next, react-intl, Lingui and Paraglide JS."
 ---
 
-BlueForm translates at the orchestration level: field components receive ready-to-render strings (`label`, `description`, `errorMessage`) and never deal with locales. One function, `i18nConfig.t(key, params)`, connects any i18n library. Put `i18nConfig` in `setupForm`, or on `<Form>` when `t` changes with the language. All options: [i18n guide](../../guide/core/i18n.mdx).
-
-## Translating labels and descriptions
-
-`t` receives the string from the field config and returns its translation. BlueForm does not dictate a key format. Field `props` such as `placeholder` pass through untouched unless listed in `i18nConfig.translateProps` (the library examples below translate `placeholder`).
+Runnable examples, from a hand-written `t` to the main i18n libraries. How it works (what goes through `t`, how `setupForm` and `<Form>` combine, what a language switch does): [i18n guide](../../guide/core/i18n.mdx).
 
 import { Tab, Tabs } from '@rspress/core/theme';
+
+## Any function is a translator
+
+`t(key, params)` can be a plain `switch`: no JSON, no library. Enough for a small app or a single language.
+
 import EgI18nMessages from '../_shared/EgI18nMessages';
-
-<Tabs>
-  <Tab label="Preview">
-    <EgI18nMessages />
-  </Tab>
-  <Tab label="Code">
-    ```tsx file="../_shared/EgI18nMessages.tsx"
-    ```
-  </Tab>
-</Tabs>
-
-## Translating validation messages
-
-`validationTranslation` maps the built-in rules (`required`, `min`, `max`, `minLength`, `maxLength`, `pattern`) to keys. `t` receives the key with `field` (the translated label) and the rule's value (e.g. `minLength: 3`), so the rules stay plain: `required: true`, `minLength: 3`. It replaces a field's own message for that rule.
-
-Other messages — from `validate`, a schema or `setError()` — go through `t` too, so they can be keys as well: see [Custom error messages](../../guide/core/i18n.mdx#custom-error-messages).
-
 import EgI18nValidation from '../_shared/EgI18nValidation';
 
 <Tabs>
-  <Tab label="Preview">
-    <EgI18nValidation />
+  <Tab label="Labels">
+    <EgI18nMessages />
+
+    ```tsx file="../_shared/EgI18nMessages.tsx"
+    ```
   </Tab>
-  <Tab label="Code">
+  <Tab label="Validation messages">
+    <EgI18nValidation />
+
     ```tsx file="../_shared/EgI18nValidation.tsx"
     ```
   </Tab>
 </Tabs>
 
+## Messages in JSON files
+
+The usual practice in an app: one file per language, keys for labels, for validation messages (`{field}` and the rule value are filled in) and for translated props. All examples below read these two files.
+
+<Tabs>
+  <Tab label="en.json">
+    ```json file="../_shared/i18n/en.json"
+    ```
+  </Tab>
+  <Tab label="vi.json">
+    ```json file="../_shared/i18n/vi.json"
+    ```
+  </Tab>
+</Tabs>
+
+## Shared setup, `t` per form
+
+What does not change with the language goes into `setupForm` once: the validation keys and the translated props. Each `<Form>` passes only `t`; the two are merged key by key (_v0.22+_).
+
+```tsx file="../_shared/i18n/form.tsx"
+```
+
+Override one key (`i18nConfig={{ t }}`) or all of them on a given form; a key set to `undefined` drops the setup's value for that form.
+
+To avoid repeating the `t` wiring in every form, wrap it in a hook of your app, `useI18nConfig()`, and pass its result: `<Form i18nConfig={useI18nConfig()} />`. Every example below does that.
+
+## Your own translator
+
+A language store of a few lines: `getLang` / `setLang` decide where the language lives (localStorage here, a cookie or the URL works the same), `useSyncExternalStore` re-renders the form when it changes, and `t` is a lookup in the JSON.
+
+import EgI18nOwnStore from '../_shared/EgI18nOwnStore';
+
+<EgI18nOwnStore />
+
+```tsx file="../_shared/EgI18nOwnStore.tsx"
+```
+
+| Pros | Cons (what a library gives you) |
+|---|---|
+| No dependency, a few dozen lines you can read | Plurals and ICU syntax (`{count, plural, …}`) |
+| Store the language anywhere: localStorage, a cookie, the URL | Number, date and currency formatting per locale |
+| **Translate outside React**: `translate(getLang(), key)` in services, API error mapping, a module-level Zod error map, toasts | Loading a locale only when it is used |
+| Easy to debug | Key extraction, translation tooling, type-checked keys, fallback locales |
+
+Good for a small or medium app with a few languages and simple messages. Once you need plurals, formatting or a translation workflow, use a library. Libraries translate outside React too, each in its own way: `i18next.t`, Lingui's `i18n._`, Paraglide's `m.key()` with `getLocale()`, react-intl's `createIntl()`.
+
 ## With an i18n library
 
-Pass the library's translate function as `t` on `<Form>`: it changes with the language, so labels and the error messages already shown follow it, and the values are kept. Each example is one field: submit it empty, then switch the language.
+The same form with each library: `useI18nConfig()` takes its `t` from the library's hook, so the form follows the language. Submit it empty, then switch the language: the label, the placeholder and the error follow, and the value is kept.
 
 import EgI18nI18next from '../_shared/EgI18nI18next';
 import EgI18nReactIntl from '../_shared/EgI18nReactIntl';
@@ -51,7 +86,7 @@ import EgI18nParaglide from '../_shared/EgI18nParaglide';
 
 <Tabs>
   <Tab label="i18next">
-    `t` from `useTranslation()`; messages use `{{field}}`.
+    `t` from `useTranslation()`. The largest ecosystem (plugins, backends, detection); here `{field}` is set as the interpolation syntax to share the JSON.
 
     <EgI18nI18next />
 
@@ -59,7 +94,7 @@ import EgI18nParaglide from '../_shared/EgI18nParaglide';
     ```
   </Tab>
   <Tab label="react-intl">
-    `intl.formatMessage({ id: key }, params)`; ICU messages use `{field}`.
+    `intl.formatMessage({ id: key }, params)` from `useIntl()`. ICU messages, formatting through the browser's `Intl`.
 
     <EgI18nReactIntl />
 
@@ -67,7 +102,7 @@ import EgI18nParaglide from '../_shared/EgI18nParaglide';
     ```
   </Tab>
   <Tab label="Lingui">
-    `_(key, params)` from `useLingui()`; ICU messages.
+    `_(key, params)` from `useLingui()`. ICU messages compiled at build time by its CLI, a small runtime.
 
     <EgI18nLingui />
 
@@ -75,7 +110,7 @@ import EgI18nParaglide from '../_shared/EgI18nParaglide';
     ```
   </Tab>
   <Tab label="Paraglide JS">
-    Messages compile to functions (`m.username_label()`), not string keys: config labels use message names and `t` looks them up.
+    Messages compile to typed, tree-shakable functions (`m.username_label()`), not string keys: config keys are message names and `t` looks them up.
 
     <EgI18nParaglide />
 

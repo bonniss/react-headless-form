@@ -1,48 +1,35 @@
 import { setupI18n } from "@lingui/core";
 import { compileMessage } from "@lingui/message-utils/compileMessage";
 import { I18nProvider, useLingui } from "@lingui/react";
-import { useCallback } from "react";
-import { Form } from "./form.setup";
+import { useMemo } from "react";
+import en from "./i18n/en.json";
+import { I18nForm } from "./i18n/form";
+import vi from "./i18n/vi.json";
 
 // In an app the Lingui CLI compiles the catalogs at build time;
-// this demo compiles its plain ICU messages at runtime instead.
+// this demo compiles the plain ICU messages at runtime instead.
 const i18n = setupI18n();
 i18n.setMessagesCompiler(compileMessage);
-i18n.load({
-  en: {
-    "username.label": "Username",
-    "username.description": "Your public display name",
-    "username.placeholder": "Translated by Lingui",
-    "validation.required": "{field} is required",
-    "validation.minLength": "{field} must be at least {minLength} characters",
-  },
-  vi: {
-    "username.label": "Tên người dùng",
-    "username.description": "Tên hiển thị công khai của bạn",
-    "username.placeholder": "Dịch bởi Lingui",
-    "validation.required": "{field} là bắt buộc",
-    "validation.minLength": "{field} phải có ít nhất {minLength} ký tự",
-  },
-});
+i18n.load({ en, vi });
 i18n.activate("en");
 
+// `_` from useLingui() changes on i18n.activate()
+function useI18nConfig() {
+  const { _ } = useLingui();
+  return useMemo(() => ({ t: (key: string, params?: Record<string, unknown>) => _(key, params) }), [_]);
+}
+
 function UsernameForm() {
-  // re-renders on i18n.activate(); `_` translates in the active locale
-  const { i18n, _ } = useLingui();
-  const t = useCallback((key: string, params?: Record<string, unknown>) => _(key, params), [_]);
+  const { i18n } = useLingui();
   return (
-    <Form
-      i18nConfig={{
-        t,
-        validationTranslation: { required: "validation.required", minLength: "validation.minLength" },
-        translateProps: ["placeholder"],
-      }}
+    <I18nForm
+      i18nConfig={useI18nConfig()}
       config={{
         username: {
           type: "text",
-          label: "username.label",
-          description: "username.description",
-          props: { placeholder: "username.placeholder" },
+          label: "username_label",
+          description: "username_description",
+          props: { placeholder: "placeholder_lingui" },
           rules: { required: true, minLength: 3 },
         },
       }}
@@ -51,7 +38,7 @@ function UsernameForm() {
         {i18n.locale === "en" ? "Tiếng Việt" : "English"}
       </button>
       <button type="submit">Submit</button>
-    </Form>
+    </I18nForm>
   );
 }
 

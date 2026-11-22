@@ -1,0 +1,12 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "username_label": "Username",
+  "username_description": "Your public display name",
+  "validation_required": "{field} is required",
+  "validation_min_length": "{field} must be at least {minLength} characters",
+  "placeholder_own": "Translated by your own t",
+  "placeholder_i18next": "Translated by i18next",
+  "placeholder_react_intl": "Translated by react-intl",
+  "placeholder_lingui": "Translated by Lingui",
+  "placeholder_paraglide": "Translated by Paraglide JS"
+}
