@@ -30,6 +30,13 @@ These are the promises the library makes to its users. Every pull request must k
 - **New features extend the checks.** Add a positive *and* a negative (`@ts-expect-error`) case in `test/types/consumer/` for new config or props, and a guarantee test when a feature touches rendering or subscriptions.
 - **Breaking changes.** While the version is `0.x`, a breaking change bumps the minor version. Deprecate first (`@deprecated` JSDoc and keep an alias for at least one minor release), then remove it in a commit marked `!` / `BREAKING CHANGE:`.
 
+### Pull requests and releases
+
+- **Every change goes through a PR**; nothing is pushed to `main` directly. Merge when the **`ci ok`** check is green. It aggregates `guarantees (lint, types, tests, package)`, `tests on React 19` and `docs build`.
+- CI installs the **root dependencies only** (`docs/` has its own lockfile). Docs examples are type-checked and tested against the library source with those, so an example must not import a docs-only package (or must be excluded in `tsconfig.test.json`). To reproduce CI exactly: fresh clone, `pnpm install --frozen-lockfile`, `pnpm verify`.
+- **Releases**: release-please opens / updates a release PR on `main`. Because it is opened with `GITHUB_TOKEN`, `release-please.yml` dispatches CI on it so `ci ok` shows on the PR. Merging the release PR creates the tag and GitHub release and publishes to npm (after `pnpm verify` runs again). If a publish fails after the release exists, fix it with a PR, then run the *release-please* workflow manually on `main` (it publishes the `package.json` version if npm does not have it yet).
+- Recommended branch protection on `main`: require a pull request, require the `ci ok` status check, and do not allow bypassing.
+
 ### Scripts
 
 | Script | What it does |

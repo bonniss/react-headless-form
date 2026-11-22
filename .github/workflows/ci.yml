@@ -1,11 +1,16 @@
 name: ci
 
-# Enforces the core guarantees (CONTRIBUTING.md → "Core guarantees") on every PR.
+# Runs on every PR (and on main). Merge only when "ci ok" is green; it is the
+# single check to require in branch protection.
 on:
   pull_request:
   push:
     branches:
       - main
+  # Release PRs are opened by release-please with GITHUB_TOKEN, which does not
+  # trigger `pull_request` workflows; release-please.yml dispatches this
+  # workflow on the release branch instead.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -25,9 +30,11 @@ jobs:
         with:
           node-version: '24.x'
           cache: 'pnpm'
+      # Root dependencies only (docs/ has its own lockfile): docs examples are
+      # type-checked and tested against the library source with these.
       - run: pnpm install --frozen-lockfile
-      # lint, typecheck (lib + tests), unit + guarantee tests, build,
-      # consumer type tests against dist, packaging checks (publint, attw, budget)
+      # lint, typecheck (lib + tests + docs examples), unit + guarantee tests,
+      # build, consumer type tests against dist, packaging checks (publint, attw, budget)
       - run: pnpm verify
 
   react-compat:
@@ -48,3 +55,31 @@ jobs:
       # devDependencies pin React 18; swap in the matrix version (not committed)
       - run: pnpm add -D react@${{ matrix.react }} react-dom@${{ matrix.react }}
       - run: pnpm vitest run
+
+  docs:
+    name: docs build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+          cache: 'pnpm'
+          cache-dependency-path: docs/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        working-directory: docs
+      # Same build as the Pages deploy (MDX, links, llms.txt ordering)
+      - run: pnpm build
+        working-directory: docs
+
+  ci-ok:
+    name: ci ok
+    if: always()
+    needs: [verify, react-compat, docs]
+    runs-on: ubuntu-latest
+    steps:
+      - name: All jobs passed
+        run: |
+          echo '${{ toJSON(needs) }}'
+          test "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}" = "false"
