@@ -221,7 +221,7 @@ describe("setupForm", () => {
     expect(screen.getByTestId("mock-field")).toBeTruthy();
   });
 
-  it("uses i18nConfig from Form props instead of setupForm", () => {
+  it("a Form's i18nConfig key overrides the same setupForm key", () => {
     const TextField = () => {
       const { label } = useField();
       return <div data-testid="label">{label}</div>;
@@ -251,7 +251,7 @@ describe("setupForm", () => {
       />,
     );
 
-    // The translated label should come from Form-level i18nConfig
+    // `t` comes from the Form
     expect(screen.getByText("OVERRIDE")).toBeTruthy();
   });
 

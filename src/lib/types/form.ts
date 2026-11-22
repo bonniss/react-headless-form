@@ -98,10 +98,16 @@ export type OnSubmitFailure<TModel extends FieldValues> = (
   form: UseFormReturn<TModel>,
 ) => unknown;
 
+/**
+ * i18n options, in `setupForm` and/or on a `<Form>`. The two are merged key by
+ * key and the Form's keys win (nested values such as `validationTranslation`
+ * are not merged): put what is fixed in `setupForm`, and pass `t` on the Form
+ * when it changes with the language.
+ */
 export type I18nConfig = {
   /**
-   * Whether to enable i18n support for validation messages.
-   * If false or omitted, messages will fallback to raw/default text.
+   * Set to `false` to turn i18n off: `t` is not called and keys are shown as-is.
+   * Enabled when omitted.
    */
   enabled?: boolean;
 
