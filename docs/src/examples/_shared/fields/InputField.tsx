@@ -1,44 +1,28 @@
-import { useField } from "react-headless-form";
-import { FunctionComponent } from "react";
+import type { InputHTMLAttributes } from 'react'
+import { useField } from 'react-headless-form'
 
-interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {}
-
-const InputField: FunctionComponent<InputFieldProps> = (props) => {
-  const {
-    id,
-    name,
-    value,
-    onChange,
-    errorMessage,
-    label,
-    description,
-    required,
-    disabled,
-    readOnly,
-    ref,
-  } = useField();
-
+export default function InputField(props: InputHTMLAttributes<HTMLInputElement>) {
+  const { value, onChange, onBlur, ref, label, description, errorMessage, required, disabled, readOnly } = useField()
   return (
-    <div id={id}>
-      <span style={{ marginRight: 10 }}>
-        {label} {required && "*"}
-      </span>
-      <input
-        {...props}
-        ref={ref}
-        name={name}
-        value={value ?? ""}
-        onChange={onChange}
-        disabled={disabled}
-        readOnly={readOnly}
-        placeholder={props.placeholder ?? label}
-        aria-required={required}
-        aria-invalid={Boolean(errorMessage)}
-      />
+    <div>
+      {/* the input inside its label: no id needed, so several forms can share field names */}
+      <label>
+        {label}
+        {required && ' *'}
+        <input
+          {...props}
+          ref={ref}
+          value={value ?? ''}
+          onChange={onChange}
+          onBlur={onBlur}
+          disabled={disabled}
+          readOnly={readOnly}
+          aria-required={required}
+          aria-invalid={Boolean(errorMessage)}
+        />
+      </label>
       {description && <div className="fieldDescription">{description}</div>}
       {errorMessage && <div className="fieldError">{errorMessage}</div>}
     </div>
-  );
-};
-
-export default InputField;
+  )
+}

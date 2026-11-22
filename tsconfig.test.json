@@ -12,7 +12,7 @@
       "react/jsx-runtime": ["node_modules/@types/react/jsx-runtime"]
     }
   },
-  "include": ["src", ".ladle", "docs/src/examples"],
+  "include": ["src", ".ladle", "docs/src/examples", "docs/integrations/shared"],
   // Needs packages installed only in docs/ (i18next, react-i18next); CI installs
   // the root dependencies only.
   "exclude": ["docs/src/examples/_shared/EgI18nI18next.tsx"]

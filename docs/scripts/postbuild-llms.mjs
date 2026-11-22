@@ -63,6 +63,11 @@ const rank = (mdUrl) => {
 const absolutize = (text) =>
   text.replace(/\]\((\/react-headless-form\/[^)]*)\)/g, (_, url) => `](${origin}${url})`)
 const stripNotation = (text) => text.replace(/[ \t]*(\/\/|#|<!--)\s*\[!code [^\]]+\](\s*-->)?/g, '')
+// A rendered preview / live demo tab is only flattened UI text ("Full Name *+ Add…"):
+// drop it up to the next tab label or heading; the code tabs stay.
+const stripPreviews = (text) =>
+  text.replace(/^\*\*(Preview|Live demo)\*\*\n[\s\S]*?(?=^\*\*[^*\n]+\*\*$|^#{1,6} |^---\nurl: |(?![\s\S]))/gm, '')
+const clean = (text) => stripPreviews(stripNotation(text))
 
 // llms.txt: sort the bullet list inside every "## Section"
 {
@@ -87,7 +92,7 @@ const stripNotation = (text) => text.replace(/[ \t]*(\/\/|#|<!--)\s*\[!code [^\]
   const chunks = text.split(/(?=^---\nurl: )/m).filter((c) => c.trim())
   const urlOf = (c) => c.match(/^---\nurl: (.+)\n/)?.[1] ?? ''
   chunks.sort((a, b) => rank(urlOf(a)) - rank(urlOf(b)))
-  const out = absolutize(stripNotation(chunks.join(''))).replace(/^url: \//gm, `url: ${origin}/`)
+  const out = absolutize(clean(chunks.join(''))).replace(/^url: \//gm, `url: ${origin}/`)
   writeFileSync(file, out)
 }
 
@@ -96,7 +101,7 @@ function walk(dir) {
   for (const entry of readdirSync(dir)) {
     const full = path.join(dir, entry)
     if (statSync(full).isDirectory()) walk(full)
-    else if (entry.endsWith('.md')) writeFileSync(full, stripNotation(readFileSync(full, 'utf8')))
+    else if (entry.endsWith('.md')) writeFileSync(full, clean(readFileSync(full, 'utf8')))
   }
 }
 walk(outDir)

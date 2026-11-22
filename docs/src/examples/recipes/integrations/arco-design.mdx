@@ -1,56 +1,38 @@
 ---
 title: Arco Design
-description: Wire Arco Design inputs to BlueForm field types with useField (Arco passes the value directly to onChange).
+description: "Arco Design inputs wired to BlueForm field types with useField; live demo built from the repo."
 outline: false
 ---
 
-This recipe demonstrates how to wire [Arco Design](https://arco.design/) components with BlueForm.
+# Arco Design
 
-Each field type is a small component that reads everything from `useField()` and forwards it to the library's input. The form config, `setupForm` and submit logic are the same as in every other recipe — see [Integrations](./index.mdx) for the shared sample form and the event-signature notes.
+The [registration form demo](./index.mdx#live-demos) written with Arco Design, self-contained:
 
-## Text field adapter
+- `form.tsx`: `setupForm` (with a `renderRoot` for the title and layout) and the config. `props` use Arco Design's own API, typed by its components.
+- `fields.tsx`: the adapters, typed with Arco Design's own props through `AdapterProps`.
+- `main.tsx`: mounts it in the demo stage (header, payload drawer).
 
-```tsx
-import { Input } from "@arco-design/web-react"
-import { useField } from "react-headless-form"
+- `Input`, `Select` and `Checkbox` pass the **value** to `onChange`, not an event.
+- Arco's `Form.Item` needs Arco's own `Form`, so label and message are plain markup.
+- Import `@arco-design/web-react/dist/css/arco.css`; `ConfigProvider locale` sets the built-in texts (here it follows the language switch).
 
-export function TextField(props: React.ComponentProps<typeof Input>) {
-  const { value, onChange, onBlur, label, errorMessage, required, disabled, readOnly } = useField()
-  return (
-    <label>
-      <span>
-        {label} {required && "*"}
-      </span>
-      <Input
-        {...props}
-        status={errorMessage ? "error" : undefined}
-        disabled={disabled}
-        readOnly={readOnly}
-        value={value ?? ""}
-        onChange={(val) => onChange?.(val)} // value, not event
-        onBlur={onBlur}
-      />
-      {errorMessage && <div className="arco-form-message">{errorMessage}</div>}
-    </label>
-  )
-}
-```
+import { Tab, Tabs } from '@rspress/core/theme';
+import LiveDemo from '../../../../components/LiveDemo';
 
-Register it in `setupForm`:
-
-```tsx
-export const [Form, defineConfig] = setupForm({
-  fieldMapping: defineMapping({ text: TextField }),
-  renderRoot: ({ children, onSubmit }) => <form onSubmit={onSubmit}>{children}</form>,
-})
-```
-
-## Full example
-
-The live demo below contains the complete set of fields (`text`, `longText`, `select`, `checkbox`), a nested section and an array field.
-
-<iframe
-  src="https://stackblitz.com/edit/vitejs-vite-yz3xtpoa?ctl=1&embed=1&file=index.html&hideNavigation=1&view=preview"
-  style={{ width: '100%', height: '500px', border: '0', borderRadius: '8px', overflow: 'hidden' }}
-  title="react-headless-form-demo"
-></iframe>
+<Tabs>
+  <Tab label="Live demo">
+    <LiveDemo lib="arco-design" />
+  </Tab>
+  <Tab label="form.tsx">
+    ```tsx file="../../../../integrations/arco-design/form.tsx"
+    ```
+  </Tab>
+  <Tab label="fields.tsx">
+    ```tsx file="../../../../integrations/arco-design/fields.tsx"
+    ```
+  </Tab>
+  <Tab label="main.tsx">
+    ```tsx file="../../../../integrations/arco-design/main.tsx"
+    ```
+  </Tab>
+</Tabs>

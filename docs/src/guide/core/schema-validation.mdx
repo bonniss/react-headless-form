@@ -39,17 +39,19 @@ So a schema that trims, coerces or transforms gives `onSubmit` the parsed result
 - Issues map to field errors by path; an issue on an array itself goes to `<path>.root`, like `useFieldArray` rules.
 
 import { Tab, Tabs } from '@rspress/core/theme';
-import EgSchemaForm from '../../examples/_shared/EgSchemaForm';
+import ZodSignupForm from '../../examples/_shared/schema/zod';
 
 <Tabs>
   <Tab label="Preview">
-    <EgSchemaForm />
+    <ZodSignupForm />
   </Tab>
   <Tab label="Code">
-    ```tsx lineNumbers file="../../examples/_shared/EgSchemaForm.tsx"
+    ```tsx lineNumbers file="../../examples/_shared/schema/zod.tsx"
     ```
   </Tab>
 </Tabs>
+
+The same form with Valibot, ArkType, Yup and Ajv: [Schema example](../../examples/foundational/schema-form.mdx).
 
 ## Any RHF resolver: `formOptions.resolver`
 

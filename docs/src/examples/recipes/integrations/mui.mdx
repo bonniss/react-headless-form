@@ -1,0 +1,37 @@
+---
+title: Material UI
+description: "Material UI v7 inputs wired to BlueForm field types with useField; one helper shares the TextField props."
+outline: false
+---
+
+# Material UI
+
+The [registration form demo](./index.mdx#live-demos) written with Material UI, self-contained:
+
+- `form.tsx`: `setupForm` (with a `renderRoot` for the title and grid) and the config. `props` use Material UI's own API, typed by its components.
+- `fields.tsx`: the adapters, typed with Material UI's own props minus what `useField()` controls.
+- `main.tsx`: mounts it in the demo stage (header, payload drawer).
+
+- One small hook (`useTextFieldProps`) maps `useField()` to `TextField` props; text, long text and select reuse it (`select` + `MenuItem`).
+- Pass the field `ref` as `inputRef` so `setFocus` / focus on error work.
+
+import { Tab, Tabs } from '@rspress/core/theme';
+import LiveDemo from '../../../../components/LiveDemo';
+
+<Tabs>
+  <Tab label="Live demo">
+    <LiveDemo lib="mui" />
+  </Tab>
+  <Tab label="form.tsx">
+    ```tsx file="../../../../integrations/mui/form.tsx"
+    ```
+  </Tab>
+  <Tab label="fields.tsx">
+    ```tsx file="../../../../integrations/mui/fields.tsx"
+    ```
+  </Tab>
+  <Tab label="main.tsx">
+    ```tsx file="../../../../integrations/mui/main.tsx"
+    ```
+  </Tab>
+</Tabs>

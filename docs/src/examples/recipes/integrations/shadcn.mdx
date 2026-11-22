@@ -1,60 +1,37 @@
 ---
 title: shadcn/ui
-description: Wire shadcn/ui primitives (Input, Label, Select…) to BlueForm field types with useField.
+description: "shadcn/ui-style Tailwind components wired to BlueForm field types with useField."
 outline: false
 ---
 
-This recipe demonstrates how to wire [shadcn/ui ](https://ui.shadcn.com/) components with BlueForm.
+# shadcn/ui
 
-Each field type is a small component that reads everything from `useField()` and forwards it to the library's input. The form config, `setupForm` and submit logic are the same as in every other recipe — see [Integrations](./index.mdx) for the shared sample form and the event-signature notes.
+The [registration form demo](./index.mdx#live-demos) written with shadcn/ui, self-contained:
 
-## Text field adapter
+- `form.tsx`: `setupForm` (with a `renderRoot` for the title and grid) and the config. `props` use shadcn/ui's own API, typed by its components.
+- `fields.tsx`: the adapters, typed with shadcn/ui's own props minus what `useField()` controls.
+- `main.tsx`: mounts it in the demo stage (header, payload drawer).
 
-```tsx
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useField } from "react-headless-form"
+- shadcn components are plain elements you own, so adapters are a few lines. The demo keeps its primitives minimal (`ui.tsx`, no Radix); with the real `Select` / `Checkbox` from `npx shadcn add`, use `onValueChange` / `onCheckedChange` (value, not event).
+- Tailwind v4 scans only this demo, so its preflight does not leak into the other demos.
 
-export function TextField(props: React.ComponentProps<typeof Input>) {
-  const { id, value, onChange, onBlur, ref, label, description, errorMessage, required, disabled, readOnly } = useField()
-  return (
-    <div className="grid gap-2">
-      <Label htmlFor={id}>
-        {label} {required && "*"}
-      </Label>
-      <Input
-        {...props}
-        id={id}
-        ref={ref}
-        disabled={disabled}
-        readOnly={readOnly}
-        aria-invalid={Boolean(errorMessage)}
-        value={value ?? ""}
-        onChange={(e) => onChange?.(e.target.value)}
-        onBlur={onBlur}
-      />
-      {description && <p className="text-sm text-muted-foreground">{description}</p>}
-      {errorMessage && <p className="text-sm text-destructive">{errorMessage}</p>}
-    </div>
-  )
-}
-```
+import { Tab, Tabs } from '@rspress/core/theme';
+import LiveDemo from '../../../../components/LiveDemo';
 
-Register it in `setupForm`:
-
-```tsx
-export const [Form, defineConfig] = setupForm({
-  fieldMapping: defineMapping({ text: TextField }),
-  renderRoot: ({ children, onSubmit }) => <form onSubmit={onSubmit}>{children}</form>,
-})
-```
-
-## Full example
-
-The live demo below contains the complete set of fields (`text`, `longText`, `select`, `checkbox`), a nested section and an array field.
-
-<iframe
-  src="https://stackblitz.com/edit/vitejs-vite-aqfhydjz?ctl=1&embed=1&file=index.html&hideNavigation=1&view=preview"
-  style={{ width: '100%', height: '500px', border: '0', borderRadius: '8px', overflow: 'hidden' }}
-  title="react-headless-form-demo"
-></iframe>
+<Tabs>
+  <Tab label="Live demo">
+    <LiveDemo lib="shadcn" />
+  </Tab>
+  <Tab label="form.tsx">
+    ```tsx file="../../../../integrations/shadcn/form.tsx"
+    ```
+  </Tab>
+  <Tab label="fields.tsx">
+    ```tsx file="../../../../integrations/shadcn/fields.tsx"
+    ```
+  </Tab>
+  <Tab label="main.tsx">
+    ```tsx file="../../../../integrations/shadcn/main.tsx"
+    ```
+  </Tab>
+</Tabs>

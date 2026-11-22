@@ -39,61 +39,30 @@ const experienceConfig = defineConfig<ExperienceItem>({
 });
 
 function ArrayField() {
-  const { items, renderItem, append, remove, duplicate, errorMessage } =
-    useArrayField();
+  const { label, items, renderItem, append, remove, duplicate, errorMessage } = useArrayField();
 
   return (
-    <div>
+    <fieldset>
+      <legend>{label}</legend>
       {items.map((field, index) => (
-        <div
-          key={field.id}
-          style={{
-            border: "1px solid var(--bf-border)",
-            borderRadius: 8,
-            padding: "1rem",
-            marginBottom: "0.75rem",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "0.5rem",
-            }}
-          >
-            <span
-              style={{
-                fontWeight: 600,
-                fontSize: "0.85rem",
-                color: "var(--bf-text-muted)",
-              }}
-            >
-              #{index + 1}
-            </span>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button type="button" onClick={() => duplicate(index)}>
-                Duplicate
-              </button>
-              <button type="button" onClick={() => remove(index)}>
-                Remove
-              </button>
-            </div>
-          </div>
+        <fieldset key={field.id}>
+          <legend>#{index + 1}</legend>
           {renderItem(field, index)}
-        </div>
+          <div>
+            <button type="button" onClick={() => duplicate(index)}>
+              Duplicate
+            </button>{" "}
+            <button type="button" onClick={() => remove(index)}>
+              Remove
+            </button>
+          </div>
+        </fieldset>
       ))}
-
-      <button
-        type="button"
-        onClick={() => append({ company: "", role: "", years: "" })}
-        style={{ marginTop: items.length ? "0.25rem" : 0 }}
-      >
+      <button type="button" onClick={() => append({ company: "", role: "", years: "" })}>
         + Add experience
       </button>
-
       {errorMessage && <div className="fieldError">{errorMessage}</div>}
-    </div>
+    </fieldset>
   );
 }
 

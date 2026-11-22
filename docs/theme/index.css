@@ -10,3 +10,72 @@ html.dark .shiki span {
     font-weight: var(--shiki-dark-font-weight) !important;
     text-decoration: var(--shiki-dark-text-decoration) !important;
 }
+
+/* Home page library wall (components/LibWall.tsx) */
+.lib-wall {
+  max-width: 72rem;
+  margin: 0 auto 4rem;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+.lib-wall h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+.lib-wall h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 2rem 0 0.75rem;
+  color: var(--rp-c-text-2);
+}
+.lib-wall p {
+  margin: 0 0 1.5rem;
+  color: var(--rp-c-text-2);
+}
+.lib-wall__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  text-align: left;
+}
+.lib-wall__grid--small {
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+}
+.lib-wall__tile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--rp-c-divider);
+  border-radius: 10px;
+  background: var(--rp-c-bg-soft);
+  color: var(--rp-c-text-1);
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.lib-wall__tile:hover {
+  border-color: var(--rp-c-brand);
+  transform: translateY(-1px);
+}
+.lib-wall__mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+.lib-wall__name {
+  display: block;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.lib-wall__note {
+  display: block;
+  font-size: 12px;
+  color: var(--rp-c-text-2);
+}

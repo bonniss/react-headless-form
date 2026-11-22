@@ -4,7 +4,7 @@ import EgWizardForm from "../../../../docs/src/examples/_shared/EgWizardForm";
 
 const fill = (placeholder: string, value: string) =>
   act(() => {
-    fireEvent.change(screen.getByPlaceholderText(placeholder), { target: { value } });
+    fireEvent.change(screen.getByLabelText(placeholder, { exact: false }), { target: { value } });
   });
 const click = async (text: string) => {
   await act(async () => {
@@ -19,12 +19,12 @@ describe("docs: EgWizardForm (recipe)", () => {
     // step 1 invalid → stays, shows errors
     await click("Next →");
     expect(screen.getByText("Email is required")).toBeTruthy();
-    expect(screen.queryByPlaceholderText("Full Name")).toBeNull();
+    expect(screen.queryByLabelText(/^Full\ Name( \*)?$/)).toBeNull();
 
     fill("Email", "ada@example.com");
     fill("Password", "secret1");
     await click("Next →");
-    await waitFor(() => screen.getByPlaceholderText("Full Name"));
+    await waitFor(() => screen.getByLabelText(/^Full\ Name( \*)?$/));
 
     // step 2 invalid → stays
     await click("Next →");
@@ -32,9 +32,9 @@ describe("docs: EgWizardForm (recipe)", () => {
 
     // back keeps step 1 values
     await click("← Back");
-    expect((screen.getByPlaceholderText("Email") as HTMLInputElement).value).toBe("ada@example.com");
+    expect((screen.getByLabelText(/^Email( \*)?$/) as HTMLInputElement).value).toBe("ada@example.com");
     await click("Next →");
-    await waitFor(() => screen.getByPlaceholderText("Full Name"));
+    await waitFor(() => screen.getByLabelText(/^Full\ Name( \*)?$/));
 
     fill("Full Name", "Ada Lovelace");
     await click("Next →");

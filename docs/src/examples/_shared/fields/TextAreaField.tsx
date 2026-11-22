@@ -1,40 +1,26 @@
-import { useField } from "react-headless-form";
-import { FunctionComponent } from "react";
+import type { TextareaHTMLAttributes } from 'react'
+import { useField } from 'react-headless-form'
 
-interface TextAreaFieldProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
-
-const TextAreaField: FunctionComponent<TextAreaFieldProps> = (props) => {
-  const {
-    id,
-    value = "",
-    onChange,
-    errorMessage,
-    label,
-    description,
-    required,
-    disabled,
-    readOnly,
-    ref,
-  } = useField();
-
+export default function TextAreaField(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  const { value, onChange, onBlur, ref, label, errorMessage, required, disabled, readOnly } = useField()
   return (
-    <div id={id}>
-      <span style={{ marginRight: 10 }}>{label}</span>
-      <textarea
-        {...props}
-        ref={ref}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        readOnly={readOnly}
-        placeholder={props.placeholder ?? label}
-        aria-required={required}
-        aria-invalid={Boolean(errorMessage)}
-      />
-      {description && <div className="fieldDescription">{description}</div>}
+    <div>
+      {/* the input inside its label: no id needed, so several forms can share field names */}
+      <label>
+        {label}
+        {required && ' *'}
+        <textarea
+          {...props}
+          ref={ref}
+          value={value ?? ''}
+          onChange={onChange}
+          onBlur={onBlur}
+          disabled={disabled}
+          readOnly={readOnly}
+          aria-invalid={Boolean(errorMessage)}
+        />
+      </label>
       {errorMessage && <div className="fieldError">{errorMessage}</div>}
     </div>
-  );
-};
-
-export default TextAreaField;
+  )
+}

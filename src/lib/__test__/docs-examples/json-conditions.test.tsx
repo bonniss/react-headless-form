@@ -10,25 +10,25 @@ const select = (index: number, value: string) =>
 describe("docs: EgJsonConditionsForm", () => {
   it("evaluates the stored JSON conditions", () => {
     render(<EgJsonConditionsForm />);
-    expect(screen.queryByPlaceholderText("Seats")).toBeNull();
+    expect(screen.queryByLabelText(/^Seats( \*)?$/)).toBeNull();
     expect(screen.queryByText("Members")).toBeNull();
 
     select(0, "team");
-    expect(screen.getByPlaceholderText("Seats")).toBeTruthy();
+    expect(screen.getByLabelText(/^Seats( \*)?$/)).toBeTruthy();
     expect(screen.getByText("Members")).toBeTruthy();
-    expect(screen.queryByPlaceholderText("Invoice email")).toBeNull();
+    expect(screen.queryByLabelText(/^Invoice\ email( \*)?$/)).toBeNull();
     expect(screen.queryByText("Billing contact")).toBeNull();
 
     // per-row condition
     select(1, "other");
-    expect(screen.getByPlaceholderText("Describe the role")).toBeTruthy();
+    expect(screen.getByLabelText(/^Describe\ the\ role( \*)?$/)).toBeTruthy();
 
     // root condition inside the row, and required from another field
     select(0, "business");
     expect(screen.getByText("Billing contact")).toBeTruthy();
     act(() => {
-      fireEvent.change(screen.getByPlaceholderText("Seats"), { target: { value: "12" } });
+      fireEvent.change(screen.getByLabelText(/^Seats( \*)?$/), { target: { value: "12" } });
     });
-    expect(screen.getByPlaceholderText("Invoice email").getAttribute("aria-required")).toBe("true");
+    expect(screen.getByLabelText(/^Invoice\ email( \*)?$/).getAttribute("aria-required")).toBe("true");
   });
 });

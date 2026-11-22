@@ -1,56 +1,38 @@
 ---
 title: Chakra UI
-description: Wire Chakra UI inputs to BlueForm field types with useField.
+description: "Chakra UI v3 inputs wired to BlueForm field types with useField; live demo built from the repo."
 outline: false
 ---
 
-This recipe demonstrates how to wire [Chakra UI](https://chakra-ui.com/) components with BlueForm.
+# Chakra UI
 
-Each field type is a small component that reads everything from `useField()` and forwards it to the library's input. The form config, `setupForm` and submit logic are the same as in every other recipe — see [Integrations](./index.mdx) for the shared sample form and the event-signature notes.
+The [registration form demo](./index.mdx#live-demos) written with Chakra UI, self-contained:
 
-## Text field adapter
+- `form.tsx`: `setupForm` (with a `renderRoot` for the title and layout) and the config. `props` use Chakra UI's own API, typed by its components.
+- `fields.tsx`: the adapters, typed with Chakra UI's own props through `AdapterProps`.
+- `main.tsx`: mounts it in the demo stage (header, payload drawer).
 
-```tsx
-// Chakra UI v3 (Field namespace). For v2, use FormControl / FormLabel / FormErrorMessage.
-import { Field, Input } from "@chakra-ui/react"
-import { useField } from "react-headless-form"
+- `Field.Root` carries the label, error and required / disabled / read-only state; the select is `NativeSelect` (its options are `<option>` children).
+- `Checkbox.Root` reports `{ checked }` in `onCheckedChange`.
+- Wrap the app in `ChakraProvider value={defaultSystem}`.
 
-export function TextField(props: React.ComponentProps<typeof Input>) {
-  const { value, onChange, onBlur, ref, label, description, errorMessage, required, disabled, readOnly } = useField()
-  return (
-    <Field.Root invalid={Boolean(errorMessage)} required={required} disabled={disabled} readOnly={readOnly}>
-      <Field.Label>
-        {label} <Field.RequiredIndicator />
-      </Field.Label>
-      <Input
-        {...props}
-        ref={ref}
-        value={value ?? ""}
-        onChange={(e) => onChange?.(e.target.value)}
-        onBlur={onBlur}
-      />
-      {description && <Field.HelperText>{description}</Field.HelperText>}
-      <Field.ErrorText>{errorMessage}</Field.ErrorText>
-    </Field.Root>
-  )
-}
-```
+import { Tab, Tabs } from '@rspress/core/theme';
+import LiveDemo from '../../../../components/LiveDemo';
 
-Register it in `setupForm`:
-
-```tsx
-export const [Form, defineConfig] = setupForm({
-  fieldMapping: defineMapping({ text: TextField }),
-  renderRoot: ({ children, onSubmit }) => <form onSubmit={onSubmit}>{children}</form>,
-})
-```
-
-## Full example
-
-The live demo below contains the complete set of fields (`text`, `longText`, `select`, `checkbox`), a nested section and an array field.
-
-<iframe
-  src="https://stackblitz.com/edit/chakra-ui-v3-cyehl6ee?ctl=1&embed=1&file=index.html&hideNavigation=1&view=preview"
-  style={{ width: '100%', height: '500px', border: '0', borderRadius: '8px', overflow: 'hidden' }}
-  title="react-headless-form-demo"
-></iframe>
+<Tabs>
+  <Tab label="Live demo">
+    <LiveDemo lib="chakra-ui" />
+  </Tab>
+  <Tab label="form.tsx">
+    ```tsx file="../../../../integrations/chakra-ui/form.tsx"
+    ```
+  </Tab>
+  <Tab label="fields.tsx">
+    ```tsx file="../../../../integrations/chakra-ui/fields.tsx"
+    ```
+  </Tab>
+  <Tab label="main.tsx">
+    ```tsx file="../../../../integrations/chakra-ui/main.tsx"
+    ```
+  </Tab>
+</Tabs>

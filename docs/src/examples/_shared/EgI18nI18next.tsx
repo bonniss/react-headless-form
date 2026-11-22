@@ -63,7 +63,7 @@ export default function EgI18nI18next() {
 
   return (
     <div>
-      <div style={{ textAlign: "right", marginBottom: "0.5rem" }}>
+      <div>
         <button type="button" onClick={toggleLang}>
           {t("switch.language")}
         </button>
