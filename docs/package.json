@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "rspress build && node scripts/postbuild-llms.mjs",
-    "dev": "rspress dev",
+    "build": "node scripts/sync-version.mjs && rspress build && node scripts/postbuild-llms.mjs",
+    "dev": "node scripts/sync-version.mjs && rspress dev",
     "preview": "rspress preview"
   },
   "dependencies": {

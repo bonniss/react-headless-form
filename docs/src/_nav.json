@@ -8,5 +8,18 @@
     "text": "Examples",
     "link": "/examples/",
     "activeMatch": "/examples/"
+  },
+  {
+    "text": "v0.16.0",
+    "items": [
+      {
+        "text": "Changelog",
+        "link": "https://github.com/bonniss/react-headless-form/blob/main/CHANGELOG.md"
+      },
+      {
+        "text": "npm",
+        "link": "https://www.npmjs.com/package/react-headless-form"
+      }
+    ]
   }
 ]

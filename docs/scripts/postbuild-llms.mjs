@@ -50,6 +50,8 @@ function orderDir(rel) {
 }
 
 const navOrder = readJson(path.join(srcDir, '_nav.json'))
+  // only internal links (the version dropdown has external `items`)
+  .filter((item) => item.link?.startsWith('/'))
   .map((item) => item.link.split('/').filter(Boolean)[0])
   .filter((top, i, all) => all.indexOf(top) === i)
 const order = navOrder.flatMap((top) => orderDir(top)).map((p) => `${base}${p}.md`)
