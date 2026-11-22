@@ -16,14 +16,14 @@ The full list of returned props:
 | `value` | Current field value | From RHF `field.value` |
 | `onChange` | Update field value | From RHF `field.onChange` — accepts a plain value or a DOM event |
 | `onBlur` | Mark field as touched | From RHF `field.onBlur` |
-| `ref` | Attach to native input | From RHF `field.ref` — enables `form.setFocus()` |
+| `ref` | Attach to the input (anything with `focus()`) | From RHF `field.ref` — enables `form.setFocus()` |
 | `errorMessage` | Ready-to-render error string | Derived from `fieldState.error?.message` — already translated, prefer over `error` |
 | `error` | Raw RHF error object | From RHF `fieldState.error` — use only when branching on `error.type` |
 | `invalid` | `true` when field has a validation error | From RHF `fieldState.invalid` — shorthand for `!!error` |
 | `isDirty` | `true` after value changes from its default | From RHF `fieldState.isDirty` |
 | `isTouched` | `true` after `onBlur` is called | From RHF `fieldState.isTouched` |
 | `isValidating` | `true` during async validation | From RHF `fieldState.isValidating` |
-| `id` | Field identifier | `<idPrefix>-<path>`, unique per form (set `idPrefix` on `Form` for stable ids) — use as `id` on input, `htmlFor` on label |
+| `id` | **Deprecated** (removed in 1.0) | The field's `path`, not unique on a page: not a DOM id. Use `useId()` in the adapter, or put the input inside its `<label>` |
 | `name` | Field key within its immediate scope | e.g. `"email"`, not `"profile.email"` |
 | `path` | Full dot-notation path | e.g. `"profile.email"` — use with RHF APIs directly |
 | `namespace` | Parent section path | `undefined` for top-level fields |
@@ -32,7 +32,7 @@ The full list of returned props:
 | `required` | Whether field is required | Derived from `rules.required` — do not infer this yourself |
 | `disabled` | Whether field is disabled | Resolved from field config and form state — excluded from submit payload |
 | `readOnly` | Whether field is read-only | Resolved from field-level and form-level `readOnly` — still included in submit payload |
-| `visible` | Whether field should render | Resolved from `visible` in field config — when `false`, the field unmounts; see [conditional rendering](../conditional-rendering.mdx) |
+| `visible` | Whether the field is visible | Always `true` in an adapter: a hidden field is not rendered |
 | `controller` | Raw return value of RHF's `useController` | Advanced integrations only |
 | `config` | Original field config object | Meta-driven or dynamic fields only |
 

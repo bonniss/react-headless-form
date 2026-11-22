@@ -7,8 +7,11 @@ import type { ValidationRules } from "./rule";
 
 export type FieldResolvedProps = {
   /**
-   * Unique DOM id for the field — use this as the `id` on the input element
-   * and the `htmlFor` on the label to ensure accessible label association.
+   * The field's path. Not unique on a page (two forms with the same fields
+   * share it), so it is not a safe DOM id.
+   * @deprecated Use `path` to identify the field. For label association the
+   * adapter owns the DOM: `const id = useId()` in the adapter, or put the input
+   * inside its `<label>`. Will be removed in 1.0.
    */
   id?: string;
 
@@ -49,9 +52,9 @@ export type FieldResolvedProps = {
 
   /**
    * Change handler sourced from RHF's `useController`.
-   * Accepts either a plain value or a native DOM event — RHF handles both.
-   * For clarity, prefer passing a plain value explicitly:
-   * `onChange?.(e.target.value)` rather than `onChange?.(e)`.
+   * Pass the value: `onChange(e.target.value)`, `onChange(checked)`. A DOM
+   * change event also works (RHF reads `event.target.value` / `checked`), but
+   * other events do not, e.g. React Native's (`nativeEvent.text`).
    */
   onChange?: ControllerRenderProps["onChange"];
 
@@ -63,8 +66,9 @@ export type FieldResolvedProps = {
 
   /**
    * Ref sourced from RHF's `useController`.
-   * Attach this to the native input element to enable auto-focus on validation error
-   * and programmatic focus via `form.setFocus()`.
+   * Attach it to anything with a `focus()` method (a DOM input, a React Native
+   * `TextInput`, a UI library input) to enable focus on validation error and
+   * `form.setFocus()`.
    */
   ref?: ControllerRenderProps["ref"];
 
@@ -150,9 +154,9 @@ export type FieldResolvedProps = {
   disabled?: boolean;
 
   /**
-   * Whether the field is visible.
-   * When `false`, the field should not be rendered.
-   * The field value is still present in form state regardless of visibility.
+   * Whether the field is visible. Always `true` in an adapter or `render`: a
+   * hidden field is not rendered at all (and with `shouldUnregister` its value
+   * leaves the form state).
    */
   visible?: boolean;
 };

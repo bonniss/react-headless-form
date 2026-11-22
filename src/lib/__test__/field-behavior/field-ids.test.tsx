@@ -3,51 +3,28 @@ import { defineMapping, setupForm, useField } from "react-headless-form";
 import { describe, expect, it } from "vitest";
 
 function TextField() {
-  const { id, label, value, onChange } = useField();
+  const { path, id, label, value, onChange } = useField();
   return (
-    <div>
-      <label htmlFor={id}>{label}</label>
-      <input id={id} value={value ?? ""} onChange={onChange} />
-    </div>
+    <label>
+      {label}
+      <input data-testid={path} data-field-id={id} value={value ?? ""} onChange={onChange} />
+    </label>
   );
 }
 
-const [Form, defineConfig] = setupForm({
+const [, defineConfig] = setupForm({
+  renderRoot: ({ children }) => <form>{children}</form>,
+  fieldMapping: defineMapping({ text: TextField }),
+});
+const [Form] = setupForm({
   renderRoot: ({ children }) => <form>{children}</form>,
   fieldMapping: defineMapping({ text: TextField }),
 });
 
-const config = { email: { type: "text", label: "Email" } } as const;
-
-describe("field ids", () => {
-  it("are unique per form, so two forms with the same fields keep their labels", () => {
-    render(
-      <>
-        <Form config={config} />
-        <Form config={config} />
-      </>,
-    );
-    const inputs = screen.getAllByLabelText("Email") as HTMLInputElement[];
-    expect(inputs).toHaveLength(2);
-    expect(inputs[0]).not.toBe(inputs[1]);
-    expect(inputs[0].id).not.toBe(inputs[1].id);
-  });
-
-  it("use `idPrefix` when given: <idPrefix>-<path>", () => {
-    render(
-      <Form
-        idPrefix="signup"
-        config={{
-          email: { type: "text", label: "Email" },
-          address: {
-            type: "section",
-            props: { nested: true, config: defineConfig<{ city: string }>({ city: { type: "text", label: "City" } }) },
-          },
-        }}
-      />,
-    );
-    expect(screen.getByLabelText("Email").id).toBe("signup-email");
-    expect(screen.getByLabelText("City").id).toBe("signup-address.city");
+describe("useField().id (deprecated)", () => {
+  it("is the field path: the lib does not generate DOM ids", () => {
+    render(<Form config={{ email: { type: "text", label: "Email" } }} />);
+    expect(screen.getByTestId("email").getAttribute("data-field-id")).toBe("email");
   });
 });
 

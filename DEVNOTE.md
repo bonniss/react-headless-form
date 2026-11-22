@@ -144,7 +144,7 @@ Thời gian: ngang RHF `useController` ở cả ba kịch bản gõ phím, nhanh
 
 ### 1.0 — Ổn định API
 
-11. **Deprecate trước (từ 0.16), xoá ở 1.0:** `onSubmitError` → `onInvalid` (đã `@deprecated`), `items` → `fields`, `push` → `append`. Xem lại `duplicate/pop/clear` của `useArrayField`: giữ hoặc chuyển thành recipe.
+11. **Deprecate trước (từ 0.16), xoá ở 1.0:** `onSubmitError` → `onInvalid` (đã `@deprecated`), `items` → `fields`, `push` → `append`. Thêm `useField().id` (đã `@deprecated` từ 0.20): lib không sinh id DOM; adapter tự lo (`useId()` hoặc bọc input trong `<label>`). Xem lại `duplicate/pop/clear` của `useArrayField`: giữ hoặc chuyển thành recipe.
 12. Chốt danh sách export (snapshot G8), chính sách SemVer, hướng dẫn migration 0.x → 1.0, bỏ `bump-minor-pre-major`.
 
 ### Sau 1.0 / tuỳ chọn
