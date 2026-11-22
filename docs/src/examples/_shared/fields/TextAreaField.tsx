@@ -1,26 +1,26 @@
-import type { TextareaHTMLAttributes } from "react";
-import { useField } from "react-headless-form";
+import type { TextareaHTMLAttributes } from 'react'
+import { useField } from 'react-headless-form'
 
 export default function TextAreaField(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  const { id, value, onChange, onBlur, ref, label, errorMessage, required, disabled, readOnly } = useField();
+  const { value, onChange, onBlur, ref, label, errorMessage, required, disabled, readOnly } = useField()
   return (
     <div>
-      <label htmlFor={id}>
+      {/* the input inside its label: no id needed, so several forms can share field names */}
+      <label>
         {label}
-        {required && " *"}
+        {required && ' *'}
+        <textarea
+          {...props}
+          ref={ref}
+          value={value ?? ''}
+          onChange={onChange}
+          onBlur={onBlur}
+          disabled={disabled}
+          readOnly={readOnly}
+          aria-invalid={Boolean(errorMessage)}
+        />
       </label>
-      <textarea
-        {...props}
-        id={id}
-        ref={ref}
-        value={value ?? ""}
-        onChange={onChange}
-        onBlur={onBlur}
-        disabled={disabled}
-        readOnly={readOnly}
-        aria-invalid={Boolean(errorMessage)}
-      />
       {errorMessage && <div className="fieldError">{errorMessage}</div>}
     </div>
-  );
+  )
 }
