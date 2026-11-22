@@ -4,12 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/sync-version.mjs && tsc -p tsconfig.json && rspress build && pnpm build:demos && node scripts/postbuild-llms.mjs",
-    "dev": "node scripts/sync-version.mjs && node scripts/dev.mjs",
+    "build": "node scripts/sync-version.mjs && pnpm i18n:compile && tsc -p tsconfig.json && rspress build && pnpm build:demos && node scripts/postbuild-llms.mjs",
+    "dev": "node scripts/sync-version.mjs && pnpm i18n:compile && node scripts/dev.mjs",
     "preview": "rspress preview",
     "build:demos": "tsc -p integrations && vite build -c integrations/vite.config.ts",
     "dev:demos": "vite -c integrations/vite.config.ts",
-    "dev:docs": "node scripts/sync-version.mjs && rspress dev"
+    "dev:docs": "node scripts/sync-version.mjs && pnpm i18n:compile && rspress dev",
+    "i18n:compile": "paraglide-js compile --silent --outdir ./src/examples/_shared/paraglide"
   },
   "dependencies": {
     "@arco-design/web-react": "^2.66.18",
@@ -44,6 +45,10 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@inlang/paraglide-js": "^3.2.2",
+    "@lingui/core": "^6.12.0",
+    "@lingui/message-utils": "^6.12.0",
+    "@lingui/react": "^6.12.0",
     "@rspress/plugin-preview": "^2.0.5",
     "@tailwindcss/vite": "^4.3.5",
     "@types/node": "^22.8.1",
@@ -53,6 +58,7 @@
     "@vitejs/plugin-react": "^4.7.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-intl": "^12.2.0",
     "simple-icons": "^16.38.1",
     "tailwindcss": "^4.3.5",
     "typescript": "~5.8.3",
