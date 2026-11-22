@@ -7,6 +7,12 @@ Every field config accepts an optional `render` prop for defining the field UI i
 
 The `render` function receives everything the field needs as arguments, the same props that `useField` or `useArrayField` would return. This makes inline field definitions self-contained: no hook calls, no extra components, no boilerplate.
 
+import RenderDiagram from '../../../../components/RenderDiagram';
+
+<RenderDiagram />
+
+What `render` receives depends on the field type: for an `inline` field only values, for a mapped field the rendered component (`self`), for a `section` its fields (`children`), for an `array` the rows (`children` / `renderItem`). A [live example](#live-example) with all four is at the end of this page.
+
 ## `inline` fields
 
 For one-off fields, `render` receives the full `useField` context:
@@ -30,6 +36,8 @@ username: {
 
 No `useField()` call needed — `value`, `onChange`, `errorMessage`, and everything else arrive as arguments.
 
+In the [live example](#live-example): the `rating` stars.
+
 ## Custom mapped fields
 
 For fields with a registered component in `fieldMapping`, `render` receives the same field props plus `self` — the rendered instance of the registered component. Use it to wrap or decorate the component without replacing it:
@@ -48,6 +56,8 @@ name: {
 ```
 
 `self` is already wrapped in `FieldProvider` and ready to render — `useField` works correctly inside the component. There are no `children` in this context — custom fields do not have nested field config.
+
+In the [live example](#live-example): `name`, with a hint under the input.
 
 :::tip
 `render` on a custom field is useful for one-off decoration — adding a tooltip, an icon, an extra label, or a conditional wrapper around a specific instance without creating a new component. For decoration that applies to all fields of that type, handle it inside the component itself instead.
@@ -76,6 +86,8 @@ __personalInfo: {
 ```
 
 Without `render`, the section's fields are rendered directly with no wrapper.
+
+In the [live example](#live-example): the `Contact` fieldset.
 
 ## `array` fields
 
@@ -119,9 +131,28 @@ render: ({ label, items, append, renderItem, remove }) => (
 
 The full list of available props matches what `useArrayField` returns — see [useArrayField](./use-array-field.mdx) for the complete reference.
 
+In the [live example](#live-example): `tags`, with remove buttons and a `maxLength` error in the shell.
+
 ## `hidden` fields
 
 `render` has no effect on `hidden` fields. Hidden fields render no UI by design — they only participate in form state.
+
+## Live example
+
+All four kinds in one form: an `inline` star rating, a mapped `text` field decorated around `self`, a `section` in a fieldset, and an `array` shell.
+
+import { Tab, Tabs } from '@rspress/core/theme';
+import EgRenderForm from '../../../examples/_shared/EgRenderForm';
+
+<Tabs>
+  <Tab label="Preview">
+    <EgRenderForm />
+  </Tab>
+  <Tab label="Code">
+    ```tsx lineNumbers file="../../../examples/_shared/EgRenderForm.tsx"
+    ```
+  </Tab>
+</Tabs>
 
 ## Summary
 
