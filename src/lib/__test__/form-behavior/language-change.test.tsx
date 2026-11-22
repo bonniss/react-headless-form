@@ -125,7 +125,7 @@ describe("custom messages go through t", () => {
 
   function CustomDemo({ formRef }: { formRef: { current: any } }) {
     const [lang, setLang] = useState("en");
-    // falls back to the key, like i18next
+    // returns unknown keys as is (a choice, as in i18next)
     const t = (key: string) => messages[lang][key] ?? key;
     return (
       <>

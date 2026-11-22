@@ -99,7 +99,14 @@ code: { type: "text", rules: { validate: (v) => v === "ok" || "errors.code.inval
 form.setError("email", { type: "server", message: "errors.email.taken" })
 ```
 
-A key is translated, and plain text comes back unchanged through your translator's fallback for unknown keys (i18next and most libraries return the key). Messages read directly from `formState.errors` are the raw keys. For messages with parameters, use `validationTranslation` (`{field}` and the rule value are filled in), or build the message with your own `t` inside a config rebuilt when the language changes: the field is validated again with the new function.
+What an unknown key gives is up to your `t`. A good choice is to return the key itself, as i18next does by default: plain-text messages then show unchanged next to translated ones.
+
+```ts
+const t = (key: string, params?: Record<string, unknown>) =>
+  (dictionary[lang][key] ?? key).replace(/\{(\w+)\}/g, (_, name) => String(params?.[name] ?? ""))
+```
+
+Messages read directly from `formState.errors` are the raw keys. For messages with parameters, use `validationTranslation` (`{field}` and the rule value are filled in), or build the message with your own `t` inside a config rebuilt when the language changes: the field is validated again with the new function.
 
 ### Translating props
 

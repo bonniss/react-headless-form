@@ -141,7 +141,7 @@ describe("BlueFormEngine — rules must not be mutated", () => {
       <BlueForm
         renderRoot={TestRoot}
         i18nConfig={{
-          // unknown keys fall back to the key itself, like real translators
+          // this translator returns unknown keys as is (a choice, as in i18next)
           t: (key: any, params: any) =>
             key === "validation.required" ? `${params?.field} is required` : key,
           validationTranslation: { required: "validation.required" },
