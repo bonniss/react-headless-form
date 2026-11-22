@@ -8,23 +8,17 @@ type Message = (inputs: Record<string, unknown>, options: { locale: Locale }) =>
 
 // Paraglide compiles each message to a function: `t` looks it up by name
 // (an unknown name comes back as is)
-function useI18nConfig(locale: Locale) {
-  return useMemo(
-    () => ({
-      t: (key: string, params?: Record<string, unknown>) => {
-        const message = (m as unknown as Record<string, Message | undefined>)[key];
-        return message ? message(params ?? {}, { locale }) : key;
-      },
-    }),
-    [locale],
-  );
-}
+const translator = (locale: Locale) => (key: string, params?: Record<string, unknown>) => {
+  const message = (m as unknown as Record<string, Message | undefined>)[key];
+  return message ? message(params ?? {}, { locale }) : key;
+};
 
 export default function EgI18nParaglide() {
   const [locale, setLocale] = useState<Locale>("en");
+  const t = useMemo(() => translator(locale), [locale]); // a new `t` per locale
   return (
     <I18nForm
-      i18nConfig={useI18nConfig(locale)}
+      i18nConfig={{ t }}
       config={{
         username: {
           type: "text",

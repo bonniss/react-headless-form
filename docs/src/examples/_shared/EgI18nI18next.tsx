@@ -13,17 +13,17 @@ i18next.use(initReactI18next).init({
   interpolation: { escapeValue: false, prefix: "{", suffix: "}" },
 });
 
-// `t` from useTranslation() changes with the language
-function useI18nConfig() {
-  const { t } = useTranslation();
-  return useMemo(() => ({ t: (key: string, params?: Record<string, unknown>) => String(t(key, params)) }), [t]);
-}
-
 export default function EgI18nI18next() {
-  const { i18n } = useTranslation();
+  // `translate` changes with the language. Wrapped because without typed
+  // resources its return type also allows objects; a new `t` per language.
+  const { t: translate, i18n } = useTranslation();
+  const t = useMemo(
+    () => (key: string, params?: Record<string, unknown>) => String(translate(key, params)),
+    [translate],
+  );
   return (
     <I18nForm
-      i18nConfig={useI18nConfig()}
+      i18nConfig={{ t }}
       config={{
         username: {
           type: "text",

@@ -75,8 +75,8 @@ importers:
         specifier: ^2.10.10
         version: 2.10.10(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react-headless-form:
-        specifier: ^0.21.0
-        version: 0.21.0(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4)
+        specifier: ^0.22.0
+        version: 0.22.0(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4)
       react-hook-form:
         specifier: ^7.71.2
         version: 7.71.2(react@19.2.4)
@@ -4024,8 +4024,8 @@ packages:
       '@types/react':
         optional: true
 
-  react-headless-form@0.21.0:
-    resolution: {integrity: sha512-kzqXXy13fQUR9jXActOQBoUiMKjXzBHdDrBElplXmkoeb+CfP8aL4yhDghD5A5OqNBlsae4rIrWZ0Wj+07BnEA==}
+  react-headless-form@0.22.0:
+    resolution: {integrity: sha512-SbN0trwCmbmKfL6gx3+NypthGpreRLIBCPIJtRqs/UuwQ3yADjDCDG9RA7c37N5S5iLc7HxYnJIeiMUCkgm3+A==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -9785,7 +9785,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.14
 
-  react-headless-form@0.21.0(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4):
+  react-headless-form@0.22.0(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4):
     dependencies:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)

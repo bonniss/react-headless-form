@@ -7,23 +7,17 @@ import vi from "./i18n/vi.json";
 const messages = { en, vi };
 type Locale = keyof typeof messages;
 
-// `intl` from useIntl() changes with the locale; the messages are ICU ({field})
-function useI18nConfig() {
+function UsernameForm({ onToggle }: { onToggle: () => void }) {
+  // `intl` changes with the locale: a new `t` for each one (ICU messages: {field})
   const intl = useIntl();
-  return useMemo(
-    () => ({
-      t: (key: string, params?: Record<string, unknown>) =>
-        intl.formatMessage({ id: key }, params as Record<string, string>),
-    }),
+  const t = useMemo(
+    () => (key: string, params?: Record<string, unknown>) =>
+      intl.formatMessage({ id: key }, params as Record<string, string>),
     [intl],
   );
-}
-
-function UsernameForm({ onToggle }: { onToggle: () => void }) {
-  const intl = useIntl();
   return (
     <I18nForm
-      i18nConfig={useI18nConfig()}
+      i18nConfig={{ t }}
       config={{
         username: {
           type: "text",

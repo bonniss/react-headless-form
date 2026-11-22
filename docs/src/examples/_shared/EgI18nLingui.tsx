@@ -1,7 +1,6 @@
 import { setupI18n } from "@lingui/core";
 import { compileMessage } from "@lingui/message-utils/compileMessage";
 import { I18nProvider, useLingui } from "@lingui/react";
-import { useMemo } from "react";
 import en from "./i18n/en.json";
 import { I18nForm } from "./i18n/form";
 import vi from "./i18n/vi.json";
@@ -13,17 +12,12 @@ i18n.setMessagesCompiler(compileMessage);
 i18n.load({ en, vi });
 i18n.activate("en");
 
-// `_` from useLingui() changes on i18n.activate()
-function useI18nConfig() {
-  const { _ } = useLingui();
-  return useMemo(() => ({ t: (key: string, params?: Record<string, unknown>) => _(key, params) }), [_]);
-}
-
 function UsernameForm() {
-  const { i18n } = useLingui();
+  // `_` changes on i18n.activate(); validationTranslation and translateProps come from setupForm
+  const { i18n, _ } = useLingui();
   return (
     <I18nForm
-      i18nConfig={useI18nConfig()}
+      i18nConfig={{ t: _ }}
       config={{
         username: {
           type: "text",
