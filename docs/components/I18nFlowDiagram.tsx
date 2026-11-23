@@ -162,3 +162,144 @@ export function I18nFieldJourney() {
     </figure>
   )
 }
+
+/* Variant C: the sketch, as a graph. Colors from the docs theme (light and dark). */
+const c = {
+  text: 'var(--rp-c-text-1)',
+  muted: 'var(--rp-c-text-2)',
+  brand: 'var(--rp-c-brand)',
+  soft: 'var(--rp-c-bg-soft)',
+  line: 'var(--rp-c-divider)',
+  error: '#dc2626',
+}
+const mono = 'var(--rp-font-family-mono, monospace)'
+
+function Box({ x, y, w, h, title, lines, tone = 'yours' }: { x: number; y: number; w: number; h: number; title: string; lines: string[]; tone?: 'yours' | 'source' }) {
+  return (
+    <g>
+      <rect
+        x={x}
+        y={y}
+        width={w}
+        height={h}
+        rx="12"
+        fill={tone === 'source' ? c.soft : 'none'}
+        stroke={c.muted}
+        strokeWidth="1.5"
+        strokeDasharray={tone === 'yours' ? '6 4' : undefined}
+      />
+      <text x={x + 14} y={y + 22} fontSize="13" fontWeight="700" fill={c.text}>
+        {title}
+      </text>
+      {lines.map((line, i) => (
+        <text key={line} x={x + 14} y={y + 42 + i * 17} fontSize="12" fill={c.muted} fontFamily={mono}>
+          {line}
+        </text>
+      ))}
+    </g>
+  )
+}
+
+function Edge({ d, label, lx, ly, anchor = 'middle' }: { d: string; label?: string; lx?: number; ly?: number; anchor?: 'start' | 'middle' | 'end' }) {
+  return (
+    <g>
+      <path d={d} fill="none" stroke={c.muted} strokeWidth="1.5" markerEnd="url(#i18n-sketch-arrow)" />
+      {label && (
+        <text x={lx} y={ly} fontSize="11" fill={c.muted} textAnchor={anchor}>
+          {label}
+        </text>
+      )}
+    </g>
+  )
+}
+
+export function I18nSketchDiagram() {
+  return (
+    <figure className="i18n-sketch">
+      <div className="i18n-sketch__scroll">
+        <svg
+          viewBox="0 0 800 440"
+          role="img"
+          aria-label="Config keys and i18nConfig (t, validationTranslation, reading your message sources) go into BlueForm; your field component reads useField(); the rendered field shows translated label, description and error"
+        >
+          <defs>
+            <marker id="i18n-sketch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill={c.muted} />
+            </marker>
+          </defs>
+
+          {/* message sources */}
+          <Box
+            x={480}
+            y={8}
+            w={310}
+            h={126}
+            tone="source"
+            title="messages (JSON, a switch, a library)"
+            lines={['"email.label": "Email"', '"email.desc": "May this message find u"', '"validation.required":', '  "{field} is required"']}
+          />
+
+          {/* config */}
+          <Box
+            x={20}
+            y={150}
+            w={250}
+            h={96}
+            title="config (keys)"
+            lines={['label: "email.label"', 'description: "email.desc"', 'rules: { required: true }']}
+          />
+
+          {/* i18nConfig */}
+          <Box
+            x={300}
+            y={150}
+            w={300}
+            h={96}
+            title="i18nConfig"
+            lines={['t(key, params)', 'validationTranslation:', '  { required: "validation.required" }']}
+          />
+          <Edge d="M630 134 L590 148" label="t reads" lx={618} ly={150} anchor="start" />
+
+          {/* BlueForm */}
+          <rect x="300" y="300" width="200" height="76" rx="14" fill={c.soft} stroke={c.brand} strokeWidth="2.5" />
+          <text x="400" y="336" textAnchor="middle" fontSize="22" fontWeight="700" fill={c.brand}>
+            BlueForm
+          </text>
+          <text x="400" y="358" textAnchor="middle" fontSize="11" fill={c.muted}>
+            calls t, then hands out strings
+          </text>
+
+          <Edge d="M150 246 L345 298" label="keys" lx={236} ly={256} />
+          <Edge d="M450 246 L425 298" label="t + validationTranslation" lx={442} ly={276} anchor="start" />
+
+          {/* your field component */}
+          <Box x={20} y={308} w={168} h={60} title="your component" lines={['useField()']} />
+          <Edge d="M298 338 L190 338" label="label · description" lx={244} ly={328} />
+          <text x="244" y="354" textAnchor="middle" fontSize="11" fill={c.muted}>
+            errorMessage
+          </text>
+
+          {/* rendered field */}
+          <Edge d="M502 338 L560 338" />
+          <text x="580" y="292" fontSize="13" fontWeight="600" fill={c.text}>
+            Email *
+          </text>
+          <rect x="580" y="302" width="200" height="32" rx="6" fill="none" stroke={c.error} strokeWidth="1.5" />
+          <text x="580" y="356" fontSize="12" fill={c.muted}>
+            May this message find u
+          </text>
+          <text x="580" y="376" fontSize="12" fill={c.error}>
+            Email is required
+          </text>
+          <text x="680" y="420" textAnchor="middle" fontSize="11" fill={c.muted}>
+            what the user sees
+          </text>
+        </svg>
+      </div>
+      <figcaption>
+        Dashed: what you write, as keys. <code>validationTranslation</code> turns <code>required: true</code> into the
+        key <code>validation.required</code>, and BlueForm fills <code>{'{field}'}</code> with the translated label.
+      </figcaption>
+    </figure>
+  )
+}

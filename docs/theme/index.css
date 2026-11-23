@@ -249,3 +249,23 @@ html.dark .shiki span {
     color: var(--rp-c-text-2);
   }
 }
+
+/* i18n guide, variant C: the sketch as a graph (I18nSketchDiagram) */
+.i18n-sketch {
+  margin: 20px 0;
+}
+.i18n-sketch__scroll {
+  overflow-x: auto;
+}
+.i18n-sketch svg {
+  display: block;
+  width: 100%;
+  min-width: 600px;
+  height: auto;
+}
+.i18n-sketch figcaption {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--rp-c-text-2);
+  line-height: 1.5;
+}
