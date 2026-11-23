@@ -1,0 +1,12 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "username_label": "Tên người dùng",
+  "username_description": "Tên hiển thị công khai của bạn",
+  "validation_required": "{field} là bắt buộc",
+  "validation_min_length": "{field} phải có ít nhất {minLength} ký tự",
+  "placeholder_own": "Dịch bởi t tự viết",
+  "placeholder_i18next": "Dịch bởi i18next",
+  "placeholder_react_intl": "Dịch bởi react-intl",
+  "placeholder_lingui": "Dịch bởi Lingui",
+  "placeholder_paraglide": "Dịch bởi Paraglide JS"
+}

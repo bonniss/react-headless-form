@@ -1,51 +1,35 @@
 import i18next from "i18next";
-import { useCallback } from "react";
+import { useMemo } from "react";
 import { initReactI18next, useTranslation } from "react-i18next";
-import { Form } from "./form.setup";
+import en from "./i18n/en.json";
+import { I18nForm } from "./i18n/form";
+import vi from "./i18n/vi.json";
 
 // In an app this lives in your i18n bootstrap file
 i18next.use(initReactI18next).init({
   lng: "en",
-  interpolation: { escapeValue: false },
-  resources: {
-    en: {
-      translation: {
-        "username.label": "Username",
-        "username.description": "Your public display name",
-        "username.placeholder": "Translated by i18next",
-        "validation.required": "{{field}} is required",
-        "validation.minLength": "{{field}} must be at least {{minLength}} characters",
-      },
-    },
-    vi: {
-      translation: {
-        "username.label": "Tên người dùng",
-        "username.description": "Tên hiển thị công khai của bạn",
-        "username.placeholder": "Dịch bởi i18next",
-        "validation.required": "{{field}} là bắt buộc",
-        "validation.minLength": "{{field}} phải có ít nhất {{minLength}} ký tự",
-      },
-    },
-  },
+  resources: { en: { translation: en }, vi: { translation: vi } },
+  // the messages use {field}; i18next's default is {{field}}
+  interpolation: { escapeValue: false, prefix: "{", suffix: "}" },
 });
 
 export default function EgI18nI18next() {
-  // `t` changes with the language: labels and shown errors follow it
-  const { i18n, t: translate } = useTranslation();
-  const t = useCallback((key: string, params?: Record<string, unknown>) => String(translate(key, params)), [translate]);
+  // `translate` changes with the language. Wrapped because without typed
+  // resources its return type also allows objects; a new `t` per language.
+  const { t: translate, i18n } = useTranslation();
+  const t = useMemo(
+    () => (key: string, params?: Record<string, unknown>) => String(translate(key, params)),
+    [translate],
+  );
   return (
-    <Form
-      i18nConfig={{
-        t,
-        validationTranslation: { required: "validation.required", minLength: "validation.minLength" },
-        translateProps: ["placeholder"],
-      }}
+    <I18nForm
+      i18nConfig={{ t }}
       config={{
         username: {
           type: "text",
-          label: "username.label",
-          description: "username.description",
-          props: { placeholder: "username.placeholder" },
+          label: "username_label",
+          description: "username_description",
+          props: { placeholder: "placeholder_i18next" },
           rules: { required: true, minLength: 3 },
         },
       }}
@@ -54,6 +38,6 @@ export default function EgI18nI18next() {
         {i18n.language === "en" ? "Tiếng Việt" : "English"}
       </button>
       <button type="submit">Submit</button>
-    </Form>
+    </I18nForm>
   );
 }

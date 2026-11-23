@@ -112,7 +112,7 @@ export const buildConfig = (t: Translator) =>
       type: 'text',
       label: 'field.promoCode',
       disabled: { when: 'ticket', eq: 'student' },
-      props: { helperText: 'hint.promoCode' },
+      description: 'hint.promoCode',
     },
     guests: {
       type: 'array',

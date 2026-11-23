@@ -103,18 +103,19 @@ For how to author field components, see [Field authoring](../field-authoring/).
 
 ## `i18nConfig`
 
-Provides translation support for labels, descriptions, and validation messages. Optional — if omitted, all text values are treated as plain strings.
+Translates labels, descriptions, placeholders and error messages through one `t` function. Optional: if omitted, all text is shown as written. Put what is fixed here; a `<Form>` can pass its own `i18nConfig`, merged key by key over this one (_v0.22+_), usually just `t` when it changes with the language.
+
 ```ts
 i18nConfig: {
-  t: (key, params) => i18next.t(key, params),
   validationTranslation: {
     required: 'validation.required',
     minLength: 'validation.minLength',
   },
 }
+// a form: <Form i18nConfig={{ t }} ... />
 ```
 
-`validationTranslation` maps RHF rule names to translation keys so validation messages are translated automatically — without putting translation keys into field config. For a full guide, see [Internationalization](../i18n.mdx).
+`validationTranslation` maps the built-in rules to message keys, so rules stay plain (`required: true`). Full guide: [Internationalization](../i18n.mdx).
 
 ## `formOptions`
 

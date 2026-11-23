@@ -1,12 +1,12 @@
 ---
 title: Schema
-description: "The same sign-up form validated with Zod, Valibot, ArkType, Yup (the schema prop, Standard Schema) and Ajv (formOptions.resolver); onSubmit receives the parsed output."
+description: "The same sign-up form validated with Zod, Valibot, ArkType, Yup, Effect Schema (the schema prop, Standard Schema), Ajv, Joi and Superstruct (formOptions.resolver); onSubmit receives the parsed output."
 ---
 
-The same sign-up form, validated by five schema libraries. In each, the inputs hold strings and `onSubmit` receives the parsed output: the name trimmed, the age a number. See [Schema validation](../../guide/core/schema-validation.mdx).
+The same sign-up form, validated by eight schema libraries. In each, the inputs hold strings and `onSubmit` receives the parsed output: the name trimmed, the age a number. See [Schema validation](../../guide/core/schema-validation.mdx).
 
-- **Zod, Valibot, ArkType, Yup (1.7+)** implement [Standard Schema](https://standardschema.dev): pass the schema to the `schema` prop. No resolver package; `onSubmit` is typed by the schema output.
-- **Ajv** (JSON Schema): pass a resolver from `@hookform/resolvers` to `formOptions.resolver`.
+- **Zod, Valibot, ArkType, Yup (1.7+), Effect Schema** implement [Standard Schema](https://standardschema.dev): pass the schema to the `schema` prop. No resolver package; `onSubmit` is typed by the schema output.
+- **Ajv** (JSON Schema), **Joi**, **Superstruct**: pass a resolver from `@hookform/resolvers` to `formOptions.resolver`.
 
 Field `rules` are not used with a schema: all validation, messages included, lives in the schema. The `*` marker comes from `rules.required`, so set `required: true` on a field to show it.
 
@@ -15,7 +15,10 @@ import ZodForm from '../_shared/schema/zod';
 import ValibotForm from '../_shared/schema/valibot';
 import ArktypeForm from '../_shared/schema/arktype';
 import YupForm from '../_shared/schema/yup';
+import EffectForm from '../_shared/schema/effect';
 import AjvForm from '../_shared/schema/ajv';
+import JoiForm from '../_shared/schema/joi';
+import SuperstructForm from '../_shared/schema/superstruct';
 
 <Tabs>
   <Tab label="Zod">
@@ -50,12 +53,36 @@ import AjvForm from '../_shared/schema/ajv';
     ```tsx file="../_shared/schema/yup.tsx"
     ```
   </Tab>
+  <Tab label="Effect Schema">
+    `pnpm add effect`. `Schema.toStandardSchemaV1` turns the schema into a Standard Schema; `Schema.FiniteFromString` parses the age while decoding.
+
+    <EffectForm />
+
+    ```tsx file="../_shared/schema/effect.tsx"
+    ```
+  </Tab>
   <Tab label="Ajv">
     `pnpm add ajv ajv-errors ajv-formats @hookform/resolvers`. Handy when the JSON Schema comes from a backend; `coerceTypes` turns the age string into a number.
 
     <AjvForm />
 
     ```tsx file="../_shared/schema/ajv.tsx"
+    ```
+  </Tab>
+  <Tab label="Joi">
+    `pnpm add joi @hookform/resolvers`. Joi converts while validating (trim, string to number); set the messages per error code with `.messages()`.
+
+    <JoiForm />
+
+    ```tsx file="../_shared/schema/joi.tsx"
+    ```
+  </Tab>
+  <Tab label="Superstruct">
+    `pnpm add superstruct @hookform/resolvers`. With `coerce: true`, `trimmed` and `coerce` convert the inputs; a refiner that returns a string fails with that message. Its resolver's output type differs from the inputs, so it is cast once.
+
+    <SuperstructForm />
+
+    ```tsx file="../_shared/schema/superstruct.tsx"
     ```
   </Tab>
 </Tabs>

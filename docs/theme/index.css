@@ -35,16 +35,21 @@ html.dark .shiki span {
 }
 .lib-wall__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   text-align: left;
 }
-/* schema and i18n groups: names stay on one line, the invitation on a row of its own */
-.lib-wall__grid--wide {
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-}
-.lib-wall__grid--wide .lib-wall__tile--cta {
+/* the invitation starts a row of its own */
+.lib-wall__grid .lib-wall__tile--cta {
   grid-column: 1 / span 2;
+}
+@media (max-width: 640px) {
+  .lib-wall__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .lib-wall__grid .lib-wall__tile--cta {
+    grid-column: 1 / -1;
+  }
 }
 .lib-wall__tile {
   display: flex;
@@ -83,7 +88,6 @@ html.dark .shiki span {
 
 /* The last tile of a group: an invitation, not a library */
 .lib-wall__tile--cta {
-  grid-column: span 2;
   justify-content: center;
   border-style: dashed;
   border-color: var(--rp-c-brand);
@@ -94,4 +98,24 @@ html.dark .shiki span {
 .lib-wall__tile--cta:hover {
   background: var(--rp-c-brand);
   color: #fff;
+}
+
+/* i18n guide diagrams (components/I18nFlowDiagram.tsx) */
+.i18n-diagram {
+  margin: 20px 0;
+}
+.i18n-diagram__scroll {
+  overflow-x: auto;
+}
+.i18n-diagram svg {
+  display: block;
+  width: 100%;
+  min-width: 600px;
+  height: auto;
+}
+.i18n-diagram figcaption {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--rp-c-text-2);
+  line-height: 1.5;
 }

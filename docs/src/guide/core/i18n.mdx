@@ -1,102 +1,116 @@
 ---
 title: Internationalization (i18n)
-description: Translate labels, descriptions, validation messages and selected props with any i18n library; literal text, translatable props, and type-checked i18n keys.
+description: How BlueForm translates labels, descriptions, placeholders and error messages through one function, how setupForm and Form combine their i18nConfig, and what a language switch does.
 ---
 
-BlueForm handles i18n at the **form orchestration level**, not inside field components. Labels, descriptions, and validation messages are translated **before** they reach fields.
-Field components always receive ready-to-render strings.
+BlueForm translates at the **form level**, not inside field components. Labels, descriptions, placeholders and error messages are translated before they reach a field: `useField()` returns ready-to-render strings, so field components never deal with locales or an i18n library.
+
+i18n is optional: without `i18nConfig`, every text is shown as written. Runnable examples (a hand-written `t`, JSON files, your own language store, i18next, react-intl, Lingui, Paraglide JS): [i18n recipe](../../examples/recipes/i18n.mdx).
+
+import I18nFlowDiagram, { I18nValidationDiagram } from '../../../components/I18nFlowDiagram';
+
+<I18nFlowDiagram />
+
+## One function: `t`
+
+Everything goes through `i18nConfig.t(key, params)`:
+
+| What | When `t` is called | `params` |
+|---|---|---|
+| `label`, `description`, `props.placeholder` | when the field renders | from `{ message, params }`, see [Text forms](#text-forms) |
+| error messages | when they are displayed (`errorMessage` of `useField()` / `useArrayField()`) | `field` + the rule value, for [validation messages](#validation-messages) |
+
+BlueForm does not dictate a key format or where messages come from: `t` can be a `switch`, a lookup in JSON files, or an i18n library's function. For a key it does not know, a good `t` returns the key itself (i18next does by default): plain text then shows unchanged next to translated text.
 
 ```ts
-label;
-description;
-errorMessage;
+const t = (key: string, params?: Record<string, unknown>) =>
+  (messages[lang][key] ?? key).replace(/\{(\w+)\}/g, (_, name) => String(params?.[name] ?? ""));
 ```
 
-Fields should never need to know about locales or translation libraries.
+## Where the config lives: `setupForm` and `<Form>`
 
-### Basic setup
+`i18nConfig` can be given to `setupForm`, to a `<Form>`, or both. They are **merged key by key, and the Form's keys win** (_v0.22+_; before, a Form's `i18nConfig` replaced the setup's entirely). This is the same rule as `formOptions`.
 
-i18n is configured once during `setupForm`. i18n is completely optional. If no `i18nConfig` is provided, all text values are treated as plain strings.
+| Key | Usually in | Why |
+|---|---|---|
+| `validationTranslation` | `setupForm` | your message keys do not change with the language |
+| `t` | `<Form>` | a new function per language, usually from a hook, which `setupForm` cannot call |
+| `enabled` | either | `false` turns i18n off, for every form or for one |
 
-```ts
+```tsx
+// once
 const [Form] = setupForm({
+  fieldMapping,
+  renderRoot,
   i18nConfig: {
-    t: (message, params) => translate(message, params),
+    validationTranslation: { required: "validation.required", minLength: "validation.minLength" },
   },
 });
+
+// each form: only what changes with the language
+<Form i18nConfig={{ t }} config={config} />
 ```
 
-### Translating validation messages
+How the merge resolves:
+
+- A key on the Form replaces the same key from `setupForm`; the other keys are kept. Override one key or all of them.
+- The merge is shallow: a Form's `validationTranslation` replaces the setup's whole map, it is not merged rule by rule.
+- A key set to `undefined` on the Form drops the setup's value for that form (e.g. `validationTranslation: undefined`).
+- Without a Form `i18nConfig`, the setup's applies as is.
+
+When `t` comes from a hook, wrap the wiring once in a hook of your app and pass its result, so forms do not repeat it:
+
+```tsx
+function useI18nConfig() {
+  const { t } = useTranslation(); // or your own store, see below
+  return useMemo(() => ({ t: (key: string, params?: Record<string, unknown>) => String(t(key, params)) }), [t]);
+}
+
+<Form i18nConfig={useI18nConfig()} config={config} />
+```
+
+A static `t` in `setupForm` (e.g. `i18next.t`) is enough when the app has one language, or reloads the page to switch.
+
+## Switching language
+
+**A new `t` function means the language changed.** When the Form receives one:
+
+- labels, descriptions and placeholders are translated again;
+- fields that show a validation error are validated again, so their messages follow; fields without an error are not validated;
+- errors set with `setError()` (e.g. a server error) are kept, and translated again as they are displayed;
+- the values are kept: nothing is remounted.
+
+So keep `t` **stable within a language** and new **only when it changes**. The hooks of i18n libraries already do that; a hand-written `t` needs a `useMemo` keyed on the language. A new function on every render reads as a language change on every render.
+
+A changing `t` can come from:
+
+- an i18n library's hook: `useTranslation()`, `useIntl()`, `useLingui()`;
+- your own language store, subscribed with `useSyncExternalStore`: `getLang` / `setLang` keep the language where you want (localStorage, a cookie, the URL) and `setLang` notifies the form. See [Your own translator](../../examples/recipes/i18n.mdx#your-own-translator) for the code and its trade-offs.
+
+## Validation messages
+
+`validationTranslation` maps the built-in rules to message keys, so rules stay plain RHF rules:
 
 ```ts
-const [Form] = setupForm({
-  i18nConfig: {
-    validationTranslation: {
-      required: "validation.required", // "{field} is required"
-      minLength: "validation.minLength", // "{field}: at least {minLength} characters"
-    },
-    t: (key, params) => translate(key, params), // your translator
+i18nConfig: {
+  validationTranslation: {
+    required: "validation.required",   // "{field} is required"
+    minLength: "validation.minLength", // "{field}: at least {minLength} characters"
   },
-});
+}
+// config
+username: { type: "text", label: "form.username", rules: { required: true, minLength: 3 } }
 ```
 
-Validation rules remain standard RHF rules. How `validationTranslation` works:
+<I18nValidationDiagram />
 
 - It covers `required`, `min`, `max`, `minLength`, `maxLength` and `pattern` (not `validate`, whose functions return their own message).
 - `t` receives the key and `{ field, <rule>: value }`: `field` is the translated label, and e.g. `minLength: 3` for `minLength`.
 - It **replaces** the field's own message for that rule (`rules: { required: "Name is needed" }` shows the `validation.required` message). Leave a rule out of `validationTranslation` to keep per-field messages for it.
 
-### Example: using i18next
-
-```ts
-import i18next from "i18next";
-
-const [Form] = setupForm({
-  i18nConfig: {
-    t: (key, params) => String(i18next.t(key, params)),
-    validationTranslation: {
-      required: "validation.required",
-    },
-  },
-});
-```
-
-```ts
-{
-  username: {
-    type: "text",
-    label: "form.username.label",
-    description: "form.username.description",
-    rules: {
-      required: true,
-    },
-  },
-}
-```
-
-### Text forms
-
-`label` and `description` accept a `TranslatableText`:
-
-| Form | Example | Result |
-|---|---|---|
-| key | `"form.username"` | `t("form.username")` |
-| key + params | `{ message: "form.max", params: { n: 5 }, fallback: "Max" }` | `t("form.max", { n: 5 })`, then `fallback`, then `message` |
-| literal | `{ text: "Họ và tên" }` | shown as-is, `t` is **not** called (v0.14+) |
-
-Use the literal form for text that is not a translation key — e.g. labels loaded from a database — so your i18n library doesn't warn about missing keys:
-
-```ts
-label: row.isKey ? row.label : { text: row.label },
-```
-
-### Switching language
-
-Pass a new `t` when the language changes (for example `t` from `useTranslation()`). Labels, descriptions and the error messages already shown follow it: fields with a validation error are validated again (fields without an error are not), and errors set with `setError()` are kept. Keep `t` stable between renders of the same language (as i18n libraries do): a new function is read as a language change.
-
 ### Custom error messages
 
-Every error message goes through `t` when it is displayed (`errorMessage` from `useField()` / `useArrayField()`), like labels. So custom messages can be keys:
+Every error message goes through `t` when it is displayed, so custom messages can be keys too:
 
 ```ts
 code: { type: "text", rules: { validate: (v) => v === "ok" || "errors.code.invalid" } },
@@ -104,43 +118,45 @@ code: { type: "text", rules: { validate: (v) => v === "ok" || "errors.code.inval
 form.setError("email", { type: "server", message: "errors.email.taken" })
 ```
 
-What an unknown key gives is up to your `t`. A good choice is to return the key itself, as i18next does by default: plain-text messages then show unchanged next to translated ones.
+These are translated without params. For a message with parameters, use `validationTranslation`, or build the message with your `t` in a config rebuilt when the language changes: the field is validated again with the new function.
+
+Messages read directly from `formState.errors` are the raw keys.
+
+## Text forms
+
+`label`, `description` and `props.placeholder` accept a `TranslatableText`:
+
+| Form | Example | Result |
+|---|---|---|
+| key | `"form.username"` | `t("form.username")` |
+| key + params | `{ message: "form.max", params: { n: 5 }, fallback: "Max" }` | `t("form.max", { n: 5 })`; `fallback`, then `message`, only if `t` returns `undefined` |
+| literal | `{ text: "Họ và tên" }` | shown as is, `t` is **not** called (v0.14+) |
+
+A `t` that returns the key for unknown keys (as i18next does) never returns `undefined`, so `fallback` is not used with it.
+
+Use the literal form for text that is not a key, e.g. labels loaded from a database, so your i18n library does not warn about missing keys:
 
 ```ts
-const t = (key: string, params?: Record<string, unknown>) =>
-  (dictionary[lang][key] ?? key).replace(/\{(\w+)\}/g, (_, name) => String(params?.[name] ?? ""))
+label: row.isKey ? row.label : { text: row.label },
 ```
 
-Messages read directly from `formState.errors` are the raw keys. For messages with parameters, use `validationTranslation` (`{field}` and the rule value are filled in), or build the message with your own `t` inside a config rebuilt when the language changes: the field is validated again with the new function.
+## Placeholders and other props
 
-### Translating props
+_v0.23+_ (before, through `translateProps`)
+
+`props.placeholder` is translated like a label: a key, `{ message, params }` or `{ text }`. Other field `props` are passed through untouched, since most are not text (`type`, `variant`, `size`) and sending them to `t` would make the i18n library report missing keys.
+
+```ts
+email: { type: "text", label: "form.email", props: { placeholder: "form.email.placeholder" } },
+```
+
+Help text goes in the field's `description`, translated, and the adapter passes it to the library's prop (Mantine `description`, MUI `helperText`). Other text props (`title`, `aria-label`) and nested values such as select options are translated where you build the config, with your `t`: each UI library shapes options differently (`data`, `options`, `<option>` children).
+
+## Type-checked keys
 
 _Added in v0.14._
 
-By default only `label`, `description` and validation messages are translated; field `props` are passed through untouched. List the props that should also go through `t` — string values and `TranslatableText` objects are translated, anything else is left as-is:
-
-```ts
-const [Form] = setupForm({
-  i18nConfig: {
-    t: (key, params) => i18next.t(key, params),
-    translateProps: ["placeholder", "title"],
-  },
-});
-
-// config
-email: {
-  type: "text",
-  props: { placeholder: "form.email.placeholder" }, // translated
-},
-```
-
-Only top-level props are translated, not nested values such as select options: each UI library shapes options differently (`data`, `options`, `<option>` children), so translate their labels where you build them, with your `t`, and let the adapter pass them to the library's prop.
-
-### Type-checked keys
-
-_Added in v0.14._
-
-Register your key union once with module augmentation, and `label` / `description` (including `{ message }`) only accept known keys — typos fail at compile time. `{ text }` still accepts any string.
+Register your key union once with module augmentation, and `label` / `description` (including `{ message }`) only accept known keys: typos fail at compile time. `{ text }` still accepts any string.
 
 ```ts
 // i18n.d.ts
@@ -159,6 +175,6 @@ email:    { type: "text", label: "form.emial" },    // ❌ compile-time error
 note:     { type: "text", label: { text: "Raw" } }, // ✅ literal
 ```
 
-### When i18n is disabled
+## Turning i18n off
 
-With `enabled: false`, `t` is not called: keys are shown as-is, `{ message }` shows its `message`, and `{ text }` its text.
+With `enabled: false` (in `setupForm` or on one Form), `t` is not called: keys are shown as is, `{ message }` shows its `message`, and `{ text }` its text.
