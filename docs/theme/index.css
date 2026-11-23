@@ -100,170 +100,20 @@ html.dark .shiki span {
   color: #fff;
 }
 
-/* i18n guide: where translation happens (components/I18nFlowDiagram.tsx) */
-.i18n-flow {
+/* i18n guide diagrams (components/I18nFlowDiagram.tsx) */
+.i18n-diagram {
   margin: 20px 0;
 }
-.i18n-flow__cols {
-  display: flex;
-  flex-direction: column;
-}
-.i18n-flow__col {
-  border-radius: 10px;
-  padding: 12px 14px;
-}
-.i18n-flow__col--yours {
-  border: 1.5px dashed var(--rp-c-text-3, var(--rp-c-divider));
-}
-.i18n-flow__col--lib {
-  border: 2px solid var(--rp-c-brand);
-  background: var(--rp-c-bg-soft);
-}
-.i18n-flow__col header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 10px;
-  margin-bottom: 8px;
-}
-.i18n-flow__col--lib header strong {
-  color: var(--rp-c-brand);
-}
-.i18n-flow__col header span {
-  font-size: 13px;
-  color: var(--rp-c-text-2);
-}
-.i18n-flow__step + .i18n-flow__step {
-  margin-top: 8px;
-}
-.i18n-flow__step-title {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--rp-c-text-2);
-  margin-bottom: 2px;
-}
-.i18n-flow__row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 2px 8px;
-  margin: 3px 0;
-}
-.i18n-flow__row code {
-  font-size: 13px;
-  overflow-wrap: anywhere;
-}
-.i18n-flow__to {
-  color: var(--rp-c-brand);
-  font-weight: 700;
-}
-.i18n-flow__out {
-  color: var(--rp-c-brand) !important;
-}
-.i18n-flow__out--error {
-  color: #dc2626 !important;
-}
-.i18n-flow__arrow {
-  text-align: center;
-  font-size: 20px;
-  line-height: 1;
-  padding: 6px 0;
-  color: var(--rp-c-brand);
-}
-.i18n-flow figcaption {
-  margin-top: 10px;
-  font-size: 13px;
-  color: var(--rp-c-text-2);
-  line-height: 1.5;
-}
-
-/* i18n guide, variant B: one field's journey (I18nFieldJourney) */
-.i18n-journey {
-  margin: 20px 0;
-  border: 1px solid var(--rp-c-divider);
-  border-radius: 10px;
-  overflow: hidden;
-}
-.i18n-journey__head,
-.i18n-journey__row {
-  display: grid;
-  grid-template-columns: 110px 1fr 1.2fr 1fr;
-  gap: 10px;
-  padding: 10px 12px;
-  align-items: start;
-}
-.i18n-journey__head {
-  background: var(--rp-c-bg-soft);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--rp-c-text-2);
-}
-.i18n-journey__head span:nth-child(3) {
-  color: var(--rp-c-brand);
-}
-.i18n-journey__row {
-  border-top: 1px solid var(--rp-c-divider);
-}
-.i18n-journey__row > strong {
-  font-size: 14px;
-}
-.i18n-journey__row code {
-  font-size: 12.5px;
-  overflow-wrap: anywhere;
-}
-.i18n-journey__row > div:nth-child(3) {
-  border-left: 2px solid var(--rp-c-brand);
-  padding-left: 8px;
-}
-.i18n-journey__when {
-  display: block;
-  margin-top: 4px;
-  font-size: 12px;
-  color: var(--rp-c-text-2);
-}
-.i18n-journey__when--display {
-  color: #d97706;
-}
-.i18n-journey figcaption {
-  padding: 10px 12px;
-  border-top: 1px solid var(--rp-c-divider);
-  font-size: 13px;
-  color: var(--rp-c-text-2);
-}
-@media (max-width: 720px) {
-  .i18n-journey__head {
-    display: none;
-  }
-  .i18n-journey__row {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-  .i18n-journey__row > div::before {
-    content: attr(data-label);
-    display: block;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--rp-c-text-2);
-  }
-}
-
-/* i18n guide, variant C: the sketch as a graph (I18nSketchDiagram) */
-.i18n-sketch {
-  margin: 20px 0;
-}
-.i18n-sketch__scroll {
+.i18n-diagram__scroll {
   overflow-x: auto;
 }
-.i18n-sketch svg {
+.i18n-diagram svg {
   display: block;
   width: 100%;
   min-width: 600px;
   height: auto;
 }
-.i18n-sketch figcaption {
+.i18n-diagram figcaption {
   margin-top: 8px;
   font-size: 13px;
   color: var(--rp-c-text-2);

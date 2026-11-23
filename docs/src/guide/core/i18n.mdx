@@ -7,13 +7,9 @@ BlueForm translates at the **form level**, not inside field components. Labels, 
 
 i18n is optional: without `i18nConfig`, every text is shown as written. Runnable examples (a hand-written `t`, JSON files, your own language store, i18next, react-intl, Lingui, Paraglide JS): [i18n recipe](../../examples/recipes/i18n.mdx).
 
-import I18nFlowDiagram, { I18nFieldJourney, I18nSketchDiagram } from '../../../components/I18nFlowDiagram';
+import I18nFlowDiagram, { I18nValidationDiagram } from '../../../components/I18nFlowDiagram';
 
 <I18nFlowDiagram />
-
-<I18nFieldJourney />
-
-<I18nSketchDiagram />
 
 ## One function: `t`
 
@@ -105,6 +101,8 @@ i18nConfig: {
 // config
 username: { type: "text", label: "form.username", rules: { required: true, minLength: 3 } }
 ```
+
+<I18nValidationDiagram />
 
 - It covers `required`, `min`, `max`, `minLength`, `maxLength` and `pattern` (not `validate`, whose functions return their own message).
 - `t` receives the key and `{ field, <rule>: value }`: `field` is the translated label, and e.g. `minLength: 3` for `minLength`.
