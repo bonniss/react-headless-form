@@ -177,3 +177,75 @@ html.dark .shiki span {
   color: var(--rp-c-text-2);
   line-height: 1.5;
 }
+
+/* i18n guide, variant B: one field's journey (I18nFieldJourney) */
+.i18n-journey {
+  margin: 20px 0;
+  border: 1px solid var(--rp-c-divider);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.i18n-journey__head,
+.i18n-journey__row {
+  display: grid;
+  grid-template-columns: 110px 1fr 1.2fr 1fr;
+  gap: 10px;
+  padding: 10px 12px;
+  align-items: start;
+}
+.i18n-journey__head {
+  background: var(--rp-c-bg-soft);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--rp-c-text-2);
+}
+.i18n-journey__head span:nth-child(3) {
+  color: var(--rp-c-brand);
+}
+.i18n-journey__row {
+  border-top: 1px solid var(--rp-c-divider);
+}
+.i18n-journey__row > strong {
+  font-size: 14px;
+}
+.i18n-journey__row code {
+  font-size: 12.5px;
+  overflow-wrap: anywhere;
+}
+.i18n-journey__row > div:nth-child(3) {
+  border-left: 2px solid var(--rp-c-brand);
+  padding-left: 8px;
+}
+.i18n-journey__when {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--rp-c-text-2);
+}
+.i18n-journey__when--display {
+  color: #d97706;
+}
+.i18n-journey figcaption {
+  padding: 10px 12px;
+  border-top: 1px solid var(--rp-c-divider);
+  font-size: 13px;
+  color: var(--rp-c-text-2);
+}
+@media (max-width: 720px) {
+  .i18n-journey__head {
+    display: none;
+  }
+  .i18n-journey__row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .i18n-journey__row > div::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--rp-c-text-2);
+  }
+}

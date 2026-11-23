@@ -106,3 +106,59 @@ export default function I18nFlowDiagram() {
     </figure>
   )
 }
+
+/** Variant B: one field's texts, row by row, from the key to what the component receives. */
+const journey: { what: string; config: string; call: string; when: string; gets: string; error?: boolean }[] = [
+  { what: 'label', config: '"form.email"', call: 't("form.email")', when: 'compile', gets: 'label: "Email"' },
+  { what: 'description', config: '"form.email.desc"', call: 't("form.email.desc")', when: 'compile', gets: 'description: "Never shared"' },
+  { what: 'placeholder', config: 'props: { placeholder: "form.email.hint" }', call: 't("form.email.hint")', when: 'compile', gets: 'placeholder: "you@company.com"' },
+  {
+    what: 'rule message',
+    config: 'rules: { required: true } + validationTranslation',
+    call: 't("validation.required", { field: "Email" })',
+    when: 'compile',
+    gets: 'errorMessage: "Email is required"',
+    error: true,
+  },
+  {
+    what: 'other errors',
+    config: 'setError("email", { message: "errors.email.taken" }), schema, validate',
+    call: 't("errors.email.taken")',
+    when: 'display',
+    gets: 'errorMessage: "Already taken"',
+    error: true,
+  },
+]
+
+export function I18nFieldJourney() {
+  return (
+    <figure className="i18n-journey" aria-label="One field's texts: the key in your config, the t call BlueForm makes, the string your component receives">
+      <div className="i18n-journey__head" aria-hidden>
+        <span />
+        <span>Your config: a key</span>
+        <span>BlueForm calls t</span>
+        <span>Your component receives</span>
+      </div>
+      {journey.map(row => (
+        <div className="i18n-journey__row" key={row.what}>
+          <strong>{row.what}</strong>
+          <div data-label="Your config">
+            <code>{row.config}</code>
+          </div>
+          <div data-label="BlueForm calls t">
+            <code className="i18n-flow__out">{row.call}</code>
+            <span className={`i18n-journey__when i18n-journey__when--${row.when}`}>
+              {row.when === 'compile' ? 'once per field, again when t changes' : 'each time it is shown'}
+            </span>
+          </div>
+          <div data-label="Your component receives">
+            <code className={row.error ? 'i18n-flow__out i18n-flow__out--error' : 'i18n-flow__out'}>{row.gets}</code>
+          </div>
+        </div>
+      ))}
+      <figcaption>
+        Each text is a key until BlueForm calls <code>t</code>; the component only ever sees the right-hand column.
+      </figcaption>
+    </figure>
+  )
+}
