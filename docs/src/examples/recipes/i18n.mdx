@@ -1,37 +1,36 @@
 ---
 title: i18n
-description: "BlueForm i18n in practice: a hand-written t, messages in JSON, shared setup with per-form t, your own language store, and live examples with i18next, react-intl, Lingui and Paraglide JS."
+description: "BlueForm i18n in practice: a hand-written t, i18nConfig in setupForm or on Form, your own language store, and live examples with i18next, react-intl, Lingui and Paraglide JS."
 ---
 
 Runnable examples, from a hand-written `t` to the main i18n libraries. How it works (what goes through `t`, how `setupForm` and `<Form>` combine, what a language switch does): [i18n guide](../../guide/core/i18n.mdx).
 
 import { Tab, Tabs } from '@rspress/core/theme';
 
-## Any function is a translator
+## The translator `t`
 
-`t(key, params)` can be a plain `switch`: no JSON, no library. Enough for a small app or a single language.
+A translator is a function that knows the current language: it takes a key (and params) and returns that key's translation. Here a `switch` translates labels, descriptions and validation messages, and the whole `i18nConfig` sits in `setupForm`.
 
-import EgI18nMessages from '../_shared/EgI18nMessages';
 import EgI18nValidation from '../_shared/EgI18nValidation';
 
-<Tabs>
-  <Tab label="Labels">
-    <EgI18nMessages />
+<EgI18nValidation />
 
-    ```tsx file="../_shared/EgI18nMessages.tsx"
-    ```
-  </Tab>
-  <Tab label="Validation messages">
-    <EgI18nValidation />
+```tsx file="../_shared/EgI18nValidation.tsx"
+```
 
-    ```tsx file="../_shared/EgI18nValidation.tsx"
-    ```
-  </Tab>
-</Tabs>
+## `i18nConfig` in `setupForm` or on `<Form>`
 
-## Messages in JSON files
+- **`t` does not change while the page runs** (one language, or a reload to switch): put the whole `i18nConfig` in `setupForm`, as above.
+- **`t` changes when the user switches language**: put `validationTranslation` in `setupForm` and pass `t` on `<Form>`; the two are merged key by key, the Form's keys win (_v0.22+_). Create `t` in React, from a library's hook or from your own store with `useSyncExternalStore`: the form knows the language changed only when it receives a new `t`.
 
-The usual practice in an app: one file per language, keys for labels, for validation messages (`{field}` and the rule value are filled in) and for placeholders. All examples below read these two files.
+```tsx file="../_shared/i18n/form.tsx"
+```
+
+Override one key (`i18nConfig={{ t }}`) or all of them on a given form; a key set to `undefined` drops the setup's value for that form.
+
+When `t` needs a few lines of wiring (your own store, an adapter around the library's function), put them in a hook of your app, `useI18nConfig()`, and pass its result to every form: `<Form i18nConfig={useI18nConfig()} />`. When the library's `t` fits as is, pass it directly.
+
+The examples below share these messages in two languages:
 
 <Tabs>
   <Tab label="en.json">
@@ -43,17 +42,6 @@ The usual practice in an app: one file per language, keys for labels, for valida
     ```
   </Tab>
 </Tabs>
-
-## Shared setup, `t` per form
-
-What does not change with the language goes into `setupForm` once: the validation keys. Each `<Form>` passes only `t`; the two are merged key by key (_v0.22+_).
-
-```tsx file="../_shared/i18n/form.tsx"
-```
-
-Override one key (`i18nConfig={{ t }}`) or all of them on a given form; a key set to `undefined` drops the setup's value for that form.
-
-When `t` needs a few lines of wiring (your own store, an adapter around the library's function), put them in a hook of your app, `useI18nConfig()`, and pass its result to every form: `<Form i18nConfig={useI18nConfig()} />`. When the library's `t` fits as is, pass it directly.
 
 ## Your own translator
 
