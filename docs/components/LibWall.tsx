@@ -99,14 +99,14 @@ export default function LibWall() {
         <CtaTile href={`${integration('')}#bring-your-own-library`}>Don't see your library? Start here →</CtaTile>
       </div>
       <h3>…and so does any schema library</h3>
-      <div className="lib-wall__grid lib-wall__grid--wide">
+      <div className="lib-wall__grid">
         {schemaLibs.map(lib => (
           <Tile key={lib.name} lib={lib} />
         ))}
         <CtaTile href={schema}>Another schema? Plug it in →</CtaTile>
       </div>
       <h3>…and so does any i18n library</h3>
-      <div className="lib-wall__grid lib-wall__grid--wide">
+      <div className="lib-wall__grid">
         {i18nLibs.map(lib => (
           <Tile key={lib.name} lib={lib} />
         ))}
