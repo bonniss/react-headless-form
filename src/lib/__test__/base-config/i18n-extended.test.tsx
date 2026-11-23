@@ -1,4 +1,5 @@
 import BlueForm from "@/components/form/BlueForm";
+import { useField } from "@/components/form/provider/FieldProvider";
 import type { TranslatableText } from "@/components/i18n";
 import { normalizeTranslator } from "@/components/i18n/resolver";
 import { screen } from "@testing-library/react";
@@ -127,6 +128,57 @@ describe("i18n – placeholder", () => {
       { i18nConfig: { t } },
     );
     expect(screen.getByTestId("input").getAttribute("placeholder")).toBe("Từ CSDL");
+    expect(t).not.toHaveBeenCalled();
+  });
+});
+
+describe("i18n – placeholder, edge cases", () => {
+  // an adapter that falls back to the label, as many do
+  const Field = (props: { placeholder?: any; title?: string }) => {
+    const { label } = useField();
+    return <input data-testid="f" title={props.title} placeholder={props.placeholder ?? label} />;
+  };
+  const renderField = (config: any, i18nConfig?: any) =>
+    renderWithBlueFormProvider(
+      <BlueForm renderRoot={TestRoot} fieldMapping={{ f: Field }} config={{ name: { type: "f", ...config } }} />,
+      i18nConfig ? { i18nConfig } : undefined,
+    );
+  const placeholder = () => screen.getByTestId("f").getAttribute("placeholder");
+
+  it("without i18nConfig, a plain placeholder is shown as written", () => {
+    renderField({ props: { placeholder: "Your name" } });
+    expect(placeholder()).toBe("Your name");
+  });
+
+  it("without i18nConfig, { message } shows its message and { text } its text", () => {
+    renderField({ props: { placeholder: { message: "Nickname" } } });
+    expect(placeholder()).toBe("Nickname");
+  });
+
+  it("without a placeholder, t is not called for props and the adapter's fallback applies", () => {
+    const t = vi.fn((k: string) => `t:${k}`);
+    renderField({ label: "form.name", props: { title: "form.title" } }, { t });
+    expect(placeholder()).toBe("t:form.name");
+    expect(screen.getByTestId("f").getAttribute("title")).toBe("form.title");
+    expect(t.mock.calls.map(([k]) => k)).not.toContain("form.title");
+  });
+
+  it("without props at all, the field renders", () => {
+    renderField({ label: "Name" }, { t: (k: string) => `t:${k}` });
+    expect(placeholder()).toBe("t:Name");
+  });
+
+  it("with enabled: false, the placeholder key is shown as is", () => {
+    const t = vi.fn((k: string) => `t:${k}`);
+    renderField({ props: { placeholder: "form.ph" } }, { t, enabled: false });
+    expect(placeholder()).toBe("form.ph");
+    expect(t).not.toHaveBeenCalled();
+  });
+
+  it("a non-text placeholder is passed through untouched", () => {
+    const t = vi.fn((k: string) => `t:${k}`);
+    renderField({ props: { placeholder: 42 } }, { t });
+    expect(placeholder()).toBe("42");
     expect(t).not.toHaveBeenCalled();
   });
 });
