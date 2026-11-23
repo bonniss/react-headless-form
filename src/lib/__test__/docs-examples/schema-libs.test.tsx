@@ -4,6 +4,8 @@ import AjvForm from "../../../../docs/src/examples/_shared/schema/ajv";
 import ArktypeForm from "../../../../docs/src/examples/_shared/schema/arktype";
 import ValibotForm from "../../../../docs/src/examples/_shared/schema/valibot";
 import YupForm from "../../../../docs/src/examples/_shared/schema/yup";
+import JoiForm from "../../../../docs/src/examples/_shared/schema/joi";
+import EffectForm from "../../../../docs/src/examples/_shared/schema/effect";
 import ZodForm from "../../../../docs/src/examples/_shared/schema/zod";
 
 const fill = (label: string, value: string) =>
@@ -23,6 +25,8 @@ describe.each([
   ["arktype", ArktypeForm, "  Ann "],
   ["yup", YupForm, "  Ann "],
   ["ajv", AjvForm, "Ann"],
+  ["joi", JoiForm, "  Ann "],
+  ["effect", EffectForm, "  Ann "],
 ])("docs: schema example with %s", (_, Example, name) => {
   it("shows the schema's messages, then submits the parsed output", async () => {
     render(<Example />);

@@ -9,7 +9,9 @@
       "react-headless-form": ["src/lib/index.ts"],
       "react-hook-form": ["node_modules/react-hook-form"],
       "react": ["node_modules/@types/react"],
-      "react/jsx-runtime": ["node_modules/@types/react/jsx-runtime"]
+      "react/jsx-runtime": ["node_modules/@types/react/jsx-runtime"],
+      // effect publishes its types through `exports` only, which "Node" resolution ignores
+      "effect": ["node_modules/effect/dist/index.d.ts"]
     }
   },
   "include": ["src", ".ladle", "docs/src/examples", "docs/integrations/shared"],

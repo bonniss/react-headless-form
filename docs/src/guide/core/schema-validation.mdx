@@ -7,7 +7,7 @@ description: "Validate the whole form with any Standard Schema (Zod, Valibot, Ar
 
 _Added in v0.17._
 
-Pass any [Standard Schema](https://standardschema.dev) (Zod 3.24+ / 4, Valibot 1, ArkType 2, …). No resolver package is needed:
+Pass any [Standard Schema](https://standardschema.dev) (Zod 3.24+ / 4, Valibot 1, ArkType 2, Yup 1.7+, Effect Schema, …). No resolver package is needed:
 
 ```tsx
 import { z } from "zod";
@@ -52,11 +52,11 @@ import ZodSignupForm from '../../examples/_shared/schema/zod';
   </Tab>
 </Tabs>
 
-The same form with Valibot, ArkType, Yup and Ajv: [Schema example](../../examples/foundational/schema-form.mdx).
+The same form with Valibot, ArkType, Yup, Effect Schema, Ajv and Joi: [Schema example](../../examples/foundational/schema-form.mdx).
 
 ## Any RHF resolver: `formOptions.resolver`
 
-For libraries without Standard Schema support (e.g. Ajv, or Yup before 1.7) or custom resolvers, pass a resolver from `@hookform/resolvers`.
+For libraries without Standard Schema support (e.g. Ajv, Joi, or Yup before 1.7) or custom resolvers, pass a resolver from `@hookform/resolvers`.
 
 ### Setup
 

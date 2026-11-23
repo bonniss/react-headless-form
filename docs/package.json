@@ -56,6 +56,8 @@
     "@types/react-dom": "^19.2.3",
     "@types/react-native-web": "^0.19.3",
     "@vitejs/plugin-react": "^4.7.0",
+    "effect": "^4.1.5",
+    "joi": "^18.3.2",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-intl": "^12.2.0",

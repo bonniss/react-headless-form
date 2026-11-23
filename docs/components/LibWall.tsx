@@ -4,6 +4,7 @@ import {
   siAjv,
   siAntdesign,
   siChakraui,
+  siEffect,
   siI18next,
   siMantine,
   siMui,
@@ -46,6 +47,8 @@ const schemaLibs: Lib[] = [
   { name: 'ArkType', href: schema, mark: 'A', color: '#7c3aed', logo: 'arktype.svg' },
   { name: 'Yup', href: schema, mark: 'Y', color: '#16a34a' },
   { name: 'Ajv', href: schema, mark: 'J', color: '#dc2626', icon: siAjv },
+  { name: 'Joi', href: schema, mark: 'Jo', color: '#0080ff' },
+  { name: 'Effect Schema', href: schema, mark: 'Ef', color: '#18181b', icon: siEffect },
 ]
 
 const i18nLibs: Lib[] = [
@@ -58,7 +61,8 @@ const i18nLibs: Lib[] = [
 function Mark({ lib }: { lib: Lib }) {
   if (lib.icon) {
     return (
-      <svg viewBox="0 0 24 24" width="22" height="22" fill={`#${lib.icon.hex}`}>
+      // a white or black brand color follows the theme instead
+      <svg viewBox="0 0 24 24" width="22" height="22" fill={/^(FFFFFF|000000)$/i.test(lib.icon.hex) ? 'currentColor' : `#${lib.icon.hex}`}>
         <path d={lib.icon.path} />
       </svg>
     )
