@@ -48,6 +48,7 @@ const schemaLibs: Lib[] = [
   { name: 'Yup', href: schema, mark: 'Y', color: '#16a34a' },
   { name: 'Ajv', href: schema, mark: 'J', color: '#dc2626', icon: siAjv },
   { name: 'Joi', href: schema, mark: 'Jo', color: '#0080ff' },
+  { name: 'Superstruct', href: schema, mark: 'Ss', color: '#ef4444' },
   { name: 'Effect Schema', href: schema, mark: 'Ef', color: '#18181b', icon: siEffect },
 ]
 

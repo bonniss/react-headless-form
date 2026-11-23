@@ -1,12 +1,12 @@
 ---
 title: Schema
-description: "The same sign-up form validated with Zod, Valibot, ArkType, Yup, Effect Schema (the schema prop, Standard Schema), Ajv and Joi (formOptions.resolver); onSubmit receives the parsed output."
+description: "The same sign-up form validated with Zod, Valibot, ArkType, Yup, Effect Schema (the schema prop, Standard Schema), Ajv, Joi and Superstruct (formOptions.resolver); onSubmit receives the parsed output."
 ---
 
-The same sign-up form, validated by seven schema libraries. In each, the inputs hold strings and `onSubmit` receives the parsed output: the name trimmed, the age a number. See [Schema validation](../../guide/core/schema-validation.mdx).
+The same sign-up form, validated by eight schema libraries. In each, the inputs hold strings and `onSubmit` receives the parsed output: the name trimmed, the age a number. See [Schema validation](../../guide/core/schema-validation.mdx).
 
 - **Zod, Valibot, ArkType, Yup (1.7+), Effect Schema** implement [Standard Schema](https://standardschema.dev): pass the schema to the `schema` prop. No resolver package; `onSubmit` is typed by the schema output.
-- **Ajv** (JSON Schema), **Joi**: pass a resolver from `@hookform/resolvers` to `formOptions.resolver`.
+- **Ajv** (JSON Schema), **Joi**, **Superstruct**: pass a resolver from `@hookform/resolvers` to `formOptions.resolver`.
 
 Field `rules` are not used with a schema: all validation, messages included, lives in the schema. The `*` marker comes from `rules.required`, so set `required: true` on a field to show it.
 
@@ -18,6 +18,7 @@ import YupForm from '../_shared/schema/yup';
 import EffectForm from '../_shared/schema/effect';
 import AjvForm from '../_shared/schema/ajv';
 import JoiForm from '../_shared/schema/joi';
+import SuperstructForm from '../_shared/schema/superstruct';
 
 <Tabs>
   <Tab label="Zod">
@@ -74,6 +75,14 @@ import JoiForm from '../_shared/schema/joi';
     <JoiForm />
 
     ```tsx file="../_shared/schema/joi.tsx"
+    ```
+  </Tab>
+  <Tab label="Superstruct">
+    `pnpm add superstruct @hookform/resolvers`. With `coerce: true`, `trimmed` and `coerce` convert the inputs; a refiner that returns a string fails with that message. Its resolver's output type differs from the inputs, so it is cast once.
+
+    <SuperstructForm />
+
+    ```tsx file="../_shared/schema/superstruct.tsx"
     ```
   </Tab>
 </Tabs>

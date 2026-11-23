@@ -28,7 +28,7 @@ importers:
         version: 4.4.0(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@hookform/resolvers':
         specifier: ^5.9.2
-        version: 5.9.2(@sinclair/typebox@0.31.30)(@standard-schema/spec@1.1.0)(ajv-errors@3.0.0(ajv@8.20.0))(ajv-formats@3.0.1(ajv@8.20.0))(ajv@8.20.0)(arktype@2.2.10)(effect@4.1.5)(joi@18.3.2)(react-hook-form@7.71.2(react@19.2.4))(valibot@1.5.0(typescript@5.8.3))(yup@1.7.1)(zod@4.6.7)
+        version: 5.9.2(@sinclair/typebox@0.31.30)(@standard-schema/spec@1.1.0)(ajv-errors@3.0.0(ajv@8.20.0))(ajv-formats@3.0.1(ajv@8.20.0))(ajv@8.20.0)(arktype@2.2.10)(effect@4.1.5)(joi@18.3.2)(react-hook-form@7.71.2(react@19.2.4))(superstruct@2.0.2)(valibot@1.5.0(typescript@5.8.3))(yup@1.7.1)(zod@4.6.7)
       '@mantine/core':
         specifier: ^8.3.18
         version: 8.3.18(@mantine/hooks@8.3.18(react@19.2.4))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -150,6 +150,9 @@ importers:
       simple-icons:
         specifier: ^16.38.1
         version: 16.38.1
+      superstruct:
+        specifier: ^2.0.2
+        version: 2.0.2
       tailwindcss:
         specifier: ^4.3.5
         version: 4.3.5
@@ -4502,6 +4505,10 @@ packages:
   stylis@4.4.0:
     resolution: {integrity: sha512-5Z9ZpRzfuH6l/UAvCPAPUo3665Nk2wLaZU3x+TLHKVzIz33+sbJqbtrYoC3KD4/uVOr2Zp+L0LySezP9OHV9yA==}
 
+  superstruct@2.0.2:
+    resolution: {integrity: sha512-uV+TFRZdXsqXTL2pRvujROjdZQ4RAlBUS5BTh9IGm+jTqQntYThciG/qu57Gs69yjnVUSqdxF9YLmSnpupBW9A==}
+    engines: {node: '>=14.0.0'}
+
   supports-color@7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
@@ -5768,7 +5775,7 @@ snapshots:
       - '@types/react'
       - supports-color
 
-  '@hookform/resolvers@5.9.2(@sinclair/typebox@0.31.30)(@standard-schema/spec@1.1.0)(ajv-errors@3.0.0(ajv@8.20.0))(ajv-formats@3.0.1(ajv@8.20.0))(ajv@8.20.0)(arktype@2.2.10)(effect@4.1.5)(joi@18.3.2)(react-hook-form@7.71.2(react@19.2.4))(valibot@1.5.0(typescript@5.8.3))(yup@1.7.1)(zod@4.6.7)':
+  '@hookform/resolvers@5.9.2(@sinclair/typebox@0.31.30)(@standard-schema/spec@1.1.0)(ajv-errors@3.0.0(ajv@8.20.0))(ajv-formats@3.0.1(ajv@8.20.0))(ajv@8.20.0)(arktype@2.2.10)(effect@4.1.5)(joi@18.3.2)(react-hook-form@7.71.2(react@19.2.4))(superstruct@2.0.2)(valibot@1.5.0(typescript@5.8.3))(yup@1.7.1)(zod@4.6.7)':
     dependencies:
       '@standard-schema/utils': 0.3.0
       react-hook-form: 7.71.2(react@19.2.4)
@@ -5781,6 +5788,7 @@ snapshots:
       arktype: 2.2.10
       effect: 4.1.5
       joi: 18.3.2
+      superstruct: 2.0.2
       valibot: 1.5.0(typescript@5.8.3)
       yup: 1.7.1
       zod: 4.6.7
@@ -10390,6 +10398,8 @@ snapshots:
   stylis@4.2.0: {}
 
   stylis@4.4.0: {}
+
+  superstruct@2.0.2: {}
 
   supports-color@7.2.0:
     dependencies:
